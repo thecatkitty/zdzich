@@ -1,0 +1,28 @@
+* ZDZICH 4 - Program przyk’adowy
+* Przyk’ad u§ycia polece¤ obs’ugi myszki i grafiki
+* Lewy przycisk - rysowanie; Prawy przycisk - zmiana koloru
+* Obydwa przyciski - koniec
+***********************************************************
+Zmienna &Kolor
+
+&Kolor=9
+Tryb $12
+Poka§Mysz
+:P‘tla
+StanPrzycisk¢w
+Por¢wnaj BX,0
+&Skok :P‘tla
+Por¢wnaj BX,2
+&Skok :Zmie¤Kolor
+Por¢wnaj BX,3
+&Skok :Koniec
+Punkt CX,DX,&Kolor
+Skok :P‘tla
+
+:Zmie¤Kolor
+Zwi‘ksz &Kolor
+Skok :P‘tla
+
+:Koniec
+Tryb 3
+Koniec

@@ -1,0 +1,26 @@
+* ZDZICH 4 - program przykíadowy
+* Programowanie z ußyciem asemblera
+* Program czyta parametr, z jakim zostaí uruchomiony
+* i wypisuje go na ekranie
+****************************************************
+* Znacznik kierunku naleßy ustawiç na "-"
+D-
+SI=$82
+Pisz Program zostaí uruchomiony z parametrem: 
+:Pëtla
+úaduj
+Por¢wnaj AL,13
+&Skok :Koniec
+AH=9
+BL=7
+BH=0
+CX=1
+Przerwanie $10
+AH=3
+Przerwanie $10
+Zwiëksz DL
+AH=2
+Przerwanie $10
+Skok :Pëtla
+:Koniec
+Koniec

@@ -1,0 +1,11 @@
+* Zdzich 4 - program przyk’adowy
+* Wypisywanie liczb losowych
+********************************
+:Start
+Losowa8
+Pisz8
+Pisz
+Klawisz
+Por¢wnaj AL,27
+<>Skok :Start
+Koniec

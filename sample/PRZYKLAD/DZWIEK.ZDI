@@ -1,0 +1,13 @@
+* ZDZICH 4 - program przykíadowy
+* Wykorzystanie procedur do tworzenia d¶wiëku
+*********************************************
+D†WIêK()
+Czekaj 10
+CISZA()
+Czekaj 5
+D†WIêK()
+Czekaj 20
+CISZA()
+Koniec
+
+#WSTAW ..\INC\DZWIEK.INC

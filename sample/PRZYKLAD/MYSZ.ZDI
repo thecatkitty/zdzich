@@ -1,0 +1,17 @@
+* ZDZICH 4 - program przykíadowy
+* Przykíad obsíugi myszki
+* Program czeka na nacisniecie lewego przycisku myszy
+*****************************************************
+Czyûç
+Pozycja 0,24
+Pisz Nacisniëcie lewego przycisku myszy ko§czy program...
+PokaßMysz
+:Pëtla
+StanPrzycisk¢w
+Por¢wnaj BX,1
+&Skok :Koniec
+Skok :Pëtla
+:Koniec
+UkryjMysz
+Czyûç
+Koniec

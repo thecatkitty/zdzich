@@ -1,0 +1,42 @@
+* Zdzich 4 - program przykíadowy
+* Demonstracja polece§ SKOK, &SKOK i POR£WNAJ
+*********************************************
+:PoczÜtek
+Czyûç
+Pisz Wybierz:
+Pisz
+Pisz 1.Opcja A
+Pisz
+Pisz 2.Opcja B
+Pisz
+Pisz 3.Opcja C
+Pisz
+Pisz
+Pisz Inny klawisz - koniec
+Klawisz
+Por¢wnaj AL,49
+&Skok :OpcjaA
+Por¢wnaj AL,50
+&Skok :OpcjaB
+Por¢wnaj AL,51
+&Skok :OpcjaC
+Czyûç
+Koniec
+
+:OpcjaA
+Czyûç
+Pisz Wybraíeû opcjë A
+Klawisz
+Skok :PoczÜtek
+
+:OpcjaB
+Czyûç
+Pisz Wybraíeû opcjë B
+Klawisz
+Skok :PoczÜtek
+
+:OpcjaC
+Czyûç
+Pisz Wybraíeû opcjë C
+Klawisz
+Skok :PoczÜtek

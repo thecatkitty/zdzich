@@ -1,0 +1,24 @@
+* ZDZICH 4 - program przykíadowy
+* Polecenia dyskowe
+* Program prosi o podanie nazwy katalogu i pliku
+* Nastepnie je tworzy i wpisuje do pliku tekst
+************************************************
+Zmienna $Nazwa
+Zmienna $NazwaPliku
+Czyûç
+Pisz Podaj nazwë katalogu:
+Czytaj $Nazwa
+Pisz
+Pisz Podaj nazwë pliku:
+Czytaj $NazwaPliku
+Tw¢rzKatalog $Nazwa
+Zmie§Katalog $Nazwa
+Tw¢rzPlik $NazwaPliku
+Otw¢rz #5,$NazwaPliku
+Pisz #5,To jest plik: 
+Pisz #5,$NazwaPliku
+Pisz #5,W katalogu:
+Pisz #5,$Nazwa
+Zamknij #5
+Czyûç
+Koniec

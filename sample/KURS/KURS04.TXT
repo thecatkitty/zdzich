@@ -1,0 +1,16 @@
+Zmienna $Imie
+
+Czysc 30
+Pisz Jak masz na imie? 
+Czytaj $Imie
+Pisz
+Pisz Czesc, 
+Pisz $Imie
+PiszL !!!
+PiszL Nacisnij ENTER
+:Sprawdzenie
+Klawisz
+Porownaj AL,13
+<>Skok :Sprawdzenie
+Czysc
+Koniec

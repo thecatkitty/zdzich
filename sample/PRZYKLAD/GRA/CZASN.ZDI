@@ -1,0 +1,487 @@
+Zmienna &Kij
+Zmienna &Zbroja
+Zmienna $Komp
+
+:Intro
+Czyûç 10
+Pisz R
+Czekaj 2
+Pisz o
+Czekaj 2
+Pisz k
+Czekaj 2
+Pisz  
+Czekaj 2
+Pisz 1
+Czekaj 2
+Pisz 9
+Czekaj 2
+Pisz 9
+Czekaj 2
+PiszL 8
+Czekaj 5
+PiszL Trwa wojna. Ziemia jest zniszczona, a ludzie ßyjÜ w podziemnych bunkrach.
+PiszL JedynÜ szansÜ na ocalenie rodzaju ludzkiego od zagíady jest cofniëcie sië
+PiszL w przeszíoûç i niedopuszczenie do wybuchu tej wojny.
+PiszL Naukowcy w jednym z bunkr¢w konstruujÜ prototyp urzÜdzenia, kt¢re w ich
+PiszL zaíoßeniu ma przenosiç ludzi w czasie. Ochotnikiem do jego przetestowania
+PiszL jesteû TY.
+PiszL Niestety, urzÜdzenie nie dziaía prawidíowo...
+KLAWISZ()
+
+Bíysk()
+Czyûç 12
+Pozycja 35,9
+Pisz C
+Czekaj 2
+Pisz  
+Czekaj 2
+Pisz Z
+Czekaj 2
+Pisz  
+Czekaj 2
+Pisz A
+Czekaj 2
+Pisz  
+Czekaj 2
+Pisz S
+Czekaj 10
+Pozycja 31,11
+Pisz N A J W Y ° S Z Y
+Czekaj 10
+Pozycja 32,24
+Pisz Paweí PiÜtkowski
+UkryjKursor()
+KLAWISZ()
+
+:Start
+&Kij=0
+&Zbroja=0
+
+:PREHISTORIA
+Czyûç
+PiszL Budzisz sië gdzieû w lesie. Olbrzymie drzewa pochylajÜ sië nad r¢wnie
+PiszL olbrzymimi paprociami. Masz zíe przeczucia...
+PiszL NAGLE...
+PiszL Co to? Jakby kroki olbrzymiego zwierzëcia... AaaaaaaaaaAAAA!
+PiszL To dinozaur!
+PiszL
+PiszL Co robisz?
+PiszL 1 - Uciekasz przez las
+PiszL 2 - Pr¢bujesz sië ukryç
+PiszL 3 - Walczysz z dinozaurem
+KLAWISZ()
+Por¢wnaj AL,49
+&Skok :Uciekasz
+Por¢wnaj AL,50
+&Skok :Ukrycie
+Por¢wnaj AL,51
+&Skok :Walka
+Skok :Start
+
+:Uciekasz
+Czyûç
+PiszL Uciekasz na oûlep przed siebie...
+Losowa8
+Por¢wnaj AL,30
+<Skok :Dziura
+Por¢wnaj AL,120
+<Skok :Polana
+Por¢wnaj AL,230
+<Skok :Jaskinia
+PiszL Niestety, dinozaur dogania cië i zjada...
+Skok :GameOver
+
+:Dziura
+PiszL Aaaaaaaaaaaaaa!!!
+PiszL Wpadasz do jakiejû dziury...
+Skok :GameOver
+
+:Polana
+PiszL Dobiegasz do jakiejû polany.
+PiszL Znajdujesz tu dußy kij. Z tym bezpieczniej chodziç po prehistorycznym ûwiecie!
+&Kij=1
+PiszL DokÜd idziesz?
+PiszL 1 - na p¢ínoc
+PiszL 2 - na poíudnie
+PiszL 3 - na wsch¢d
+PiszL 4 - na zach¢d
+:PolanaKlawisz
+KLAWISZ()
+Por¢wnaj AL,49
+&Skok :Dziura
+Por¢wnaj AL,50
+&Skok :Jaskinia
+Por¢wnaj AL,51
+&Skok :òredniowiecze
+Por¢wnaj AL,52
+&Skok :MaíyDinozaur
+Skok :PolanaKlawisz
+
+:MaíyDinozaur
+Czyûç
+PiszL Spotykasz maíego dinozaura.
+PiszL Co robisz?
+PiszL 1 - bijesz go kijem
+PiszL 2 - podchodzisz do niego przyja¶nie
+PiszL 3 - uciekasz
+KLAWISZ()
+Por¢wnaj AL,49
+&Skok :Kijem
+Por¢wnaj AL,50
+&Skok :Przyja¶nie
+Por¢wnaj AL,51
+&Skok :Uciekasz
+
+:Kijem
+Czyûç
+Por¢wnaj &Kij,0
+&Skok :BezKija
+PiszL Zabijasz dinozaura kijem. C¢ß, takie sÜ prawa dßungli...
+PiszL Z jego pancerza robisz sobie zbrojë.
+Zwiëksz &Zbroja
+PiszL
+PiszL DokÜd teraz?
+PiszL 1 - na wsch¢d
+PiszL 2 - na zach¢d
+KLAWISZ()
+Por¢wnaj AL,49
+&Skok :Jaskinia
+Por¢wnaj AL,50
+&Skok :Polana
+Skok :Kijem
+
+:BezKija
+Czyûç
+PiszL Niestety, nie masz kija...
+PiszL Pr¢bujesz uciekaç, ale dinozaur cië dogania i zjada...
+Skok :GameOver
+
+:Przyja¶nie
+Czyûç
+PiszL Powoli podchodzisz do dinozaura,
+PiszL Jednak on traktuje cië jak posiíek.
+PiszL Rzuca sië na ciebie i zjada...
+Skok :GameOver
+
+:Jaskinia
+PiszL Chowasz sië w jaskini.
+PiszL Zmëczony zasypiasz...
+Losowa8
+Por¢wnaj AL,32
+<Skok :òredniowiecze
+PiszL Po obudzeniu sië, wychodzisz z jaskini i idziesz przed siebie...
+KLAWISZ()
+Losowa8
+Por¢wnaj AL,128
+<Skok :Polana
+Por¢wnaj AL,220
+<Skok :MaíyDinozaur
+Skok :Dziura
+
+:Ukrycie
+Czyûç
+Pisz Pr¢bujesz sië ukryç, 
+Losowa8
+Por¢wnaj AL,128
+<Skok :DinozaurKill
+PiszL a gdy dinozaur odchodzi, biegniesz przez las.
+Skok :Polana
+
+:DinozaurKill
+PiszL niestety dinozaur cië znajduje...
+Skok :GameOver
+
+:Walka
+Czyûç 11
+PiszL Oj, nierozsÜdny krok!
+PiszL Dinozaur zabija cië jednym machniëciem íapy...
+Skok :GameOver
+
+:òREDNIOWIECZE
+Bíysk()
+Czyûç
+PiszL Budzisz sië na polu. W oddali widaç zamek.
+PiszL "No, íadne kwiatki!" myûlisz sobie. "Teraz jestem w ûredniowieczu!"
+:Pole
+PiszL
+PiszL Co robisz?
+PiszL 1 - idziesz do zamku
+PiszL 2 - idziesz polnÜ drogÜ przed siebie
+PiszL 3 - zasypiasz
+:PoleKlawisz
+KLAWISZ()
+Por¢wnaj AL,49
+&Skok :Zamek
+Por¢wnaj AL,50
+&Skok :PolnaDroga
+Por¢wnaj AL,51
+&Skok :PREHISTORIA
+Skok :PoleKlawisz
+
+:Zamek
+Czyûç
+PiszL Jesteû w zamku. Spotykasz czarodzieja.
+Losowa8
+Pisz Czarodziej teleportuje cië do 
+Por¢wnaj AL,64
+<Skok :CzarodziejOK
+PiszL pobliskiej wioski.
+KLAWISZ()
+Skok :Wioska
+
+:CzarodziejOK
+PiszL roku 1995.
+KLAWISZ()
+Skok :TERAZ
+
+:PolnaDroga
+Czyûç
+PiszL Idziesz powoli polnÜ drogÜ, aß dochodzisz do wioski.
+Skok :WWiosce
+
+:Wioska
+Czyûç
+Pisz Jesteû w wiosce. 
+:WWiosce
+PiszL Jest tu parë chat i studnia.
+PiszL Co robisz?
+PiszL 1 - Wchodzisz do pierwszej chaty
+PiszL 2 - Wchodzisz do drugiej chaty
+PiszL 3 - Wchodzisz do trzeciej chaty
+PiszL 4 - ZaglÜdasz do studni
+PiszL 5 - Wracasz
+KLAWISZ()
+Por¢wnaj AL, 49
+&Skok :1Chata
+Por¢wnaj AL, 50
+&Skok :2Chata
+Por¢wnaj AL, 51
+&Skok :3Chata
+Por¢wnaj AL, 52
+&Skok :Studnia
+Por¢wnaj AL, 53
+&Skok :Wracasz
+Skok :Wioska
+
+:1Chata
+Czyûç
+PiszL Wchodzisz do chaty.
+PiszL Nikogo tu nie ma.
+PiszL Wychodzisz.
+KLAWISZ()
+Skok :Wioska
+
+:2Chata
+Czyûç
+PiszL Wchodzisz do drugiej chaty.
+PiszL Akurat odbywajÜ sië tu obrzëdy magiczne.
+PiszL Szaman przenosi cië do prehistorii.
+KLAWISZ()
+Skok :PREHISTORIA
+
+:3Chata
+Czyûç
+PiszL Wchodzisz do trzeciej chaty...
+PiszL Wyskakuje na ciebie pies i przegryza ci gardío.
+Skok :GameOver
+
+:Studnia
+Czyûç
+PiszL Pochylasz sië nad studniÜ...
+Losowa8
+Por¢wnaj AL,128
+<Skok :DoTeraz
+PiszL Nie ma tu nic ciekawego.
+KLAWISZ()
+Skok :Wioska
+
+:Wracasz
+Czyûç
+PiszL Wracasz na to pole, gdzie sië obudziíeû.
+Skok :Pole
+
+:DoTeraz
+KLAWISZ()
+Skok :TERAZ
+
+:TERAZ
+Bíysk()
+Czyûç
+PiszL Nareszcie!
+PiszL Jesteû w roku 1995. Dookoía jeßdßÜ samochody, czujesz przyjemny zapach spalin.
+PiszL Teraz tylko musisz zniszczyç plany broni, kt¢ra spowodowaía zagíadë ûwiata.
+PiszL Wsiadasz w pociÜg i jedziesz do miasta, w kt¢rym mieûci sië laboratorium
+PiszL wojskowe.
+KLAWISZ()
+Losowa8
+Por¢wnaj AL,32
+<Skok :Wypadek
+:Miasto
+Czyûç
+PiszL Jesteû w mieûcie.
+PiszL Co robisz?
+PiszL 1 - Idziesz do laboratorium
+PiszL 2 - Idziesz do swojego przyjaciela
+PiszL 3 - Idziesz do baru
+KLAWISZ()
+Por¢wnaj AL,49
+&Skok :LaboratoriumPr¢ba
+Por¢wnaj AL,50
+&Skok :Przyjaciel
+Por¢wnaj AL,51
+&Skok :Bar
+Skok :Miasto
+
+:Wypadek
+PiszL Nagle czujesz silny wstrzÜs i uderzasz gíowÜ w coû twardego.
+PiszL Zapada ciemnoûç...
+Skok :GameOver
+
+:LaboratoriumPr¢ba
+Czyûç
+PiszL Podchodzisz do budki straßniczej.
+PiszL "Przepustka!"
+PiszL "Eeeee" - grzebiesz w kieszeni - "Gdzieû jÜ muszë mieç!"
+PiszL "No, szybko!"
+PiszL "Juß, juß!". Powoli sië wycofujesz...
+PiszL Straßnik, widzÜc co sië dzieje, wyciÜga karabin.
+PiszL "St¢j! Coû ty za jeden?"
+PiszL "Niiiikt! Turysta..."
+PiszL "Tak, turysta. P¢jdziesz ze mnÜ!"
+PiszL Pr¢bujesz uciec, lecz dosiëga cië kula z karabinu.
+Skok :GameOver
+
+:Przyjaciel
+Czyûç
+PiszL Pukasz do drzwi. Otwiar tw¢j stary kumpel.
+PiszL "Síuchaj, moße nie uwierzysz, ale przybyíem tu z przyszíoûci.
+PiszL  Za rok wybuchnie wojna, kt¢ra doprowadzi do zniszczenia caíego ûwiata!"
+PiszL "Zaraz, zaraz. Co ty bredzisz? Jaka wojna?"
+PiszL "W tym laboratorium koío twojego domu jest opracowywany projekt super
+PiszL  broni. Trzeba zniszczyç wszystkie plany, zanim zostanÜ zrealizowane."
+PiszL "W porzÜdku, w czym mam ci pom¢c?"
+PiszL "Masz przepustkë. Wejdziemy tam razem, a potem zobaczymy."
+PiszL "Spoko."
+KLAWISZ()
+Czyûç
+PiszL Podchodzicie do budki straßniczej. Wartownik was wpuszcza i wchodzicie.
+KLAWISZ()
+:Laboratorium
+Czyûç
+PiszL Jesteûcie w laboratorium.
+PiszL "O, w tym pokoju jest komputer!"
+PiszL Wchodzicie do ciemnego pomieszczenia.
+PiszL WíÜczasz komputer...
+KLAWISZ()
+Czyûç 10
+PiszL UNIX boot
+PiszL Loading kernel...
+Czekaj 15
+PiszL Loading drivers...
+Czekaj 13
+PiszL Initializing hdd0, hdd1...
+Czekaj 8
+PiszL Initializing swap space...
+Czekaj 10
+PiszL Loading CRON...
+Czekaj 12
+PiszL
+PiszL UNIX version 17.32.2
+Pisz Login: 
+Czytaj $Komp
+PiszL
+Pisz Password: 
+Czytaj $Komp
+PiszL
+Pisz % 
+Czytaj $Komp
+PiszL
+PiszL File: microsoft_WIN95.txt     Length: 30975 bytes
+PiszL
+PiszL Dane broni o kryptonimie WIN'95.
+PiszL Nowa, multidestrukcyjna bro§ komputerowa.
+PiszL Rozmiar: 50MB
+PiszL Platforma sprzëtowa: x86
+PiszL -------
+PiszL
+PiszL Kod ¶r¢díowy pod adresem: microsoft.com:8065
+PiszL
+Pisz %
+Czytaj $Komp
+PiszL
+PiszL RLOGIN version 0.95.1
+Pisz Address: 
+Czytaj $Komp
+PiszL
+Pisz Connecting... 
+Czekaj 10
+PiszL OK.
+Pisz >
+Czytaj $Komp
+PiszL
+Pisz Deleting file WIN95.gz... 
+Czekaj 8
+PiszL OK.
+Pisz >
+Czytaj $Komp
+PiszL
+Pisz %
+Czytaj $Komp
+PiszL
+PiszL Shutdown...
+Czekaj 15
+Czyûç 15
+UkryjKursor()
+Czekaj 20
+Pozycja 0,0
+PiszL Udaío sië!
+PiszL Niebezpiecze§stwo zostaío zlikwidowane w zarodku.
+PiszL Teraz ûwiat moße spaç spokojnie.
+PiszL Aß do czasu nastëpnej wojny...
+PiszL
+Pisz K
+Czekaj 2
+Pisz  
+Czekaj 2
+Pisz O
+Czekaj 2
+Pisz  
+Czekaj 2
+Pisz N
+Czekaj 2
+Pisz  
+Czekaj 2
+Pisz I
+Czekaj 2
+Pisz  
+Czekaj 2
+Pisz E
+Czekaj 2
+Pisz  
+Czekaj 2
+PiszL C
+Klawisz
+Skok :CzyKoniec?
+
+:Bar
+Czyûç
+PiszL Wchodzisz do baru. òmierdzi tu piwem i dymem papierosowym.
+PiszL Zamawiasz piwo, wypijasz je i wychodzisz
+KLAWISZ()
+Skok :Miasto
+
+:GameOver
+KLAWISZ()
+Czyûç 75
+Pozycja 25,12
+Pisz K  O  N  I  E  C      G  R  Y  !
+UkryjKursor()
+Klawisz
+Skok :CzyKoniec?
+
+:Koniec
+Czyûç
+Koniec
+
+#WSTAW ..\..\INC\DOGIER.INC
