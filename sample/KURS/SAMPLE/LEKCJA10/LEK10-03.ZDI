@@ -1,0 +1,29 @@
+
+Zmienna &Kolor
+* Domyslny kolor
+&Kolor=9
+Tryb $12
+PokazMysz
+:Petla
+StanPrzyciskow
+  * Nic nie zosta³o klikniête, to powróæ na pocz¹tek pêtli
+Porownaj BX,0
+&Skok :Petla
+  * Prawy przycisk, zmiana kolory
+Porownaj BX,2
+&Skok :ZmienKolor
+  * Obydwa przyciski - koniec
+Porownaj BX,3
+&Skok :Koniec
+  * Lewy przycisk punkt ( zwroc uwage na brak petli, dlaczego tak jest ? )
+Punkt CX,DX,&Kolor
+Skok :Petla
+
+:ZmienKolor
+Zwieksz &Kolor
+Skok :Petla
+
+:Koniec
+  * Powrot do trybu tekstowego
+Tryb 3
+Koniec

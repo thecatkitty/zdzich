@@ -1,0 +1,8 @@
+Stala $Tekst1=Ten program
+Stala $Tekst2=u¿ywa sta³ych
+
+czysc
+pisz $Tekst1
+pisz $Tekst2
+pisz .
+Koniec

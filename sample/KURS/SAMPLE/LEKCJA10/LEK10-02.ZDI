@@ -1,0 +1,21 @@
+Czysc
+Pozycja 15,20
+Pisz Najedz myszka na migajacy znaczek...
+Pozycja 1,1
+PiszZnak 1,135
+Pozycja 0,25
+PokazMysz
+:Petla
+* Znaku "!" uzywamy w trybie tekstowym !!!
+StanPrzyciskow !
+Porownaj CX,1
+&Skok :Dalej
+Skok :Petla
+:Dalej
+Porownaj DX,1
+&Skok :Dalej2
+Skok :Petla
+:Dalej2
+UkryjMysz
+Czysc
+Koniec

@@ -1,0 +1,35 @@
+* ZDZICH 4 przyklad
+* Demonstracja petli i instrkcji graficznych
+*********************************************
+
+Zmienna %Kw1
+%Kw1=100
+Tryb $12
+
+* Rysuj 2 pionowe linie
+:Xk
+Punkt %Kw1,100,2
+Punkt %Kw1,200,2
+Zwieksz %Kw1,1
+Porownaj %Kw1,200
+&Skok :Yu
+Skok :Xk
+
+* "Zeruj" zmienne
+:Yu
+%Kw1=100
+
+* Rysuj 2 poziome linie
+:Yk
+Punkt 100,%Kw1,2
+Punkt 200,%Kw1,2
+Zwieksz %Kw1,1
+Porownaj %Kw1,200
+&Skok :kon
+skok :Yk
+
+* Procedura konczaca program po nacisnieciu dowolnego klawisza
+:kon
+klawisz
+tryb $3
+koniec

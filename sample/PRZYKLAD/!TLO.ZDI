@@ -1,0 +1,32 @@
+* ZDZICH4 przyklad
+* Program zalalowuje caly ekran
+********************************
+
+Zmienna %Kw1
+Zmienna %Kw2
+%Kw1=0
+%Kw2=0
+Tryb $12
+
+* Pierwszaq petla
+:Yk
+* Zeruj zmienna
+%Kw1=0
+* druga "zagniezdzona" petla
+:Xk
+punkt %kw1,%Kw2,2
+zwieksz %Kw1,1
+Porownaj %Kw1,639
+&Skok :nast
+skok :Xk
+:nast
+Zwieksz %Kw2,1
+Porownaj %Kw2,479
+&Skok :Kon
+Skok :Yk
+
+* Po skonczeniu 2 petli zakoncz program
+:kon
+klawisz
+Tryb $3
+koniec

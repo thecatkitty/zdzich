@@ -1,0 +1,14 @@
+* Tu deklarujemy procedurê 
+Procedura LOGO()
+* Tu piszemy co am robuæ ta proedura
+Czysc
+Pozycja 30,2
+PiszL Moja aplikacja
+PiszL --------------------------------------------------
+Czekaj 5
+* Tak koñczymy ka¿d¹ procedurê
+Koniec LOGO()
+
+* Tak wywo³ujemy procedurê
+LOGO()
+Koniec

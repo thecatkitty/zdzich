@@ -1,0 +1,10 @@
+Zmienna %Pe
+
+:Petla
+* Jakieœ tam instrukcje
+Zwieksz %Pe,1
+Porownaj %Pe,13
+&Skok :Dalej
+Skok :petla
+:Dalej
+koniec

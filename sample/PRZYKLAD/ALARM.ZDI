@@ -1,0 +1,16 @@
+* Zdzich 4
+* Program sie nie uciszy dopoki nie nacisniesz dowolnego klawisza
+
+czysc 
+dx=$61
+al=$ff
+doportu
+czysc 2
+pozycja 1,19
+piszl             Nacisniecie dowolnego klawisza konczy program
+klawisz
+dx=$61
+al=0
+doportu
+czysc
+koniec

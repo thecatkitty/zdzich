@@ -1,0 +1,10 @@
+Zmienna %Liczba
+%Liczba=10
+pisz Pierwotna wartoœæ zmiennej : 
+pisz8 %Liczba
+piszl
+ZMNIEJSZ %Liczba,4
+pisz PóŸniejsza wartoœæ zmiennej : 
+pisz8 %Liczba
+piszl
+koniec

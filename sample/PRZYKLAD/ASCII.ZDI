@@ -1,0 +1,16 @@
+Zmienna $ASCII
+:STRT
+czysc
+piszl Nacisnij dowolny klawisz . . .
+czytaj $ASCII
+pisz
+pisz8 $ASCII
+pisz
+pisz
+pisz Nacisnij dowolny klawisz w celu kontynuacji lub ESC w celu wyjscia
+klawisz
+porownaj AL,27
+&Skok :kon
+skok :STRT
+:kon
+koniec

@@ -1,0 +1,44 @@
+czysc
+
+* Galazka gorna
+pozycja 40,5
+pisz *
+pozycja 38,6
+pisz *****
+pozycja 37,7
+pisz *******
+pozycja 36,8
+pisz *********
+
+* Galazka srodkowa
+pozycja 40,9
+pisz *
+pozycja 38,10
+pisz *****
+pozycja 37,11
+pisz *******
+pozycja 36,12
+pisz *********
+
+* Galazka dolna
+pozycja 40,13
+pisz *
+pozycja 38,14
+pisz *****
+pozycja 37,15
+pisz *******
+pozycja 36,16
+pisz *********
+
+* Pien
+pozycja 39,17
+pisz ***
+pozycja 39,18
+pisz ***
+pozycja 39,19
+pisz ***
+pozycja 39,20
+pisz ***
+
+* Koniec programu
+koniec

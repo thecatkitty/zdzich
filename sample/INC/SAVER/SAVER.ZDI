@@ -1,0 +1,77 @@
+* ZDZICH4 przyklad
+* screen saver
+*******************
+
+Zmienna %Kw1
+Zmienna %Kw2
+Zmienna %Col
+Zmienna %Col2
+
+Tryb $12
+* Oproznianie bufora klawiatury
+czekaj 4
+%COL=3
+MYSZUR()
+OPROZNIJBUFOR()
+
+:Yk
+Czyklawisz()
+RUCHMYSZY()
+%Kw1=0
+:Xk
+punkt %kw1,%Kw2,%Col
+zwieksz %Kw1,1
+KOL()
+Porownaj %Kw1,639
+&Skok :nast
+skok :Xk
+:nast
+Zwieksz %Kw2,1
+Porownaj %Kw2,479
+&Skok :Kon2
+Skok :Yk
+
+Procedura KOL()
+Zwieksz %Col
+Porownaj %COL,16
+&Skok :min
+skok :ll
+:min
+%COL=0
+:ll
+Koniec KOL()
+
+Procedura TLO()
+Zwieksz %COL2
+porownaj %COL2,16
+&Skok :xx
+skok :yy
+:xx
+%Col2=0
+:yy
+Koniec TLO()
+
+:kon2
+czekaj 4
+:Yk2
+Czyklawisz()
+RUCHMYSZY()
+%Kw1=639
+:Xk2
+punkt %kw1,%Kw2,%col2
+Zmniejsz %Kw1,1
+Porownaj %Kw1,0
+&Skok :nast2
+skok :Xk2
+:nast2
+Zmniejsz %Kw2,1
+Porownaj %Kw2,0
+&Skok :Kon3
+Skok :Yk2
+
+:kon3
+TLO()
+czekaj 4
+skok :YK
+
+#WSTAW Saver.INC
