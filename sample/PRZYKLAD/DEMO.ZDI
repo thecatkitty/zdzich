@@ -1,0 +1,103 @@
+* ZDZICH 4 - program przykíadowy
+* Demonstracja polece§ jëzyka Zdzich
+************************************
+
+Zmienna $Imië
+Zmienna $Coû
+
+* Powitanie
+StaLa $Tekst=Witaj,
+* Tryby graficzne
+Stala &CGA=4
+Stala &VGA=3
+Stala &Graf=$13
+* Znak ASCII #1
+Stala &Buzia=1
+* Iloûç znak¢w na ekranie
+Stala %CaíyEkran=2000
+
+:Start
+Tryb &CGA
+Czyûç 32
+Pozycja 10,6
+Pisz Demonstracja jezyka
+Pozycja 16,8
+Pisz ZDZICH
+Pozycja 7,20
+Pisz Nacisnij dowolny klawisz...
+Klawisz
+Czyûç 31
+IMIê()
+Klawisz
+Tryb 0
+Czyûç 52
+Pisz Napisz coû: 
+Czytaj $Coû
+Tryb &Graf
+PokazMysz
+Pozycja 5,3
+Pisz $Coû
+Pozycja 6,4
+Pisz $Coû
+Pozycja 7,20
+Pisz Nacisnij ENTER...
+:CzyENTER?
+Klawisz
+Por¢wnaj AL,13
+&Skok :Dalej
+Skok :CzyENTER?
+:Dalej
+Tryb $12
+Pozycja 10,6
+Pisz $Coû
+Pozycja 12,8
+Pisz $Coû
+Pozycja 14,20
+Pisz Nacisnij SPACJE...
+:CzySPACJA?
+Klawisz
+Por¢wnaj AL,32
+&Skok :Dalej2
+Skok :CzySPACJA?
+:Dalej2
+Tryb &VGA
+Czyûç 40
+:Pytanie
+Pisz Czy chcesz zobaczyç to jeszcze raz?
+Pozycja 0,25
+Klawisz
+Por¢wnaj AL,78
+&Skok :Koniec
+Por¢wnaj AL,110
+&Skok :Koniec
+Por¢wnaj AL,84
+&Skok :Start
+Por¢wnaj AL,116
+&Skok :Start
+Skok :Pytanie
+:Koniec
+Czyûç 41
+BH=0
+PiszZnak &Buzia,191,%CaíyEkran
+Przerwanie $10
+Pozycja 29,14
+Pisz !!! K O N I E C !!!
+Pozycja 0,25
+Klawisz
+Czyûç
+Tw¢rzPlik DEMO.TXT
+Otw¢rz #5,DEMO.TXT
+Pisz #5,Czeûç 
+Pisz #5,$Imië
+Pisz #5,$Coû
+Zamknij #5
+PiszL Zobacz plik DEMO.TXT w tym katalogu!!!
+Koniec
+
+Procedura IMIê()
+	PiszL Jak masz na imie?
+	Czytaj $Imië
+	Pisz $Tekst
+	Pisz $Imië
+	PiszL !!!
+Koniec IMIê()

@@ -1,0 +1,12 @@
+Zmienna $Imie
+
+Czysc 30
+Pisz Jak masz na imie? 
+Czytaj $Imie
+Pisz
+Pisz Czesc, 
+Pisz $Imie
+PiszL !!!
+Klawisz
+Czysc
+Koniec

@@ -1,0 +1,10 @@
+* ZDZICH 4 - program przyk’adowy
+* Polecenia dyskowe
+* Program po uruchomieniu tworzy katalog TEST
+* i przenosi samego siebie do tego katalogu,
+* po czym przechodzi do niego
+*****************************
+Tw¢rzKatalog TEST
+Zmie¤Nazw‘ pliki1.com,TEST\pliki1.com
+Zmie¤Katalog TEST
+Koniec

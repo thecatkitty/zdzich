@@ -1,0 +1,13 @@
+* Zdzich 4 - program przykíadowy
+* Dyrektywa #WSTAW
+* (plik WSTAW.INC musi byç w tym katalogu!)
+*******************************************
+
+Zmienna $Imië
+
+Czyûç
+JAKIEIMIê()
+POZDROWIENIE()
+Koniec
+
+#WSTAW WSTAW.INC

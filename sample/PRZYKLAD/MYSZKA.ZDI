@@ -1,0 +1,24 @@
+* ZDZICH 4 - program przykíadowy
+* Przykíad obsíugi myszki
+* Program czeka na najechanie myszka na znaczek w gornym lewym rogu
+*******************************************************************
+Czyûç
+Pozycja 15,20
+Pisz Najed¶ myszkÜ na migajÜcy znaczek...
+Pozycja 1,1
+PiszZnak 1,135
+Pozycja 0,25
+PokaßMysz
+:Pëtla
+StanPrzycisk¢w !
+Por¢wnaj CX,1
+&Skok :Dalej
+Skok :Pëtla
+:Dalej
+Por¢wnaj DX,1
+&Skok :Dalej2
+Skok :Pëtla
+:Dalej2
+UkryjMysz
+Czyûç
+Koniec
