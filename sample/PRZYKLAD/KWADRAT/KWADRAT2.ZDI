@@ -1,0 +1,31 @@
+* ZDZICH4 przyklad
+* Program rysuje na ekranie kwadrat
+************************************
+
+Zmienna %Kw1
+Zmienna %Kw2
+%Kw1=200
+%Kw2=200
+Tryb $12
+
+:Yk
+%Kw1=200
+:Xk
+punkt %kw1,%Kw2,9
+zwieksz %Kw1,1
+Porownaj %Kw1,300
+&Skok :nast
+skok :Xk
+:nast
+Zwieksz %Kw2,1
+Porownaj %Kw2,300
+&Skok :Kon
+
+
+Skok :Yk
+
+
+:kon
+klawisz
+Tryb $3
+koniec

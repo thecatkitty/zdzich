@@ -1,0 +1,39 @@
+
+:Poczatek
+Czysc
+Pisz Menu
+Pisz
+Pisz 1. Kurczak
+Pisz
+Pisz 2. Befsztyk
+Pisz
+Pisz 3. Kromka chleba
+Pisz
+Klawisz
+Porownaj AL,49
+&Skok :OpcjaA
+Porownaj AL,50
+&Skok :OpcjaB
+Porownaj AL,51
+&Skok :OpcjaC
+Czysc
+Pisz Nie jesteœ g³odny ?
+Koniec
+
+:OpcjaA
+Czysc
+Pisz Czy kurczak ci smakuje ?
+Klawisz
+Skok :Poczatek
+
+:OpcjaB
+Czysc
+Pisz Czy befsztyk nie jest za twardy ?
+Klawisz
+Skok :Poczatek
+
+:OpcjaC
+Czysc
+Pisz Czy najad³eœ siê kromk¹ chleba ?
+Klawisz
+Skok :Poczatek

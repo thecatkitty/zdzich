@@ -6,15 +6,15 @@ Zmienna $Imië
 Zmienna $Coû
 
 * Powitanie
-StaLa $Tekst=Witaj,
+Staía $Tekst=Witaj,
 * Tryby graficzne
-Stala &CGA=4
-Stala &VGA=3
-Stala &Graf=$13
+Staía &CGA=4
+Staía &VGA=3
+Staía &Graf=$13
 * Znak ASCII #1
-Stala &Buzia=1
+Staía &Buzia=1
 * Iloûç znak¢w na ekranie
-Stala %CaíyEkran=2000
+Staía %CaíyEkran=2000
 
 :Start
 Tryb &CGA
@@ -34,7 +34,7 @@ Czyûç 52
 Pisz Napisz coû: 
 Czytaj $Coû
 Tryb &Graf
-PokazMysz
+PokaßMysz
 Pozycja 5,3
 Pisz $Coû
 Pozycja 6,4

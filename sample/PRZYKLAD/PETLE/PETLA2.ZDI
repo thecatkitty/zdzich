@@ -1,0 +1,29 @@
+* Program ten jest przykladem zastosowania petli ujemnej w programie
+* ( odpowiednik FOR BEGIN END; w pascalu lub FOR-NEXT w QBASICu )
+
+* Zadeklaruj zmienna, ktora bedzie licznikiem petli
+Zmienna %Pe
+
+* Nadaj poczatkowa wartosc ( od ilu mam liczyc np. od 65 do ... )
+%Pe=80
+
+:Sko
+* Tu jest poczatek petli. Program kaze wypisac dane liczby.
+pisz8 %pe
+piszl
+
+* do ilu mam liczyc. Jesli program osiagnie ta wartosc to konczy petle
+Porownaj %Pe,65
+&Skok :kon
+
+* Zmniejsz licznik o 1. Jesli chesz zwiekszyc od razu o 2 to napisz
+* ZMNIEJSZ %Pe,2
+
+ZMNIEJSZ %Pe,1
+* Ta instrukcja jest ostatnia instrukcja petli
+skok :sko
+
+* Ten kod zostanie wykonany, po wykonaniu petli
+:kon
+* Zakoncz program
+koniec

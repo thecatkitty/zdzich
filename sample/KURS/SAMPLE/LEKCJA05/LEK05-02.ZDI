@@ -1,0 +1,24 @@
+Zmienna %Licz
+
+%Licz=2
+POROWNAJ %LICZ,2
+&Skok :rowna
+* Jesli zmienna ma inna wartosc to wykonuj ponizsze rozkazy lub skacz do innej etykiety
+Skok :inna
+
+:rowna
+PISZ zmienna Licz wynosi 2
+%LICZ=2
+POROWNAJ %LICZ,3
+<>SKOK :rozne
+Skok :inna
+
+:rozne
+Pisz Zmienna licz nie jest rowna 3
+skok :Kon
+
+:inna
+Pisz Kto zmienial wartosc zmiennej ?
+
+:Kon
+Koniec

@@ -1,0 +1,153 @@
+* Zdzich 4 i procedury
+* ZDZICH COMMANDER v 1.0 Program ten jest "nakladka" na system MS-DOS
+* Oprocz tego program ten demonstruje komendy dyskowe w jezyku programowania
+* w ktorym zostal napisany, czyli ZDZICH 4.
+
+Zmienna $zmn
+zmienna $zmnn
+Stala $autor=JELCYN RZESZOW 1999
+Stala $komp=Ten program zostal skompilowany w jezyku ZDZICH 4
+* Pokaz efekt
+COOL()
+* Na efekcie napisz ZDZICH COMMANDER
+LOGOZC()
+* Pokaz efekt
+COOL()
+* Wroc do trybu tekstowego
+TRYB $3
+:Start
+* Pokaz menu
+MENUZC()
+NIC
+
+* Jesli nacisnoles inny klawisz, to pokaz jeszcze raz menu
+:Blad
+Skok :Start
+
+
+* Poszczegolne opcje
+:Opcja1
+czysc
+piszl
+piszl                          Zmien nazwe pliku
+piszl                          -----------------
+piszl
+piszl
+pisz Podaj stara nazwe pliku >>
+czytaj $zmn
+piszl
+pisz Podaj nowa nazwe pliku  >>
+czytaj $zmnn
+piszl
+zmiennazwe $zmn, $zmnn
+piszl
+piszl Nazwa zmieniona, nacisnij dowolny klawisz
+klawisz
+Skok :Start
+
+:opcja2
+czysc
+piszl
+piszl                            Usun plik
+piszl                            ---------
+piszl
+piszl
+pisz Podaj nazwe pliku, ktory mam usunac >>
+czytaj $Zmn
+USUNPLIK $Zmn
+piszl
+piszl
+piszl
+pisz Usunolem plik : 
+pisz $Zmn
+
+
+klawisz
+skok :Start
+
+:opcja3
+czysc
+piszl
+piszl                          Nowy katalog
+piszl                          ------------
+Piszl
+Pisz Podaj nazwe nowego katalogu >>
+czytaj $Zmn
+TworzKatalog $Zmn
+piszl
+piszl
+pisz Zalozylem katalog : 
+pisz $Zmn
+klawisz
+skok :Start
+
+:opcja4
+czysc
+piszl
+piszl                         Usun pusty katalog
+piszl                         ------------------
+piszl
+piszl
+pisz Podaj nazwe katalogu, ktory mam usunac >>
+czytaj $Zmn
+USUNKATALOG $Zmn
+piszl
+piszl
+piszl
+pisz Usunolem katalog : 
+pisz $Zmn
+klawisz
+skok :start
+
+:opcja5
+czysc
+piszl
+piszl                      Przejdz do katalogu
+piszl                      -------------------
+piszl
+piszl
+pisz Podaj nazwe katalogu, do ktorego mam przejsc  >>
+czytaj $Zmn
+ZmienKatalog $Zmn
+piszl
+piszl
+piszl
+pisz Przeszedlem do katalogu : 
+pisz $Zmn
+
+klawisz
+skok :start
+
+:opcja6
+czysc
+piszl
+piszl                         Nowy plik
+piszl                         ---------
+piszl
+piszl
+pisz Podaj nazwe nowego pliku >>
+czytaj $Zmn
+TworzPlik $Zmn
+piszl
+piszl
+piszl
+pisz Utworzylem nowy plik : 
+pisz $Zmn
+
+klawisz
+skok :start
+
+:enter
+czysc 40
+piszl
+czekaj 1
+czysc
+skok :blad
+
+
+:opcja0
+czysc
+koniec
+
+
+#Wstaw ZDC-DLL.INC

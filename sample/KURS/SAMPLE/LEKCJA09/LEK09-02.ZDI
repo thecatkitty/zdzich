@@ -1,0 +1,12 @@
+  * Daj glos
+DX=$61
+AL=$FF
+DoPortu
+  * Tutaj jest instrukcja, ktora mowi ile x/10 s. ma byc wydawany dzwiek
+czekaj 10
+  * Ucisz sie
+DX=$61
+AL=0
+DoPortu
+  * Nareszcie !!!
+Koniec

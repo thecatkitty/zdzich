@@ -1,0 +1,10 @@
+* Skocz do etykiety dalej
+Skok :dalej
+* Tu jest etykieta Kon i instrukcja koñcz¹ca ten program
+:kon
+Koniec
+
+* etykieta dalej
+:dalej
+*Skok do instrukcji kon
+Skok :kon

@@ -1,0 +1,13 @@
+Czysc
+Pozycja 0,24
+Pisz Nacisniecie lewego przycisku myszy konczy program...
+PokazMysz
+:Petla
+StanPrzyciskow
+Porownaj BX,1
+&Skok :Koniec
+Skok :Petla
+:Koniec
+UkryjMysz
+Czysc
+Koniec

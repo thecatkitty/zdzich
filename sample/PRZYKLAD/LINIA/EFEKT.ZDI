@@ -1,0 +1,19 @@
+* ZDZICH4 przyklad
+* Program rysuje na ekranie efekt
+***********************************
+
+Zmienna %Kw1
+%Kw1=200
+Tryb $12
+
+:Xk
+punkt %kw1,%kw1,2
+zwieksz %Kw1,1
+Porownaj %Kw1,100
+&Skok :Kon
+skok :Xk
+
+:kon
+klawisz
+Tryb $3
+koniec

@@ -1,0 +1,44 @@
+* Zdzich 4
+* Program zapisuje do pliku tekstowego 3 dowcipy
+
+
+Stala $Plik=!Dowcipy.col
+
+
+TworzPlik $Plik
+Otworz #5, $Plik
+piszl #5,                          EXTRA - DOWCIPY !!!
+piszl #5,
+piszl #5,
+Piszl #5, Maly Jas wybiera sie z mama do przedszkoda. Mama sie pyta :
+Piszl #5, - Jasiu, co ja zrobie, jak pani powie, ze znow byles niegrzeczny ?
+Piszl #5, - Sypniesz ja piaskiem !!!
+Piszl #5,
+Piszl #5, Lekarz pyta Kowalskiego :
+Piszl #5, - Czy skleroza nie przeszkadza panu w pracy ?
+Piszl #5, - Nie, zupelnie o niej zapomnialem.
+Piszl #5,
+Piszl #5, Pewna baba miala plaski biust. Smarowala roznymi masciami i nic. wreszcie
+Piszl #5, wybrala sie do znachorki. Ta jej kazala przy pelni ksiezyca masowac biust
+Piszl #5, i mowic "Siala baba mak, siala baba mak ...". Baba zastosowala sie do rad
+piszl #5, znachorki i rzeczywiscie biust rosl. Po 2 misiacach baba musiala pojechac
+piszl #5, pociagiem nocnym do Radomia. Wchodzi do pustego przedzialu, gdzie spi 
+piszl #5, jakis facet. Baba otwiera okno, rozbiera sie i masuje biust mowiac :
+Piszl #5, "Siala baba mak ...." Facet sie budzi i mowi : 
+piszl #5, - Co juz pelnia ? Slimak, slimak wystaw rogi.
+piszl #5, 
+Piszl #5,                           Dowcipy zebral i ten program ulozyl :
+Pisz #5,                                                          Jeclyn Rzeszow 1999
+zamknij #5
+
+czysc 10
+nic
+pozycja 26,11
+pisz Zobacz do pliku 
+pisz $plik
+piszl !!!
+klawisz
+
+
+
+koniec

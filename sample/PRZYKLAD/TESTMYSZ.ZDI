@@ -1,0 +1,89 @@
+:pocz
+Czysc
+piszl
+piszl                              Test myszy v 1.0
+piszl
+piszl Nacisnij dowolny przycisk myszy.
+piszl
+piszl
+piszl       ----------------------
+piszl       [         |          ]
+piszl       [         |          ]
+piszl       [         |          ]
+piszl       [         |          ]
+piszl        [--------|---------]
+piszl         [       |        ] 
+piszl          [      |       ]
+piszl           [     |      ]
+piszl            ------------
+Pozycja 0,24
+PokazMysz
+:Petla
+StanPrzyciskЂw
+
+Porownaj BX,1
+&Skok :PL
+
+Porownaj BX,2
+&Skok :PP
+
+skok :petla
+
+:PL
+UkryjMysz
+CZYSC
+piszl
+piszl
+piszl
+piszl
+piszl
+piszl
+piszl       ----------------------
+piszl       [ллллллллл|          ]
+piszl       [ллллллллл|          ]
+piszl       [ллллллллл|          ]
+piszl       [ллллллллл|          ]
+piszl        [--------|---------]
+piszl         [       |        ] 
+piszl          [      |       ]
+piszl           [     |      ]
+piszl            ------------
+Piszl
+piszl  Kliknoles lewym przyciskiem myszy
+piszl
+piszl  Klawisz ESC konczy program
+klawisz
+porownaj AL,27
+&skok :kon
+skok :pocz
+
+:PP
+UkryjMysz
+Czysc
+piszl
+piszl
+piszl
+piszl
+piszl
+piszl
+piszl       ----------------------
+piszl       [         |лллллллллл]
+piszl       [         |лллллллллл]
+piszl       [         |лллллллллл]
+piszl       [         |лллллллллл]
+piszl        [--------|---------]
+piszl         [       |        ] 
+piszl          [      |       ]
+piszl           [     |      ]
+piszl            ------------
+piszl  Kliknoles prawym przyciskiem myszy
+piszl
+piszl  Klawisz ESC konczy program
+klawisz
+Porownaj AL,27
+&skok :kon
+skok :pocz
+
+:Kon
+czysc
+Koniec

@@ -1,0 +1,42 @@
+* ZDZICH4 przyklad
+* Program rysuje na ekranie linie
+***********************************
+
+Zmienna %Kw1
+Zmienna %Kw2
+Zmienna %Col
+%Kw1=0
+%Kw2=0
+%Col=3
+Tryb $12
+
+:Yk
+%Kw1=0
+:Xk
+punkt %kw1,%Kw2,%Col
+zwieksz %Kw1,1
+KOL()
+Porownaj %Kw1,639
+&Skok :nast
+skok :Xk
+:nast
+Zwieksz %Kw2,1
+Porownaj %Kw2,479
+&Skok :Kon
+Skok :Yk
+
+Procedura KOL()
+Zwieksz %Col,1
+Porownaj %COL,16
+&Skok :min
+skok :ll
+:min
+%COL=0
+:ll
+Koniec KOL()
+
+
+:kon
+klawisz
+Tryb $3
+koniec
