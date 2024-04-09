@@ -211,7 +211,10 @@ class ProgramDos
     }
 
     void
-    GrubyKursor();
+    GrubyKursor()
+    {
+        Pisz("\x1B[1 q");
+    }
 
     void
     Klawisz()
@@ -235,7 +238,10 @@ class ProgramDos
     PiszZnak(Bajt znak, Bajt kolor = 0x07, Słowo liczba = 1);
 
     void
-    PokażKursor();
+    PokażKursor()
+    {
+        Pisz("\x1B[?25h\x1B[5 q");
+    }
 
     void
     PokażMysz();
@@ -250,7 +256,10 @@ class ProgramDos
     StanPrzycisków();
 
     void
-    UkryjKursor();
+    UkryjKursor()
+    {
+        Pisz("\x1B[?25l");
+    }
 
     void
     UkryjMysz();
