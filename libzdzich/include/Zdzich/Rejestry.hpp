@@ -40,10 +40,11 @@ class Rejestr16 : public Rejestr
     Słowo _rejestr;
 
   public:
-    Rejestr16
+    Rejestr16 &
     operator=(Słowo wartość)
     {
         _rejestr = wartość;
+        return *this;
     }
 
     operator Słowo &()
