@@ -15,25 +15,10 @@
 #define write  _write
 #define O_RDWR _O_RDWR
 #else
-#include <termios.h>
 #include <unistd.h>
-
-static int
-_getch()
-{
-    struct termios oldattr, newattr;
-    tcgetattr(STDIN_FILENO, &oldattr);
-
-    newattr = oldattr;
-    newattr.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &newattr);
-
-    int ch = getchar();
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
-    return ch;
-}
 #endif
 
+#include <Zdzich/Program.hpp>
 #include <Zdzich/Rejestry.hpp>
 #include <Zdzich/Skoki.hpp>
 
@@ -82,23 +67,7 @@ class StrumieńDos
 
 std::map<Bajt, StrumieńDos> Strumienie;
 
-int
-KolorNaAnsi(Bajt kolor)
-{
-    const int ansi[16] = {30, 34, 32, 36, 31, 35, 33, 37,
-                          90, 94, 92, 96, 91, 95, 93, 97};
-    return ansi[kolor & 0xF];
-}
-
-int
-TłoNaAnsi(Bajt kolor)
-{
-    const int ansi[16] = {40,  44,  42,  46,  41,  45,  43,  47,
-                          100, 104, 102, 106, 101, 105, 103, 107};
-    return ansi[kolor >> 4];
-}
-
-class ProgramDos
+class ProgramDos : public Program
 {
   protected:
     // ----- Rejestry -----
@@ -129,140 +98,46 @@ class ProgramDos
         return Strumienie[uchwyt];
     }
 
-    // ----- Cykl życia programu -----
-
-    void
-    Czekaj(Słowo czas)
-    {
-        std::this_thread::sleep_for(std::chrono::milliseconds(czas * 100));
-    }
-
-    void
-    Koniec()
-    {
-        std::exit(0);
-    }
-
-    // ----- Wejście/wyjście -----
-
-    void
-    Czytaj(Tekst &tekst)
-    {
-        std::getline(std::cin, tekst);
-    }
-
-    void
-    Pisz(const Tekst &tekst = "\n")
-    {
-        operator[](1).Pisz(tekst);
-    }
-
-    void
-    Pisz8(Słowo liczba)
-    {
-        std::printf("%d", liczba);
-    }
-
-    void
-    PiszL(const Tekst &tekst = "")
-    {
-        operator[](1).PiszL(tekst);
-    }
-
     // ----- Konsola -----
 
-    void
-    Czyść(Bajt kolor = 0x07)
+    virtual void
+    Enter() override
     {
-        char bufor[16];
-        std::snprintf(bufor, 16, "\x1B[2J\x1B[%d;%dm", KolorNaAnsi(kolor),
-                      TłoNaAnsi(kolor));
-        Pisz(bufor);
-        Pisz("\x1B[1H");
+        Program::Enter();
+        AL = '\n';
     }
 
-    void
-    Enter()
+    virtual void
+    Esc() override
     {
-        while ('\n' != _getch())
-            ;
+        Program::Esc();
+        AL = '\x1B';
     }
 
-    void
-    Esc()
+    virtual Bajt
+    EscSpacjaEnter() override
     {
-        while ('\x1B' != _getch())
-            ;
+        return AL = Program::EscSpacjaEnter();
     }
 
-    void
-    EscSpacjaEnter()
+    virtual Bajt
+    Klawisz() override
     {
-        int ch = 0;
-        while (('\n' != ch) && (' ' != ch))
-        {
-            ch = _getch();
-            if ('\x1B' == ch)
-            {
-                Koniec();
-            }
-        }
-        AL = ch & 0xFF;
+        return AL = Program::Klawisz();
     }
 
-    void
-    GrubyKursor()
+    virtual Bajt
+    KlawiszEsc(Bajt klawisz) override
     {
-        Pisz("\x1B[1 q");
+        return AL = Program::KlawiszEsc(klawisz);
     }
 
-    void
-    Klawisz()
+    virtual void
+    Spacja() override
     {
-        AL = _getch() & 0xFF;
+        Program::Spacja();
+        AL = ' ';
     }
-
-    void
-    KlawiszEsc(Bajt klawisz = 0)
-    {
-        int ch = 0;
-        do
-        {
-            ch = _getch();
-        } while (klawisz && (klawisz != ch));
-
-        AL = ch & 0xFF;
-    }
-
-    void
-    PiszZnak(Bajt znak, Bajt kolor = 0x07, Słowo liczba = 1);
-
-    void
-    PokażKursor()
-    {
-        Pisz("\x1B[?25h\x1B[5 q");
-    }
-
-    void
-    PokażMysz();
-
-    void
-    Pozycja(Bajt x, Bajt y);
-
-    void
-    Spacja();
-
-    void
-    StanPrzycisków();
-
-    void
-    UkryjKursor()
-    {
-        Pisz("\x1B[?25l");
-    }
-
-    void
-    UkryjMysz();
 
     // ----- Operacja na rejestrach oraz portach we/wy -----
 
@@ -293,58 +168,18 @@ class ProgramDos
     void
     ZPortu();
 
-    // ----- Operacja plikowe -----
-
-    void
-    TwórzKatalog(const Tekst &nazwa);
-
-    void
-    TwórzPlik(const Tekst &nazwa);
-
-    void
-    UsuńKatalog(const Tekst &nazwa);
-
-    void
-    UsuńPlik(const Tekst &nazwa);
-
-    void
-    ZmieńKatalog(const Tekst &nazwa);
-
-    void
-    ZmieńNazwę(const Tekst &nazwa1, const Tekst &nazwa2);
-
     // ----- Liczby pseudolosowe -----
 
-    void
-    Losowa8();
-
-    void
-    Losowa16();
-
-    // ----- Tryb graficzny -----
-
-    void
-    Punkt(Słowo x, Słowo y, Bajt kolor);
-
-    void
-    Tryb(Bajt tryb);
-
-    // ----- Dźwięk -----
-
-    void
-    Cisza();
-
-    void
-    Głos();
-
-    // ----- Porównanie -----
-
-    int __wynik = 0;
-
-    void
-    Porównaj(Słowo b1, Słowo b2)
+    virtual Bajt
+    Losowa8() override
     {
-        __wynik = b1 - b2;
+        return AL = Program::Losowa8();
+    }
+
+    virtual Słowo
+    Losowa16() override
+    {
+        return AX = Program::Losowa16();
     }
 };
 } // namespace Zdzich

@@ -40,6 +40,14 @@ class Rejestr16 : public Rejestr
     Słowo _rejestr;
 
   public:
+    Rejestr16() : _rejestr{}
+    {
+    }
+
+    Rejestr16(Słowo słowo) : _rejestr{słowo}
+    {
+    }
+
     Rejestr16 &
     operator=(Słowo wartość)
     {
@@ -61,6 +69,14 @@ class Rejestr16 : public Rejestr
 
 struct RejestrHL : public Rejestr16
 {
+    RejestrHL() : Rejestr16{}
+    {
+    }
+
+    RejestrHL(Słowo słowo) : Rejestr16{słowo}
+    {
+    }
+
     Rejestr8 &
     H()
     {
