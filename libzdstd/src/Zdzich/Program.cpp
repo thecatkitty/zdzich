@@ -1,3 +1,5 @@
+#include <cstdlib>
+#include <ctime>
 #include <iostream>
 #include <thread>
 
@@ -12,6 +14,11 @@ static const int ANSI_FG[]{30, 34, 32, 36, 31, 35, 33, 37,
 
 static const int ANSI_BG[]{40,  44,  42,  46,  41,  45,  43,  47,
                            100, 104, 102, 106, 101, 105, 103, 107};
+
+Program::Program()
+{
+    std::srand(std::time(NULL));
+}
 
 void
 Program::Czekaj(Słowo czas)
@@ -189,13 +196,13 @@ Program::ZmieńNazwę(const Tekst &nazwa1, const Tekst &nazwa2)
 Bajt
 Program::Losowa8()
 {
-    return 0;
+    return std::rand() & 0xFF;
 }
 
 Słowo
 Program::Losowa16()
 {
-    return 0;
+    return std::rand() & 0xFFFF;
 }
 
 void

@@ -9,6 +9,8 @@ namespace Zdzich
 class Program
 {
   protected:
+    Program();
+
     // ----- Cykl życia programu -----
 
     virtual void
