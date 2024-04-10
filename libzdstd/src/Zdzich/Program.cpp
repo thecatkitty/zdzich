@@ -70,14 +70,14 @@ Program::Pisz(const Tekst &tekst)
 void
 Program::Pisz8(Słowo liczba)
 {
-    std::printf("%d", liczba);
+    Pisz(std::to_string(liczba));
 }
 
 void
 Program::PiszL(const Tekst &tekst)
 {
     Pisz(tekst);
-    std::cout << std::endl;
+    Pisz();
 }
 
 void
