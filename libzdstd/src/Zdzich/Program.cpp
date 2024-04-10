@@ -7,21 +7,11 @@
 
 using namespace Zdzich;
 
-static int
-KolorNaAnsi(Bajt kolor)
-{
-    const int ansi[16] = {30, 34, 32, 36, 31, 35, 33, 37,
-                          90, 94, 92, 96, 91, 95, 93, 97};
-    return ansi[kolor & 0xF];
-}
+static const int ANSI_FG[]{30, 34, 32, 36, 31, 35, 33, 37,
+                           90, 94, 92, 96, 91, 95, 93, 97};
 
-static int
-TłoNaAnsi(Bajt kolor)
-{
-    const int ansi[16] = {40,  44,  42,  46,  41,  45,  43,  47,
-                          100, 104, 102, 106, 101, 105, 103, 107};
-    return ansi[kolor >> 4];
-}
+static const int ANSI_BG[]{40,  44,  42,  46,  41,  45,  43,  47,
+                           100, 104, 102, 106, 101, 105, 103, 107};
 
 void
 Program::Czekaj(Słowo czas)
@@ -63,10 +53,9 @@ Program::PiszL(const Tekst &tekst)
 void
 Program::Czyść(Bajt kolor)
 {
-    char bufor[16];
-    std::snprintf(bufor, 16, "\x1B[2J\x1B[%d;%dm", KolorNaAnsi(kolor),
-                  TłoNaAnsi(kolor));
-    Pisz(bufor);
+    Pisz("\x1B[" + std::to_string(ANSI_FG[kolor & 0xF]) + ";" +
+         std::to_string(ANSI_BG[kolor >> 4]) + "m");
+    Pisz("\x1B[2J");
     Pisz("\x1B[1H");
 }
 
