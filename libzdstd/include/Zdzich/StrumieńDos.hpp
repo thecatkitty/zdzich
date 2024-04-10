@@ -2,20 +2,9 @@
 
 #include <map>
 
+#include <zd/sysio.hpp>
+
 #include <Zdzich/Typy.hpp>
-
-#include <fcntl.h>
-#ifdef _WIN32
-#include <conio.h>
-#include <io.h>
-
-#define open   _open
-#define close  _close
-#define write  _write
-#define O_RDWR _O_RDWR
-#else
-#include <unistd.h>
-#endif
 
 namespace Zdzich
 {
