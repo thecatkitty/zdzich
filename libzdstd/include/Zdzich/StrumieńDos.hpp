@@ -1,7 +1,5 @@
 #pragma once
 
-#include <map>
-
 #include <zd/sysio.hpp>
 
 #include <Zdzich/Typy.hpp>
@@ -48,7 +46,5 @@ class StrumieńDos
         _uchwyt = -1;
     }
 };
-
-std::map<Bajt, StrumieńDos> Strumienie;
 
 } // namespace Zdzich

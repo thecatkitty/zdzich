@@ -25,18 +25,10 @@ class ProgramDos : public Program
     ParaRejestrów    X2{SI, DI};
     ParaRejestrów    X3{X1, X2};
 
-    // ----- Wykaz strumieni -----
+    // ----- Strumienie globalne -----
 
     StrumieńDos &
-    operator[](Bajt uchwyt)
-    {
-        if (Strumienie.end() == Strumienie.find(uchwyt))
-        {
-            Strumienie[uchwyt] = StrumieńDos(uchwyt);
-        }
-
-        return Strumienie[uchwyt];
-    }
+    operator[](Bajt uchwyt);
 
     // ----- Konsola -----
 
