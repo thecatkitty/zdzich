@@ -1,7 +1,12 @@
+#include <cassert>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
 #include <thread>
+
+#ifdef _WIN32
+#include <windows.h>
+#endif // _WIN32
 
 #include <zd/sysio.hpp>
 
@@ -18,6 +23,10 @@ static const int ANSI_BG[]{40,  44,  42,  46,  41,  45,  43,  47,
 Program::Program()
 {
     std::srand(std::time(NULL));
+
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+#endif // _WIN32
 }
 
 void
