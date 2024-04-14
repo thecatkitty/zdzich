@@ -14,6 +14,9 @@ struct encoding
     virtual size_t
     decode(const char *buff, int &codepoint) = 0;
 
+    virtual size_t
+    encode(char *buff, int codepoint) = 0;
+
     virtual std::string
     get_name() const = 0;
 
@@ -41,6 +44,9 @@ class single_byte_encoding : public encoding
 
     virtual size_t
     decode(const char *buff, int &codepoint) override;
+
+    virtual size_t
+    encode(char *buff, int codepoint) override;
 
     virtual std::string
     get_name() const override

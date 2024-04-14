@@ -4,8 +4,10 @@
 
 using namespace zd;
 
-static const char LEAD_MASK[]{0, 0x1F, 0x0F, 0x07, 0x03};
-static const char CONTINUATION_MASK{0x3F};
+static const unsigned char LEAD_PREAMBLE[]{0, 0xC0, 0xE0, 0xF0};
+static const unsigned char LEAD_MASK[]{0, 0x1F, 0x0F, 0x07, 0x03};
+static const unsigned char CONTINUATION_PREAMBLE{0x80};
+static const unsigned char CONTINUATION_MASK{0x3F};
 
 struct _utf8_encoding : public multi_byte_encoding
 {
@@ -40,6 +42,46 @@ struct _utf8_encoding : public multi_byte_encoding
         }
 
         return length;
+    }
+
+    virtual size_t
+    encode(char *buff, int codepoint) override
+    {
+        if ((0 > codepoint) || (0x10FFFF < codepoint))
+        {
+            return 0;
+        }
+
+        if (0x80 > codepoint)
+        {
+            buff[0] = codepoint;
+            return 1;
+        }
+
+        size_t continuation_bytes = 0;
+        if (0x00007F < codepoint)
+        {
+            continuation_bytes++;
+
+            if (0x0007FF < codepoint)
+            {
+                continuation_bytes++;
+
+                if (0x00FFFF < codepoint)
+                {
+                    continuation_bytes++;
+                }
+            }
+        }
+
+        for (auto i = continuation_bytes; i > 0; i--)
+        {
+            buff[i] = CONTINUATION_PREAMBLE | (codepoint & CONTINUATION_MASK);
+            codepoint >>= 6;
+        }
+
+        buff[0] = LEAD_PREAMBLE[continuation_bytes] | codepoint;
+        return 1 + continuation_bytes;
     }
 
     virtual std::string
