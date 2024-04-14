@@ -8,3 +8,4 @@ endif()
 
 add_subdirectory(libzdstd)
 add_subdirectory(sample)
+add_subdirectory(zdc)
