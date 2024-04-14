@@ -5,11 +5,24 @@
 int
 main(int argc, char *argv[])
 {
-    std::cout << zd::encoding::unknown->get_name() << std::endl;
-    std::cout << zd::encoding::ibm852->get_name() << std::endl;
-    std::cout << zd::encoding::windows_1250->get_name() << std::endl;
-    std::cout << zd::encoding::iso_8859_2->get_name() << std::endl;
-    std::cout << zd::encoding::utf_8->get_name() << std::endl;
-    std::cout << zd::encoding::x_iso_or_windows->get_name() << std::endl;
+    if (2 > argc)
+    {
+        std::cerr << __FUNCTION__ ": file name not provided" << std::endl;
+        return 1;
+    }
+
+    zd::pl_istream istr{argv[1]};
+    while (istr)
+    {
+        auto codepoint = istr.read();
+        if (0 == codepoint)
+        {
+            break;
+        }
+
+        auto encoding = istr.get_encoding()->get_name();
+        std::cout << codepoint << '\t' << encoding << std::endl;
+    }
+
     return 0;
 }
