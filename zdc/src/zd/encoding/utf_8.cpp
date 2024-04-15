@@ -32,8 +32,8 @@ struct _utf8_encoding : public multi_byte_encoding
             char byte = buff[i];
             if (0x80 != (byte & 0xC0))
             {
-                std::cerr << __FUNCTION__ ": invalid continuation byte " << byte
-                          << std::endl;
+                std::cerr << __FUNCTION__ << ": invalid continuation byte "
+                          << byte << std::endl;
                 return 0;
             }
 
@@ -115,7 +115,8 @@ struct _utf8_encoding : public multi_byte_encoding
             return 4;
         }
 
-        std::cerr << __FUNCTION__ ": invalid lead byte " << lead << std::endl;
+        std::cerr << __FUNCTION__ << ": invalid lead byte " << lead
+                  << std::endl;
         return 0;
     }
 };
