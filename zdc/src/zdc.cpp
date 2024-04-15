@@ -7,7 +7,7 @@ main(int argc, char *argv[])
 {
     if (2 > argc)
     {
-        std::cerr << __FUNCTION__ ": file name not provided" << std::endl;
+        std::cerr << __FUNCTION__ << ": file name not provided" << std::endl;
         return 1;
     }
 

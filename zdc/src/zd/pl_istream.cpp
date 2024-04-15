@@ -107,7 +107,7 @@ pl_istream::read() noexcept
 
         if (0 > codepoint)
         {
-            std::cerr << __FUNCTION__ ": unexpected byte " << ch
+            std::cerr << __FUNCTION__ << ": unexpected byte " << ch
                       << " in the encoding '" << _encoding->get_name() << "'"
                       << std::endl;
             return 0;
@@ -117,25 +117,25 @@ pl_istream::read() noexcept
     }
 
     // UTF-8
-    char buffer[4]{ch & 0xFF};
+    char buffer[4]{static_cast<char>(ch)};
 
     auto length = encoding::utf_8->get_sequence_length(buffer);
     if (0 == length)
     {
-        std::cerr << __FUNCTION__ ": invalid UTF-8 sequence" << std::endl;
+        std::cerr << __FUNCTION__ << ": invalid UTF-8 sequence" << std::endl;
         return -1;
     }
 
     if ((length - 1) != _stream.read(buffer + 1, length - 1))
     {
-        std::cerr << __FUNCTION__ ": read error in a UTF-8 sequence"
+        std::cerr << __FUNCTION__ << ": read error in a UTF-8 sequence"
                   << std::endl;
         return -1;
     }
 
     if (0 > _encoding->decode(buffer, codepoint))
     {
-        std::cerr << __FUNCTION__ ": invalid UTF-8 sequence" << std::endl;
+        std::cerr << __FUNCTION__ << ": invalid UTF-8 sequence" << std::endl;
         return -1;
     }
 
