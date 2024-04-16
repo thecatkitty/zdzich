@@ -7,6 +7,10 @@ namespace zd
 int
 pl_toascii(int codepoint);
 
+// Check equality of two Polish strings, ignore case
+bool
+pl_streqi(const std::string &left, const std::string &right);
+
 // Check equality of two Polish strings, ignore diacritics and case
 bool
 pl_streqai(const std::string &left, const std::string &right);

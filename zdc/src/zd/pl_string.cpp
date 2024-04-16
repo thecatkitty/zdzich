@@ -57,6 +57,21 @@ _load_codepoint(const char *&ptr, int &codepoint)
 }
 
 bool
+zd::pl_streqi(const std::string &left, const std::string &right)
+{
+    return std::equal(left.begin(), left.end(), right.begin(), right.end(),
+                      [](char a, char b) -> bool {
+                          if (isascii(a) && isascii(b))
+                          {
+                              return std::toupper(a) == std::toupper(b);
+                          }
+
+                          return a == b;
+                      });
+    return false;
+}
+
+bool
 zd::pl_streqai(const std::string &left, const std::string &right)
 {
     auto ptr_left = left.c_str();
