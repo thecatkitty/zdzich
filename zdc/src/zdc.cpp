@@ -1,27 +1,46 @@
+#include <iomanip>
 #include <iostream>
 
-#include <zd/pl_istream.hpp>
+#include <zd/lexer.hpp>
+
+static zd::pl_istream
+_get_pl_stream(int argc, char *argv[])
+{
+    if (1 < argc)
+    {
+        std::string path{argv[1]};
+        return zd::pl_istream{zd::min_istream{path}};
+    }
+
+    return zd::pl_istream{zd::min_istream{stdin}};
+}
 
 int
 main(int argc, char *argv[])
 {
-    if (2 > argc)
-    {
-        std::cerr << __FUNCTION__ << ": file name not provided" << std::endl;
-        return 1;
-    }
+    auto stream = _get_pl_stream(argc, argv);
 
-    zd::pl_istream istr{argv[1]};
-    while (istr)
+    zd::lexer lexer{stream};
+    while (stream)
     {
-        auto codepoint = istr.read();
-        if (0 == codepoint)
+        auto token = lexer.get_token();
+        std::cout << '\t' << std::setw(16) << std::left << zd::to_string(token);
+
+        switch (token)
         {
+        case zd::token::name:
+        case zd::token::literal_str: {
+            std::cout << lexer.get_string();
             break;
         }
 
-        auto encoding = istr.get_encoding()->get_name();
-        std::cout << codepoint << '\t' << encoding << std::endl;
+        case zd::token::literal_int: {
+            std::cout << lexer.get_integer();
+            break;
+        }
+        }
+
+        std::cout << std::endl;
     }
 
     return 0;
