@@ -1,7 +1,8 @@
+#include <zd/characters.hpp>
 #include <zd/encoding.hpp>
 #include <zd/pl_string.hpp>
 
-static const struct
+static const struct _code_mapping
 {
     int  codepoint;
     char ascii;
@@ -11,6 +12,12 @@ static const struct
     {0x0143, 'N'}, {0x0144, 'n'}, {0x015A, 'S'}, {0x015B, 's'}, {0x0179, 'Z'},
     {0x017A, 'z'}, {0x017B, 'Z'}, {0x017C, 'z'},
 };
+
+bool
+zd::isplalpha(int codepoint)
+{
+    return pl_toascii(codepoint) != codepoint;
+}
 
 int
 zd::pl_toascii(int codepoint)
