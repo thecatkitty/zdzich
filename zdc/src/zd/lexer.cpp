@@ -16,21 +16,21 @@ using namespace zd;
         return value;                                                          \
     }
 
-static token
+static token_type
 _match_keyword(const std::string &str)
 {
-    RETURN_IF_STREQI(str, "Koniec", token::end);
+    RETURN_IF_STREQI(str, "Koniec", token_type::end);
 
-    return token::name;
+    return token_type::name;
 }
 
 token
 lexer::get_token()
 {
-    auto ch = _saved_ch ? std::exchange(_saved_ch, 0) : _stream.read();
+    auto ch = _last_ch ? std::exchange(_last_ch, 0) : _stream.read();
     if (!_stream)
     {
-        return _last = token::eof;
+        return {_last_type = token_type::eof};
     }
 
     if (('\r' == ch) || ('\n' == ch))
@@ -39,10 +39,10 @@ lexer::get_token()
         {
             std::cerr << __FUNCTION__ << ": unexpected lone carriage return"
                       << std::endl;
-            return _last = token::unknown;
+            return {_last_type = token_type::unknown};
         }
 
-        return _last = token::line_break;
+        return {_last_type = token_type::line_break};
     }
 
     while (_stream && isspace(ch))
@@ -50,40 +50,41 @@ lexer::get_token()
         ch = _stream.read();
     }
 
-    _integer = 0;
-    _string.clear();
-
     if (',' == ch)
     {
-        return _last = token::comma;
+        return {_last_type = token_type::comma};
     }
 
-    if ((token::line_break == _last) && isalpha(ch))
+    if ((token_type::line_break == _last_type) && isalpha(ch))
     {
         // Keyword, verb, or target
+        std::string name{};
+
         while (_stream && isalnum(ch))
         {
             char buff[5]{};
             if (!encoding::utf_8->encode(buff, ch))
             {
-                return _last = token::eof;
+                return _last_type = token_type::eof;
             }
-            _string.append(buff);
+            name.append(buff);
 
             ch = _stream.read();
         }
 
-        _saved_ch = ch;
-        return _last = _match_keyword(_string);
+        _last_ch = ch;
+        return {_last_type = _match_keyword(name), name};
     }
 
     // Integer literal
     if (isdigit(ch))
     {
+        int number{0};
+
         while (isdigit(ch))
         {
-            _integer *= 10;
-            _integer += ch - '0';
+            number *= 10;
+            number += ch - '0';
             ch = _stream.read();
         }
 
@@ -91,26 +92,28 @@ lexer::get_token()
         {
             std::cerr << __FUNCTION__ << ": unexpected character " << ch
                       << " in an integer literal" << std::endl;
-            return _last = token::unknown;
+            return {_last_type = token_type::unknown};
         }
 
-        _saved_ch = ch;
-        return _last = token::literal_int;
+        _last_ch = ch;
+        return {_last_type = token_type::literal_int, number};
     }
 
     // String literal
+    std::string str{};
+
     while (_stream && ('\r' != ch) && ('\n' != ch))
     {
         char buff[5]{};
         if (!encoding::utf_8->encode(buff, ch))
         {
-            return _last = token::eof;
+            return {_last_type = token_type::eof};
         }
-        _string.append(buff);
+        str.append(buff);
 
         ch = _stream.read();
     }
 
-    _saved_ch = ch;
-    return _last = token::literal_str;
+    _last_ch = ch;
+    return {_last_type = token_type::literal_str, str};
 }

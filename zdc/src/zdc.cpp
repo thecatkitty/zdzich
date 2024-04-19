@@ -24,20 +24,17 @@ main(int argc, char *argv[])
     while (stream)
     {
         auto token = lexer.get_token();
-        std::cout << '\t' << std::setw(16) << std::left << zd::to_string(token);
+        std::cout << '\t' << std::setw(16) << std::left
+                  << zd::to_string(token.get_type());
 
-        switch (token)
+        auto text = token.get_text();
+        if (!text.empty())
         {
-        case zd::token::name:
-        case zd::token::literal_str: {
-            std::cout << lexer.get_string();
-            break;
+            std::cout << token.get_text();
         }
-
-        case zd::token::literal_int: {
-            std::cout << lexer.get_integer();
-            break;
-        }
+        else if (zd::token_type::literal_int == token.get_type())
+        {
+            std::cout << token.get_number();
         }
 
         std::cout << std::endl;
