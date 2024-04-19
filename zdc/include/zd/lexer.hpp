@@ -10,32 +10,17 @@ namespace zd
 class lexer
 {
     pl_istream &_stream;
-    token       _last;
-    int         _saved_ch;
-    unsigned    _integer;
-    std::string _string;
+    token_type  _last_type;
+    int         _last_ch;
 
   public:
     lexer(pl_istream &stream)
-        : _stream{stream}, _last{token::line_break}, _saved_ch{}, _integer{},
-          _string{}
+        : _stream{stream}, _last_type{token_type::line_break}, _last_ch{}
     {
     }
 
     token
     get_token();
-
-    unsigned
-    get_integer() const
-    {
-        return _integer;
-    }
-
-    std::string
-    get_string() const
-    {
-        return _string;
-    }
 };
 
 } // namespace zd
