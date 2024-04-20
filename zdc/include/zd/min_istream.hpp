@@ -1,8 +1,9 @@
 #pragma once
 
 #include <cstdio>
-#include <string>
 #include <utility>
+
+#include <zd/ustring.hpp>
 
 namespace zd
 {
@@ -20,8 +21,8 @@ class min_istream
     {
     }
 
-    min_istream(const std::string &name) noexcept
-        : _file{fopen(name.c_str(), "rb")}
+    min_istream(const ustring &name) noexcept
+        : _file{fopen(name.data(), "rb")}
     {
     }
 

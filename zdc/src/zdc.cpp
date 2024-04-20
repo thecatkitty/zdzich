@@ -8,7 +8,7 @@ _get_pl_stream(int argc, char *argv[])
 {
     if (1 < argc)
     {
-        std::string path{argv[1]};
+        zd::ustring path{argv[1]};
         return zd::pl_istream{zd::min_istream{path}};
     }
 
@@ -25,12 +25,12 @@ main(int argc, char *argv[])
     {
         auto token = lexer.get_token();
         std::cout << '\t' << std::setw(16) << std::left
-                  << zd::to_string(token.get_type());
+                  << zd::to_string(token.get_type()).data();
 
         auto text = token.get_text();
         if (!text.empty())
         {
-            std::cout << token.get_text();
+            std::cout << token.get_text().data();
         }
         else if (zd::token_type::literal_int == token.get_type())
         {

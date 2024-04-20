@@ -17,7 +17,7 @@ using namespace zd;
     }
 
 static token_type
-_match_keyword(const std::string &str)
+_match_keyword(const ustring &str)
 {
     RETURN_IF_STREQI(str, "Koniec", token_type::end);
 
@@ -58,16 +58,11 @@ lexer::get_token()
     if ((token_type::line_break == _last_type) && isalpha(ch))
     {
         // Keyword, verb, or target
-        std::string name{};
+        ustring name{};
 
         while (_stream && isalnum(ch))
         {
-            char buff[5]{};
-            if (!encoding::utf_8->encode(buff, ch))
-            {
-                return _last_type = token_type::eof;
-            }
-            name.append(buff);
+            name.append(ch);
 
             ch = _stream.read();
         }
@@ -100,16 +95,11 @@ lexer::get_token()
     }
 
     // String literal
-    std::string str{};
+    ustring str{};
 
     while (_stream && ('\r' != ch) && ('\n' != ch))
     {
-        char buff[5]{};
-        if (!encoding::utf_8->encode(buff, ch))
-        {
-            return {_last_type = token_type::eof};
-        }
-        str.append(buff);
+        str.append(ch);
 
         ch = _stream.read();
     }

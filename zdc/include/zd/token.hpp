@@ -1,4 +1,4 @@
-#include <string>
+#include <zd/ustring.hpp>
 
 namespace zd
 {
@@ -15,7 +15,7 @@ enum class token_type
     end,   // Koniec
 };
 
-std::string
+ustring
 to_string(token_type tok);
 
 class token
@@ -31,8 +31,8 @@ class token
 
     _value_type _vtype;
     union {
-        int         _number;
-        std::string _text;
+        int     _number;
+        ustring _text;
     };
 
   public:
@@ -49,7 +49,7 @@ class token
     {
     }
 
-    token(token_type type, const std::string &value)
+    token(token_type type, const ustring &value)
         : _vtype{_value_type::text}, _ttype{type}, _text{value}
     {
     }
@@ -78,10 +78,10 @@ class token
         return (_value_type::number == _vtype) ? _number : 0;
     }
 
-    std::string
+    ustring
     get_text() const
     {
-        return (_value_type::text == _vtype) ? _text : std::string{};
+        return (_value_type::text == _vtype) ? _text : ustring{};
     }
 };
 

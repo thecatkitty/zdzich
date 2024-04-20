@@ -108,8 +108,8 @@ pl_istream::read() noexcept
         if (0 > codepoint)
         {
             std::cerr << __FUNCTION__ << ": unexpected byte " << ch
-                      << " in the encoding '" << _encoding->get_name() << "'"
-                      << std::endl;
+                      << " in the encoding '" << _encoding->get_name().data()
+                      << "'" << std::endl;
             return 0;
         }
 
