@@ -1,3 +1,6 @@
+#include <cstdio>
+#include <new>
+
 #include <zd/encoding.hpp>
 #include <zd/token.hpp>
 
@@ -14,7 +17,7 @@ static const char *ENUM_NAMES[]{
     ENUM_NAME_MAPPING(end, "end keyword"),
 };
 
-std::string
+zd::ustring
 zd::to_string(token_type tok)
 {
     auto i = static_cast<int>(tok);
@@ -23,14 +26,16 @@ zd::to_string(token_type tok)
         return ENUM_NAMES[i];
     }
 
-    return std::to_string(i);
+    char buff[12]{};
+    std::snprintf(buff, 12, "%d", i);
+    return buff;
 }
 
 zd::token::~token()
 {
     if (_value_type::text == _vtype)
     {
-        _text.~basic_string();
+        _text.~ustring();
     }
 }
 
@@ -39,7 +44,7 @@ zd::token::token(const token &that)
 {
     if (_value_type::text == _vtype)
     {
-        new (&_text) std::string(that._text);
+        new (&_text) ustring(that._text);
     }
 }
 
@@ -48,7 +53,7 @@ zd::token::token(token &&that) noexcept
 {
     if (_value_type::text == _vtype)
     {
-        new (&_text) std::string(std::move(that._text));
+        new (&_text) ustring(std::move(that._text));
     }
 }
 
@@ -67,7 +72,7 @@ zd::token::operator=(const token &that)
 
     if (_value_type::text == _vtype)
     {
-        new (&_text) std::string(that._text);
+        new (&_text) ustring(that._text);
     }
 
     return *this;
@@ -88,7 +93,7 @@ zd::token::operator=(token &&that) noexcept
 
     if (_value_type::text == _vtype)
     {
-        new (&_text) std::string(std::move(that._text));
+        new (&_text) ustring(std::move(that._text));
     }
 
     return *this;

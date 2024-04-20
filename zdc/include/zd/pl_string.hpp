@@ -1,4 +1,4 @@
-#include <string>
+#include <zd/ustring.hpp>
 
 namespace zd
 {
@@ -9,10 +9,10 @@ pl_toascii(int codepoint);
 
 // Check equality of two Polish strings, ignore case
 bool
-pl_streqi(const std::string &left, const std::string &right);
+pl_streqi(const ustring &left, const ustring &right);
 
 // Check equality of two Polish strings, ignore diacritics and case
 bool
-pl_streqai(const std::string &left, const std::string &right);
+pl_streqai(const ustring &left, const ustring &right);
 
 } // namespace zd

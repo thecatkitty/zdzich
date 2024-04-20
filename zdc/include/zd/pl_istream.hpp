@@ -17,8 +17,7 @@ class pl_istream
     {
     }
 
-    pl_istream(const std::string &name,
-               encoding          *enc = encoding::unknown) noexcept
+    pl_istream(const ustring &name, encoding *enc = encoding::unknown) noexcept
         : _stream{name}, _encoding{enc}
     {
     }

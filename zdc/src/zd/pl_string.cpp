@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include <zd/characters.hpp>
 #include <zd/encoding.hpp>
 #include <zd/pl_string.hpp>
@@ -57,10 +59,10 @@ _load_codepoint(const char *&ptr, int &codepoint)
 }
 
 bool
-zd::pl_streqi(const std::string &left, const std::string &right)
+zd::pl_streqi(const ustring &left, const ustring &right)
 {
     return std::equal(left.begin(), left.end(), right.begin(), right.end(),
-                      [](char a, char b) -> bool {
+                      [](int a, int b) -> bool {
                           if (isascii(a) && isascii(b))
                           {
                               return std::toupper(a) == std::toupper(b);
@@ -72,10 +74,10 @@ zd::pl_streqi(const std::string &left, const std::string &right)
 }
 
 bool
-zd::pl_streqai(const std::string &left, const std::string &right)
+zd::pl_streqai(const ustring &left, const ustring &right)
 {
-    auto ptr_left = left.c_str();
-    auto ptr_right = right.c_str();
+    auto ptr_left = left.data();
+    auto ptr_right = right.data();
 
     while (*ptr_left && *ptr_right)
     {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <zd/min_istream.hpp>
+#include <zd/ustring.hpp>
 
 namespace zd
 {
@@ -17,7 +18,7 @@ struct encoding
     virtual size_t
     encode(char *buff, int codepoint) = 0;
 
-    virtual std::string
+    virtual ustring
     get_name() const = 0;
 
     static encoding             *unknown;
@@ -33,11 +34,11 @@ struct encoding
 
 class single_byte_encoding : public encoding
 {
-    std::string _name;
+    ustring _name;
     const int  *_mapping;
 
   public:
-    single_byte_encoding(std::string name, const int *mapping)
+    single_byte_encoding(ustring name, const int *mapping)
         : _name{name}, _mapping{mapping}
     {
     }
@@ -48,7 +49,7 @@ class single_byte_encoding : public encoding
     virtual size_t
     encode(char *buff, int codepoint) override;
 
-    virtual std::string
+    virtual ustring
     get_name() const override
     {
         return _name;

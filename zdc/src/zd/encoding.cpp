@@ -19,7 +19,7 @@ struct _unknown_encoding : public encoding
         return 0;
     }
 
-    virtual std::string
+    virtual ustring
     get_name() const override
     {
         return "unknown";
@@ -52,7 +52,7 @@ single_byte_encoding::encode(char *buff, int codepoint)
     {
         return 0;
     }
-    
+
     *buff = 0x80 + (position - _mapping);
     return 1;
 }
