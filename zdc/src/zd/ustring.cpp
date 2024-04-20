@@ -130,7 +130,11 @@ zd::operator==(const ustring &left, const ustring &right)
 zd::ustring::iterator::value_type
 zd::ustring::iterator::operator*() const
 {
+#ifdef __ia16__
+    int codepoint{'?'};
+#else
     int codepoint{0x00FFFD};
+#endif
     encoding::utf_8->decode(_ptr, codepoint);
     return codepoint;
 }
