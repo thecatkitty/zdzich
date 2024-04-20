@@ -1,5 +1,4 @@
-#include <iomanip>
-#include <iostream>
+#include <cstdio>
 
 #include <zd/lexer.hpp>
 
@@ -24,20 +23,19 @@ main(int argc, char *argv[])
     while (stream)
     {
         auto token = lexer.get_token();
-        std::cout << '\t' << std::setw(16) << std::left
-                  << zd::to_string(token.get_type()).data();
+        std::printf("\t%-16s", zd::to_string(token.get_type()).data());
 
         auto text = token.get_text();
         if (!text.empty())
         {
-            std::cout << token.get_text().data();
+            std::printf("%s", token.get_text().data());
         }
         else if (zd::token_type::literal_int == token.get_type())
         {
-            std::cout << token.get_number();
+            std::printf("%d", token.get_number());
         }
 
-        std::cout << std::endl;
+        std::puts("");
     }
 
     return 0;

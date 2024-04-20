@@ -37,8 +37,8 @@ lexer::get_token()
     {
         if (('\r' == ch) && ('\n' != _stream.read()))
         {
-            std::cerr << __FUNCTION__ << ": unexpected lone carriage return"
-                      << std::endl;
+            std::fprintf(stderr, "%s: unexpected lone carriage return\n",
+                         __FUNCTION__);
             return {_last_type = token_type::unknown};
         }
 
@@ -85,8 +85,9 @@ lexer::get_token()
 
         if (isalpha(ch))
         {
-            std::cerr << __FUNCTION__ << ": unexpected character " << ch
-                      << " in an integer literal" << std::endl;
+            std::fprintf(stderr,
+                         "%s: unexpected character %d in an integer literal\n",
+                         __FUNCTION__, ch);
             return {_last_type = token_type::unknown};
         }
 
