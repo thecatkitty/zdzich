@@ -1,4 +1,4 @@
-#include <iostream>
+#include <cstdio>
 
 #include <zd/encoding.hpp>
 
@@ -32,8 +32,8 @@ struct _utf8_encoding : public multi_byte_encoding
             char byte = buff[i];
             if (0x80 != (byte & 0xC0))
             {
-                std::cerr << __FUNCTION__ << ": invalid continuation byte "
-                          << byte << std::endl;
+                std::fprintf(stderr, "%s: invalid continuation byte %u\n",
+                             __FUNCTION__, static_cast<unsigned>(byte));
                 return 0;
             }
 
@@ -115,8 +115,8 @@ struct _utf8_encoding : public multi_byte_encoding
             return 4;
         }
 
-        std::cerr << __FUNCTION__ << ": invalid lead byte " << lead
-                  << std::endl;
+        std::fprintf(stderr, "%s: invalid lead byte %u\n", __FUNCTION__,
+                     static_cast<unsigned>(lead));
         return 0;
     }
 };

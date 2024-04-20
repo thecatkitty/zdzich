@@ -1,4 +1,4 @@
-#include <iostream>
+#include <cstdio>
 
 #include <zd/containers.hpp>
 #include <zd/pl_istream.hpp>
@@ -107,9 +107,9 @@ pl_istream::read() noexcept
 
         if (0 > codepoint)
         {
-            std::cerr << __FUNCTION__ << ": unexpected byte " << ch
-                      << " in the encoding '" << _encoding->get_name().data()
-                      << "'" << std::endl;
+            std::fprintf(stderr,
+                         "%s: unexpected byte %u in the encoding '%s'\n",
+                         __FUNCTION__, ch, _encoding->get_name().data());
             return 0;
         }
 
@@ -122,20 +122,20 @@ pl_istream::read() noexcept
     auto length = encoding::utf_8->get_sequence_length(buffer);
     if (0 == length)
     {
-        std::cerr << __FUNCTION__ << ": invalid UTF-8 sequence" << std::endl;
+        std::fprintf(stderr, "%s: invalid UTF-8 sequence\n", __FUNCTION__);
         return -1;
     }
 
     if ((length - 1) != _stream.read(buffer + 1, length - 1))
     {
-        std::cerr << __FUNCTION__ << ": read error in a UTF-8 sequence"
-                  << std::endl;
+        std::fprintf(stderr, "%s: read error in a UTF-8 sequence\n",
+                     __FUNCTION__);
         return -1;
     }
 
     if (0 > _encoding->decode(buffer, codepoint))
     {
-        std::cerr << __FUNCTION__ << ": invalid UTF-8 sequence" << std::endl;
+        std::fprintf(stderr, "%s: invalid UTF-8 sequence\n", __FUNCTION__);
         return -1;
     }
 
