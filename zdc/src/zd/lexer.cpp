@@ -28,7 +28,7 @@ token
 lexer::get_token()
 {
     auto ch = _last_ch ? std::exchange(_last_ch, 0) : _stream.read();
-    if (!_stream)
+    if (!_stream || (EOF == ch))
     {
         return {_last_type = token_type::eof};
     }

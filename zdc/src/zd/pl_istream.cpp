@@ -1,5 +1,9 @@
 #include <cstdio>
 
+#ifdef __ia16__
+#include <unistd.h>
+#endif
+
 #include <zd/containers.hpp>
 #include <zd/pl_istream.hpp>
 
@@ -92,14 +96,23 @@ _detect_encoding(int ch, min_istream &stream, encoding *&enc)
 int
 pl_istream::read() noexcept
 {
-    int  codepoint{};
     auto ch = _stream.getc();
     if (!_stream.good())
     {
         return EOF;
     }
 
+#ifdef __ia16__
+    // Detect manually entered Ctrl+Z
+    if ((26 == ch) && ::isatty(::fileno(_stream.get())))
+    {
+        return EOF;
+    }
+#endif
+
     _detect_encoding(ch, _stream, _encoding);
+
+    int codepoint{};
     if (encoding::utf_8 != _encoding)
     {
         char byte = ch & 0xFF;

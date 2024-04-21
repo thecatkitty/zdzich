@@ -24,6 +24,10 @@ main(int argc, char *argv[])
     {
         auto token = lexer.get_token();
         std::printf("\t%-16s", zd::to_string(token.get_type()).data());
+        if (zd::token_type::eof == token.get_type())
+        {
+            break;
+        }
 
         auto text = token.get_text();
         if (!text.empty())
