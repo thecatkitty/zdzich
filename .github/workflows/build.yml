@@ -1,0 +1,56 @@
+name: Build
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  Build:
+    name: Build for ${{ matrix.platform.name }}
+
+    runs-on: ${{ matrix.platform.os }}
+    strategy:
+      matrix:
+        platform:
+          - name: Linux
+            target: linux
+            os: ubuntu-latest
+          - name: DOS (IA16)
+            target: dos-ia16
+            os: ubuntu-latest
+            flags: -DCMAKE_TOOLCHAIN_FILE=cmake/DOS-GCC-IA16.cmake
+          - name: Windows (x64)
+            target: windows-x64
+            os: windows-latest
+            flags: -DCMAKE_BUILD_TYPE=Release
+          - name: Windows (IA32)
+            target: windows-ia32
+            os: windows-latest
+            flags: -DCMAKE_BUILD_TYPE=Release -A Win32
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch DOS dependencies
+        if: matrix.platform.target == 'dos-ia16'
+        run: |
+          sudo add-apt-repository ppa:tkchia/build-ia16
+          sudo apt update
+          sudo apt install gcc-ia16-elf libi86-ia16-elf -y
+          mkdir cmake && cd cmake
+          wget https://raw.githubusercontent.com/thecatkitty/lavender/main/cmake/DOS-GCC-IA16.cmake
+
+      - name: Build for ${{ matrix.platform.name }}
+        run: |
+          git fetch --depth=1 origin +refs/tags/*:refs/tags/* || true
+          cmake -S . -B build -DCMAKE_INSTALL_PREFIX=bin ${{ matrix.platform.flags }}
+          cmake --build build --target install --config Release
+  
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zdzich-${{ matrix.platform.target }}
+          path: |
+            bin
