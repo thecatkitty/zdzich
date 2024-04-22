@@ -27,6 +27,12 @@ _match_keyword(const ustring &str)
     return token_type::name;
 }
 
+static bool
+_isnotcrlf(int ch)
+{
+    return ('\r' != ch) && ('\n' != ch);
+}
+
 token
 lexer::get_token()
 {
@@ -40,7 +46,7 @@ lexer::get_token()
         return {_last_type = token_type::eof};
     }
 
-    if (('\r' == _ch) || ('\n' == _ch))
+    if (!_isnotcrlf(_ch))
     {
         if (('\r' == _ch) && ('\n' != _stream.read()))
         {
@@ -80,14 +86,7 @@ lexer::get_token()
     {
         // Comment
         ustring comment{};
-
-        while (_stream && ('\r' != _ch) && ('\n' != _ch))
-        {
-            comment.append(_ch);
-
-            _ch = _stream.read();
-        }
-
+        scan_while(comment, _isnotcrlf);
         return {_last_type = token_type::comment, comment};
     }
 
@@ -95,23 +94,12 @@ lexer::get_token()
     {
         // Keyword, verb, or target
         ustring name{};
-
-        while (_stream && isalnum(_ch))
-        {
-            name.append(_ch);
-
-            _ch = _stream.read();
-        }
+        scan_while(name, isalnum);
 
         auto keyword = _match_keyword(name);
         if (token_type::comment == keyword)
         {
-            while (_stream && ('\r' != _ch) && ('\n' != _ch))
-            {
-                name.append(_ch);
-
-                _ch = _stream.read();
-            }
+            scan_while(name, _isnotcrlf);
         }
 
         return {_last_type = keyword, name};
@@ -142,13 +130,19 @@ lexer::get_token()
 
     // String literal
     ustring str{};
+    scan_while(str, _isnotcrlf);
+    return {_last_type = token_type::literal_str, str};
+}
 
-    while (_stream && ('\r' != _ch) && ('\n' != _ch))
+bool
+lexer::scan_while(ustring &out, bool (*predicate)(int))
+{
+    while (_stream && predicate(_ch))
     {
-        str.append(_ch);
+        out.append(_ch);
 
         _ch = _stream.read();
     }
 
-    return {_last_type = token_type::literal_str, str};
+    return !!_stream;
 }
