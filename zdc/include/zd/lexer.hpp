@@ -18,6 +18,10 @@ class lexer
 
     token
     get_token();
+
+  private:
+    bool
+    scan_while(ustring &out, bool (*predicate)(int));
 };
 
 } // namespace zd
