@@ -11,9 +11,12 @@ enum class token_type
     literal_int,
     literal_str,
     name,
-    comma,   // ,
-    comment, // *, Koment, Komentarz
-    end,     // Koniec
+    comma,     // ,
+    lbracket,  // (
+    rbracket,  // )
+    comment,   // *, Koment, Komentarz
+    end,       // Koniec
+    procedure, // Procedura
 };
 
 ustring
