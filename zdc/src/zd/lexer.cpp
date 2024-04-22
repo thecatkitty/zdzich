@@ -20,6 +20,8 @@ static token_type
 _match_keyword(const ustring &str)
 {
     RETURN_IF_STREQI(str, "Koniec", token_type::end);
+    RETURN_IF_STREQI(str, "Koment", token_type::comment);
+    RETURN_IF_STREQI(str, "Komentarz", token_type::comment);
 
     return token_type::name;
 }
@@ -55,6 +57,22 @@ lexer::get_token()
         return {_last_type = token_type::comma};
     }
 
+    if ((token_type::line_break == _last_type) && ('*' == ch))
+    {
+        // Comment
+        ustring comment{};
+
+        while (_stream && ('\r' != ch) && ('\n' != ch))
+        {
+            comment.append(ch);
+
+            ch = _stream.read();
+        }
+
+        _last_ch = ch;
+        return {_last_type = token_type::comment, comment};
+    }
+
     if ((token_type::line_break == _last_type) && isalpha(ch))
     {
         // Keyword, verb, or target
@@ -67,8 +85,19 @@ lexer::get_token()
             ch = _stream.read();
         }
 
+        auto keyword = _match_keyword(name);
+        if (token_type::comment == keyword)
+        {
+            while (_stream && ('\r' != ch) && ('\n' != ch))
+            {
+                name.append(ch);
+
+                ch = _stream.read();
+            }
+        }
+
         _last_ch = ch;
-        return {_last_type = _match_keyword(name), name};
+        return {_last_type = keyword, name};
     }
 
     // Integer literal
