@@ -83,24 +83,9 @@ lexer::get_token()
         return {_last_type = token_type::comment, comment};
     }
 
-    if ((token_type::name != _last_type) && isalpha(_ch))
-    {
-        // Keyword, verb, or target
-        ustring name{};
-        scan_while(name, isalnum);
-
-        auto keyword = _match_keyword(name);
-        if (token_type::comment == keyword)
-        {
-            scan_while(name, _isnotcrlf);
-        }
-
-        return {_last_type = keyword, name};
-    }
-
-    // Integer literal
     if (isdigit(_ch))
     {
+        // Integer literal
         int number{0};
 
         while (isdigit(_ch))
@@ -121,10 +106,24 @@ lexer::get_token()
         return {_last_type = token_type::literal_int, number};
     }
 
+    ustring string{};
+    if ((token_type::name != _last_type) && isalpha(_ch))
+    {
+        // Keyword, verb, or target
+        scan_while(string, isalnum);
+        _last_type = _match_keyword(string);
+        if (token_type::comment == _last_type)
+        {
+            // Verbose comment
+            scan_while(string, _isnotcrlf);
+        }
+
+        return {_last_type, string};
+    }
+
     // String literal
-    ustring str{};
-    scan_while(str, _isnotcrlf);
-    return {_last_type = token_type::literal_str, str};
+    scan_while(string, _isnotcrlf);
+    return {_last_type = token_type::literal_str, string};
 }
 
 bool
