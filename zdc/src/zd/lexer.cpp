@@ -16,6 +16,13 @@ using namespace zd;
         return value;                                                          \
     }
 
+#define RETURN_IF_CHTOKEN(ch, value)                                           \
+    if ((ch) == _ch)                                                           \
+    {                                                                          \
+        _ch = 0;                                                               \
+        return value;                                                          \
+    };
+
 static token_type
 _match_keyword(const ustring &str)
 {
@@ -64,23 +71,9 @@ lexer::get_token()
         _ch = _stream.read();
     }
 
-    if (',' == _ch)
-    {
-        _ch = 0;
-        return {_last_type = token_type::comma};
-    }
-
-    if ('(' == _ch)
-    {
-        _ch = 0;
-        return {_last_type = token_type::lbracket};
-    }
-
-    if (')' == _ch)
-    {
-        _ch = 0;
-        return {_last_type = token_type::rbracket};
-    }
+    RETURN_IF_CHTOKEN(',', {_last_type = token_type::comma});
+    RETURN_IF_CHTOKEN('(', {_last_type = token_type::lbracket});
+    RETURN_IF_CHTOKEN(')', {_last_type = token_type::rbracket});
 
     if ((token_type::line_break == _last_type) && ('*' == _ch))
     {
