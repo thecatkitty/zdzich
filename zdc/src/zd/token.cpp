@@ -14,6 +14,7 @@ static const char *ENUM_NAMES[]{
     ENUM_NAME_MAPPING(literal_str, "string literal"),
     ENUM_NAME_MAPPING(name, "symbolic name"),
     ENUM_NAME_MAPPING(comma, "comma"),
+    ENUM_NAME_MAPPING(comment, "comment"),
     ENUM_NAME_MAPPING(end, "end keyword"),
 };
 
