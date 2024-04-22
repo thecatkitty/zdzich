@@ -19,9 +19,10 @@ using namespace zd;
 static token_type
 _match_keyword(const ustring &str)
 {
-    RETURN_IF_STREQI(str, "Koniec", token_type::end);
     RETURN_IF_STREQI(str, "Koment", token_type::comment);
     RETURN_IF_STREQI(str, "Komentarz", token_type::comment);
+    RETURN_IF_STREQI(str, "Koniec", token_type::end);
+    RETURN_IF_STREQI(str, "Procedura", token_type::procedure);
 
     return token_type::name;
 }
@@ -57,6 +58,16 @@ lexer::get_token()
         return {_last_type = token_type::comma};
     }
 
+    if ('(' == ch)
+    {
+        return {_last_type = token_type::lbracket};
+    }
+
+    if (')' == ch)
+    {
+        return {_last_type = token_type::rbracket};
+    }
+
     if ((token_type::line_break == _last_type) && ('*' == ch))
     {
         // Comment
@@ -73,7 +84,7 @@ lexer::get_token()
         return {_last_type = token_type::comment, comment};
     }
 
-    if ((token_type::line_break == _last_type) && isalpha(ch))
+    if ((token_type::name != _last_type) && isalpha(ch))
     {
         // Keyword, verb, or target
         ustring name{};
