@@ -30,121 +30,125 @@ _match_keyword(const ustring &str)
 token
 lexer::get_token()
 {
-    auto ch = _last_ch ? std::exchange(_last_ch, 0) : _stream.read();
-    if (!_stream || (EOF == ch))
+    if (!_ch)
+    {
+        _ch = _stream.read();
+    }
+
+    if (!_stream || (EOF == _ch))
     {
         return {_last_type = token_type::eof};
     }
 
-    if (('\r' == ch) || ('\n' == ch))
+    if (('\r' == _ch) || ('\n' == _ch))
     {
-        if (('\r' == ch) && ('\n' != _stream.read()))
+        if (('\r' == _ch) && ('\n' != _stream.read()))
         {
             std::fprintf(stderr, "%s: unexpected lone carriage return\n",
                          __FUNCTION__);
             return {_last_type = token_type::unknown};
         }
 
+        _ch = 0;
         return {_last_type = token_type::line_break};
     }
 
-    while (_stream && isspace(ch))
+    while (_stream && isspace(_ch))
     {
-        ch = _stream.read();
+        _ch = _stream.read();
     }
 
-    if (',' == ch)
+    if (',' == _ch)
     {
+        _ch = 0;
         return {_last_type = token_type::comma};
     }
 
-    if ('(' == ch)
+    if ('(' == _ch)
     {
+        _ch = 0;
         return {_last_type = token_type::lbracket};
     }
 
-    if (')' == ch)
+    if (')' == _ch)
     {
+        _ch = 0;
         return {_last_type = token_type::rbracket};
     }
 
-    if ((token_type::line_break == _last_type) && ('*' == ch))
+    if ((token_type::line_break == _last_type) && ('*' == _ch))
     {
         // Comment
         ustring comment{};
 
-        while (_stream && ('\r' != ch) && ('\n' != ch))
+        while (_stream && ('\r' != _ch) && ('\n' != _ch))
         {
-            comment.append(ch);
+            comment.append(_ch);
 
-            ch = _stream.read();
+            _ch = _stream.read();
         }
 
-        _last_ch = ch;
         return {_last_type = token_type::comment, comment};
     }
 
-    if ((token_type::name != _last_type) && isalpha(ch))
+    if ((token_type::name != _last_type) && isalpha(_ch))
     {
         // Keyword, verb, or target
         ustring name{};
 
-        while (_stream && isalnum(ch))
+        while (_stream && isalnum(_ch))
         {
-            name.append(ch);
+            name.append(_ch);
 
-            ch = _stream.read();
+            _ch = _stream.read();
         }
 
         auto keyword = _match_keyword(name);
         if (token_type::comment == keyword)
         {
-            while (_stream && ('\r' != ch) && ('\n' != ch))
+            while (_stream && ('\r' != _ch) && ('\n' != _ch))
             {
-                name.append(ch);
+                name.append(_ch);
 
-                ch = _stream.read();
+                _ch = _stream.read();
             }
         }
 
-        _last_ch = ch;
         return {_last_type = keyword, name};
     }
 
     // Integer literal
-    if (isdigit(ch))
+    if (isdigit(_ch))
     {
         int number{0};
 
-        while (isdigit(ch))
+        while (isdigit(_ch))
         {
             number *= 10;
-            number += ch - '0';
-            ch = _stream.read();
+            number += _ch - '0';
+            _ch = _stream.read();
         }
 
-        if (isalpha(ch))
+        if (isalpha(_ch))
         {
             std::fprintf(stderr,
                          "%s: unexpected character %d in an integer literal\n",
-                         __FUNCTION__, ch);
+                         __FUNCTION__, _ch);
             return {_last_type = token_type::unknown};
         }
 
-        _last_ch = ch;
         return {_last_type = token_type::literal_int, number};
     }
 
     // String literal
     ustring str{};
 
-    while (_stream && ('\r' != ch) && ('\n' != ch))
+    while (_stream && ('\r' != _ch) && ('\n' != _ch))
     {
-        str.append(ch);
+        str.append(_ch);
 
-        ch = _stream.read();
+        _ch = _stream.read();
     }
 
-    _last_ch = ch;
     return {_last_type = token_type::literal_str, str};
 }
