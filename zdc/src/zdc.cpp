@@ -14,6 +14,9 @@ _get_pl_stream(int argc, char *argv[])
     return zd::pl_istream{zd::min_istream{stdin}};
 }
 
+extern void
+print_error(const zd::error &err);
+
 int
 main(int argc, char *argv[])
 {
@@ -26,12 +29,7 @@ main(int argc, char *argv[])
         if (!token)
         {
             zd::error err = std::move(token.error());
-            std::fprintf(stderr, "error %02X%02X", err.origin(), err.ordinal());
-            for (auto arg : err)
-            {
-                std::fprintf(stderr, " %p", reinterpret_cast<void *>(arg));
-            }
-            std::fputs("\n", stderr);
+            print_error(err);
             break;
         }
 
