@@ -1,5 +1,7 @@
 #pragma once
 
+#include <tl/expected.hpp>
+
 #include <array>
 #include <cstdint>
 #include <cstdlib>
@@ -105,5 +107,12 @@ class error
         to_argv(_argv, args...);
     }
 };
+
+enum class error_origin : uint8_t
+{
+    stream = 1,
+};
+
+template <typename T> using result = tl::expected<T, error>;
 
 } // namespace zd
