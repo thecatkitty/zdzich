@@ -1,6 +1,7 @@
 #pragma once
 
 #include <zd/encoding.hpp>
+#include <zd/error.hpp>
 #include <zd/min_istream.hpp>
 
 namespace zd
@@ -27,13 +28,37 @@ class pl_istream
         return _stream.good();
     }
 
-    int
+    result<int>
     read() noexcept;
 
     encoding *
     get_encoding() const
     {
         return _encoding;
+    }
+
+    enum class error_code : uint8_t
+    {
+        unexpected_byte = 0,
+        invalid_sequence = 1,
+        read_error = 2,
+    };
+
+  private:
+    static tl::unexpected<error>
+    make_error(error_code code)
+    {
+        return tl::make_unexpected(
+            error{static_cast<uint8_t>(error_origin::stream),
+                  static_cast<uint8_t>(code)});
+    }
+
+    static tl::unexpected<error>
+    make_error(error_code code, char byte, const char *encoding)
+    {
+        return tl::make_unexpected(
+            error{static_cast<uint8_t>(error_origin::stream),
+                  static_cast<uint8_t>(code), byte, encoding});
     }
 };
 

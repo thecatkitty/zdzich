@@ -40,12 +40,31 @@ _isnotcrlf(int ch)
     return ('\r' != ch) && ('\n' != ch);
 }
 
+static int
+_read_stream(pl_istream &str)
+{
+    auto che = str.read();
+    if (che)
+    {
+        return *che;
+    }
+
+    auto err = std::move(che.error());
+    std::fprintf(stderr, "error %02X%02X", err.origin(), err.ordinal());
+    for (auto arg : err)
+    {
+        std::fprintf(stderr, " %p", reinterpret_cast<void *>(arg));
+    }
+    std::fputs("\n", stderr);
+    return EOF;
+}
+
 token
 lexer::get_token()
 {
     if (!_ch)
     {
-        _ch = _stream.read();
+        _ch = _read_stream(_stream);
     }
 
     if (!_stream || (EOF == _ch))
@@ -68,7 +87,7 @@ lexer::get_token()
 
     while (_stream && isspace(_ch))
     {
-        _ch = _stream.read();
+        _ch = _read_stream(_stream);
     }
 
     RETURN_IF_CHTOKEN(',', {_last_type = token_type::comma});
@@ -92,7 +111,7 @@ lexer::get_token()
         {
             number *= 10;
             number += _ch - '0';
-            _ch = _stream.read();
+            _ch = _read_stream(_stream);
         }
 
         if (isalpha(_ch))
@@ -133,7 +152,7 @@ lexer::scan_while(ustring &out, bool (*predicate)(int))
     {
         out.append(_ch);
 
-        _ch = _stream.read();
+        _ch = _read_stream(_stream);
     }
 
     return !!_stream;

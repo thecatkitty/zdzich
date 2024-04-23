@@ -93,7 +93,7 @@ _detect_encoding(int ch, min_istream &stream, encoding *&enc)
     return enc = encoding::utf_8;
 }
 
-int
+result<int>
 pl_istream::read() noexcept
 {
     auto ch = _stream.getc();
@@ -120,10 +120,8 @@ pl_istream::read() noexcept
 
         if (0 > codepoint)
         {
-            std::fprintf(stderr,
-                         "%s: unexpected byte %u in the encoding '%s'\n",
-                         __FUNCTION__, ch, _encoding->get_name());
-            return 0;
+            return make_error(error_code::unexpected_byte, byte,
+                              _encoding->get_name());
         }
 
         return codepoint;
@@ -135,21 +133,17 @@ pl_istream::read() noexcept
     auto length = encoding::utf_8->get_sequence_length(buffer);
     if (0 == length)
     {
-        std::fprintf(stderr, "%s: invalid UTF-8 sequence\n", __FUNCTION__);
-        return -1;
+        return make_error(error_code::invalid_sequence);
     }
 
     if ((length - 1) != _stream.read(buffer + 1, length - 1))
     {
-        std::fprintf(stderr, "%s: read error in a UTF-8 sequence\n",
-                     __FUNCTION__);
-        return -1;
+        return make_error(error_code::read_error);
     }
 
     if (0 > _encoding->decode(buffer, codepoint))
     {
-        std::fprintf(stderr, "%s: invalid UTF-8 sequence\n", __FUNCTION__);
-        return -1;
+        return make_error(error_code::invalid_sequence);
     }
 
     return codepoint;
