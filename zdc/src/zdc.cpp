@@ -23,20 +23,32 @@ main(int argc, char *argv[])
     while (stream)
     {
         auto token = lexer.get_token();
-        std::printf("\t%-16s", zd::to_string(token.get_type()).data());
-        if (zd::token_type::eof == token.get_type())
+        if (!token)
+        {
+            zd::error err = std::move(token.error());
+            std::fprintf(stderr, "error %02X%02X", err.origin(), err.ordinal());
+            for (auto arg : err)
+            {
+                std::fprintf(stderr, " %p", reinterpret_cast<void *>(arg));
+            }
+            std::fputs("\n", stderr);
+            break;
+        }
+
+        std::printf("\t%-16s", zd::to_string(token->get_type()).data());
+        if (zd::token_type::eof == token->get_type())
         {
             break;
         }
 
-        auto text = token.get_text();
+        auto text = token->get_text();
         if (!text.empty())
         {
-            std::printf("%s", token.get_text().data());
+            std::printf("%s", token->get_text().data());
         }
-        else if (zd::token_type::literal_int == token.get_type())
+        else if (zd::token_type::literal_int == token->get_type())
         {
-            std::printf("%d", token.get_number());
+            std::printf("%d", token->get_number());
         }
 
         std::puts("");

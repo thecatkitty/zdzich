@@ -22,6 +22,9 @@ enum class token_type
 ustring
 to_string(token_type tok);
 
+const char *
+to_cstr(token_type tok);
+
 class token
 {
     enum class _value_type
