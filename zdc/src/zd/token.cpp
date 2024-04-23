@@ -24,15 +24,26 @@ static const char *ENUM_NAMES[]{
 zd::ustring
 zd::to_string(token_type tok)
 {
+    if (auto cstr = to_cstr(tok))
+    {
+        return cstr;
+    }
+
+    char buff[12]{};
+    std::snprintf(buff, 12, "%d", static_cast<int>(tok));
+    return buff;
+}
+
+const char *
+zd::to_cstr(token_type tok)
+{
     auto i = static_cast<int>(tok);
     if (0 <= i)
     {
         return ENUM_NAMES[i];
     }
 
-    char buff[12]{};
-    std::snprintf(buff, 12, "%d", i);
-    return buff;
+    return nullptr;
 }
 
 zd::token::~token()

@@ -111,8 +111,20 @@ class error
 enum class error_origin : uint8_t
 {
     stream = 1,
+    lexer = 2,
 };
 
 template <typename T> using result = tl::expected<T, error>;
+
+#define RETURN_IF_ERROR_VOID(expr)                                             \
+    auto __result = (expr);                                                    \
+    if (!__result)                                                             \
+    {                                                                          \
+        return tl::make_unexpected(std::move(__result.error()));               \
+    }
+
+#define RETURN_IF_ERROR(out, expr)                                             \
+    RETURN_IF_ERROR_VOID(expr)                                                 \
+    (out) = *__result;
 
 } // namespace zd

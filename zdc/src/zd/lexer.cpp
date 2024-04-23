@@ -40,31 +40,12 @@ _isnotcrlf(int ch)
     return ('\r' != ch) && ('\n' != ch);
 }
 
-static int
-_read_stream(pl_istream &str)
-{
-    auto che = str.read();
-    if (che)
-    {
-        return *che;
-    }
-
-    auto err = std::move(che.error());
-    std::fprintf(stderr, "error %02X%02X", err.origin(), err.ordinal());
-    for (auto arg : err)
-    {
-        std::fprintf(stderr, " %p", reinterpret_cast<void *>(arg));
-    }
-    std::fputs("\n", stderr);
-    return EOF;
-}
-
-token
+result<token>
 lexer::get_token()
 {
     if (!_ch)
     {
-        _ch = _read_stream(_stream);
+        RETURN_IF_ERROR(_ch, _stream.read());
     }
 
     if (!_stream || (EOF == _ch))
@@ -76,9 +57,7 @@ lexer::get_token()
     {
         if (('\r' == _ch) && ('\n' != _stream.read()))
         {
-            std::fprintf(stderr, "%s: unexpected lone carriage return\n",
-                         __FUNCTION__);
-            return {_last_type = token_type::unknown};
+            return make_error(error_code::invalid_newline);
         }
 
         _ch = 0;
@@ -87,7 +66,7 @@ lexer::get_token()
 
     while (_stream && isspace(_ch))
     {
-        _ch = _read_stream(_stream);
+        RETURN_IF_ERROR(_ch, _stream.read());
     }
 
     RETURN_IF_CHTOKEN(',', {_last_type = token_type::comma});
@@ -98,8 +77,8 @@ lexer::get_token()
     {
         // Comment
         ustring comment{};
-        scan_while(comment, _isnotcrlf);
-        return {_last_type = token_type::comment, comment};
+        RETURN_IF_ERROR_VOID(scan_while(comment, _isnotcrlf));
+        return token{_last_type = token_type::comment, comment};
     }
 
     if (isdigit(_ch))
@@ -111,49 +90,47 @@ lexer::get_token()
         {
             number *= 10;
             number += _ch - '0';
-            _ch = _read_stream(_stream);
+            RETURN_IF_ERROR(_ch, _stream.read());
         }
 
         if (isalpha(_ch))
         {
-            std::fprintf(stderr,
-                         "%s: unexpected character %d in an integer literal\n",
-                         __FUNCTION__, _ch);
-            return {_last_type = token_type::unknown};
+            return make_error(error_code::unexpected_character, _ch,
+                              token_type::literal_int);
         }
 
-        return {_last_type = token_type::literal_int, number};
+        return token{_last_type = token_type::literal_int, number};
     }
 
     ustring string{};
     if ((token_type::name != _last_type) && isalpha(_ch))
     {
         // Keyword, verb, or target
-        scan_while(string, isalnum);
+        RETURN_IF_ERROR_VOID(scan_while(string, isalnum));
         _last_type = _match_keyword(string);
         if (token_type::comment == _last_type)
         {
             // Verbose comment
-            scan_while(string, _isnotcrlf);
+            RETURN_IF_ERROR_VOID(scan_while(string, _isnotcrlf));
         }
 
-        return {_last_type, string};
+        return token{_last_type, string};
     }
 
     // String literal
-    scan_while(string, _isnotcrlf);
-    return {_last_type = token_type::literal_str, string};
+    RETURN_IF_ERROR_VOID(scan_while(string, _isnotcrlf));
+    return token{_last_type = token_type::literal_str, string};
 }
 
-bool
+result<void>
 lexer::scan_while(ustring &out, bool (*predicate)(int))
 {
     while (_stream && predicate(_ch))
     {
         out.append(_ch);
 
-        _ch = _read_stream(_stream);
+        RETURN_IF_ERROR(_ch, _stream.read());
     }
 
-    return !!_stream;
+    return {};
 }

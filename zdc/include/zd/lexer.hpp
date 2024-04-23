@@ -1,3 +1,4 @@
+#include <zd/error.hpp>
 #include <zd/pl_istream.hpp>
 #include <zd/token.hpp>
 
@@ -16,12 +17,34 @@ class lexer
     {
     }
 
-    token
+    result<token>
     get_token();
 
+    enum class error_code : uint8_t
+    {
+        invalid_newline = 0,
+        unexpected_character = 1,
+    };
+
   private:
-    bool
+    result<void>
     scan_while(ustring &out, bool (*predicate)(int));
+
+    static tl::unexpected<error>
+    make_error(error_code code)
+    {
+        return tl::make_unexpected(
+            error{static_cast<uint8_t>(error_origin::lexer),
+                  static_cast<uint8_t>(code)});
+    }
+
+    static tl::unexpected<error>
+    make_error(error_code code, int character, token_type ttype)
+    {
+        return tl::make_unexpected(
+            error{static_cast<uint8_t>(error_origin::lexer),
+                  static_cast<uint8_t>(code), character, to_cstr(ttype)});
+    }
 };
 
 } // namespace zd
