@@ -19,7 +19,7 @@ struct _unknown_encoding : public encoding
         return 0;
     }
 
-    virtual ustring
+    virtual const char *
     get_name() const override
     {
         return "unknown";

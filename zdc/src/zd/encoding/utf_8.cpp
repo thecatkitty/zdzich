@@ -84,7 +84,7 @@ struct _utf8_encoding : public multi_byte_encoding
         return 1 + continuation_bytes;
     }
 
-    virtual ustring
+    virtual const char *
     get_name() const override
     {
         return "utf-8";

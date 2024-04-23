@@ -122,7 +122,7 @@ pl_istream::read() noexcept
         {
             std::fprintf(stderr,
                          "%s: unexpected byte %u in the encoding '%s'\n",
-                         __FUNCTION__, ch, _encoding->get_name().data());
+                         __FUNCTION__, ch, _encoding->get_name());
             return 0;
         }
 
