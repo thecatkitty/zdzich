@@ -18,7 +18,7 @@ struct encoding
     virtual size_t
     encode(char *buff, int codepoint) = 0;
 
-    virtual ustring
+    virtual const char *
     get_name() const = 0;
 
     static encoding             *unknown;
@@ -49,10 +49,10 @@ class single_byte_encoding : public encoding
     virtual size_t
     encode(char *buff, int codepoint) override;
 
-    virtual ustring
+    virtual const char *
     get_name() const override
     {
-        return _name;
+        return _name.data();
     }
 };
 
