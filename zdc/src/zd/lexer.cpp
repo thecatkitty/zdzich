@@ -75,6 +75,7 @@ lexer::get_token()
     RETURN_IF_CHTOKEN(')', {_last_type = token_type::rbracket});
     RETURN_IF_CHTOKEN('%', {_last_type = token_type::byval});
     RETURN_IF_CHTOKEN('$', {_last_type = token_type::byref});
+    RETURN_IF_CHTOKEN('=', {_last_type = token_type::assign});
 
     if ((token_type::line_break == _last_type) && ('*' == _ch))
     {
