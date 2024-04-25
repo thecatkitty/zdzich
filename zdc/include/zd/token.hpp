@@ -14,6 +14,8 @@ enum class token_type
     comma,     // ,
     lbracket,  // (
     rbracket,  // )
+    byval,     // %
+    byref,     // $
     comment,   // *, Koment, Komentarz
     end,       // Koniec
     procedure, // Procedura
