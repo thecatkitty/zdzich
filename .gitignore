@@ -4,3 +4,5 @@ CMakeSettings.json
 bin
 build*
 out*
+
+ext/nicetia16*

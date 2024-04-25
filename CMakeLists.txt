@@ -17,6 +17,9 @@ if(DOS)
 
     add_link_options(-mcmodel=small)
     add_link_options(-mnewlib-nano-stdio)
+
+    include_directories(BEFORE SYSTEM ext/nicetia16/include/c++/6.3.0)
+    link_directories(BEFORE ext/nicetia16/lib)
 endif()
 
 # Subprojects
