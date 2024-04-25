@@ -33,7 +33,7 @@ ustring::ustring(const ustring &that)
 {
     if (that._size)
     {
-        _data = new (std::nothrow) char[that._capacity];
+        _data = new (std::nothrow) char[that._capacity + 1];
         std::copy_n(that._data, _size + 1, _data);
     }
 }
@@ -49,7 +49,7 @@ ustring::operator=(const ustring &that)
     this->~ustring();
     _size = that._size;
     _capacity = that._capacity;
-    _data = new (std::nothrow) char[that._capacity];
+    _data = new (std::nothrow) char[that._capacity + 1];
     std::copy_n(that._data, _capacity, _data);
 
     return *this;
