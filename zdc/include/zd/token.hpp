@@ -20,6 +20,7 @@ enum class token_type
     assign,    // =
     comment,   // *, Koment, Komentarz
     end,       // Koniec
+    jump,      // Skok
     procedure, // Procedura
     variable,  // Zmienna
 };
