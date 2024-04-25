@@ -16,6 +16,7 @@ enum class token_type
     rbracket,  // )
     byval,     // %
     byref,     // $
+    assign,    // =
     comment,   // *, Koment, Komentarz
     end,       // Koniec
     procedure, // Procedura
