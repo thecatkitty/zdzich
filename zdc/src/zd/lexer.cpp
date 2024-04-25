@@ -71,6 +71,7 @@ lexer::get_token()
     }
 
     RETURN_IF_CHTOKEN(',', {_last_type = token_type::comma});
+    RETURN_IF_CHTOKEN(':', {_last_type = token_type::colon});
     RETURN_IF_CHTOKEN('(', {_last_type = token_type::lbracket});
     RETURN_IF_CHTOKEN(')', {_last_type = token_type::rbracket});
     RETURN_IF_CHTOKEN('%', {_last_type = token_type::byval});
