@@ -12,6 +12,7 @@ enum class token_type
     literal_str,
     name,
     comma,     // ,
+    colon,     // :
     lbracket,  // (
     rbracket,  // )
     byval,     // %
