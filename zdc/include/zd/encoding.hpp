@@ -34,11 +34,11 @@ struct encoding
 
 class single_byte_encoding : public encoding
 {
-    ustring _name;
+    const char *_name;
     const int  *_mapping;
 
   public:
-    single_byte_encoding(ustring name, const int *mapping)
+    single_byte_encoding(const char *name, const int *mapping)
         : _name{name}, _mapping{mapping}
     {
     }
@@ -52,7 +52,7 @@ class single_byte_encoding : public encoding
     virtual const char *
     get_name() const override
     {
-        return _name.data();
+        return _name;
     }
 };
 
