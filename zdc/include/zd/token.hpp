@@ -19,6 +19,7 @@ enum class token_type
     comment,   // *, Koment, Komentarz
     end,       // Koniec
     procedure, // Procedura
+    variable,  // Zmienna
 };
 
 ustring
