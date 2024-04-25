@@ -18,7 +18,7 @@ jobs:
           - name: DOS (IA16)
             target: dos-ia16
             os: ubuntu-latest
-            flags: -DCMAKE_TOOLCHAIN_FILE=cmake/DOS-GCC-IA16.cmake
+            flags: -DCMAKE_TOOLCHAIN_FILE=ext/nicetia16/cmake/DOS-GCC-IA16.cmake
           - name: Windows (x64)
             target: windows-x64
             os: windows-latest
@@ -34,14 +34,22 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      - name: Fetch DOS dependencies
+      - name: Fetch nicetia16
+        if: matrix.platform.target == 'dos-ia16'
+        uses:  dsaltares/fetch-gh-release-asset@1.1.1
+        with:
+          repo: thecatkitty/nicetia16
+          version: tags/REL-20240425
+          file: nicetia16-REL-20240425.zip
+          target: ext/nicetia16.zip
+
+      - name: Install DOS dependencies
         if: matrix.platform.target == 'dos-ia16'
         run: |
           sudo add-apt-repository ppa:tkchia/build-ia16
           sudo apt update
           sudo apt install gcc-ia16-elf libi86-ia16-elf -y
-          mkdir cmake && cd cmake
-          wget https://raw.githubusercontent.com/thecatkitty/lavender/main/cmake/DOS-GCC-IA16.cmake
+          unzip ext/nicetia16.zip -d ext/nicetia16
 
       - name: Build for ${{ matrix.platform.name }}
         run: |
