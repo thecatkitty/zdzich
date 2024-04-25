@@ -21,6 +21,7 @@ static const char *ENUM_NAMES[]{
     ENUM_NAME_MAPPING(comment, "comment"),
     ENUM_NAME_MAPPING(end, "end keyword"),
     ENUM_NAME_MAPPING(procedure, "procedure keyword"),
+    ENUM_NAME_MAPPING(variable, "variable keyword"),
 };
 
 zd::ustring
