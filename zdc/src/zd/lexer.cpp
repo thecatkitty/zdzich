@@ -84,7 +84,7 @@ lexer::get_token()
         // Comment
         ustring comment{};
         RETURN_IF_ERROR_VOID(scan_while(comment, _isnotcrlf));
-        return token{_last_type = token_type::comment, comment};
+        return token{_last_type = token_type::comment, std::move(comment)};
     }
 
     if (isdigit(_ch))
@@ -120,12 +120,12 @@ lexer::get_token()
             RETURN_IF_ERROR_VOID(scan_while(string, _isnotcrlf));
         }
 
-        return token{_last_type, string};
+        return token{_last_type, std::move(string)};
     }
 
     // String literal
     RETURN_IF_ERROR_VOID(scan_while(string, _isnotcrlf));
-    return token{_last_type = token_type::literal_str, string};
+    return token{_last_type = token_type::literal_str, std::move(string)};
 }
 
 result<void>

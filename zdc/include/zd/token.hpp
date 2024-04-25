@@ -62,8 +62,8 @@ class token
     {
     }
 
-    token(token_type type, const ustring &value)
-        : _vtype{_value_type::text}, _ttype{type}, _text{value}
+    token(token_type type, ustring &&value)
+        : _vtype{_value_type::text}, _ttype{type}, _text{std::move(value)}
     {
     }
 
@@ -94,7 +94,7 @@ class token
     ustring
     get_text() const
     {
-        return (_value_type::text == _vtype) ? _text : ustring{};
+        return (_value_type::text == _vtype) ? _text : std::move(ustring{});
     }
 };
 
