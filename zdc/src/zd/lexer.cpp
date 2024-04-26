@@ -28,6 +28,7 @@ _match_keyword(const ustring &str)
 {
     RETURN_IF_STREQI(str, "Koment", token_type::comment);
     RETURN_IF_STREQI(str, "Komentarz", token_type::comment);
+    RETURN_IF_STREQAI(str, "Porównaj", token_type::compare)
     RETURN_IF_STREQI(str, "Koniec", token_type::end);
     RETURN_IF_STREQI(str, "Skok", token_type::jump);
     RETURN_IF_STREQI(str, "Procedura", token_type::procedure);

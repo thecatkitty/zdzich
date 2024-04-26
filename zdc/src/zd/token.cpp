@@ -27,6 +27,7 @@ static const char *ENUM_NAMES[]{
     ENUM_NAME_MAPPING(cpref_le, "conditional prefix less or equal"),
     ENUM_NAME_MAPPING(cpref_ge, "conditional prefix greater or equal"),
     ENUM_NAME_MAPPING(comment, "comment"),
+    ENUM_NAME_MAPPING(compare, "compare keyword"),
     ENUM_NAME_MAPPING(end, "end keyword"),
     ENUM_NAME_MAPPING(jump, "jump keyword"),
     ENUM_NAME_MAPPING(procedure, "procedure keyword"),
