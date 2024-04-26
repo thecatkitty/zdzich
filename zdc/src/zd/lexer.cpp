@@ -30,6 +30,7 @@ _match_keyword(const ustring &str)
     RETURN_IF_STREQI(str, "Komentarz", token_type::comment);
     RETURN_IF_STREQAI(str, "Porównaj", token_type::compare)
     RETURN_IF_STREQAI(str, "Stała", token_type::constant)
+    RETURN_IF_STREQI(str, "Zmniejsz", token_type::decrement);
     RETURN_IF_STREQI(str, "Koniec", token_type::end);
     RETURN_IF_STREQAI(str, "Zwiększ", token_type::increment);
     RETURN_IF_STREQI(str, "Skok", token_type::jump);

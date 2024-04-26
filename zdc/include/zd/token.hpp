@@ -27,6 +27,7 @@ enum class token_type
     comment,   // *, Koment, Komentarz
     compare,   // Porównaj
     constant,  // Stała
+    decrement, // Zmniejsz
     end,       // Koniec
     increment, // Zwiększ
     jump,      // Skok
