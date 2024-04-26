@@ -10,15 +10,22 @@ class lexer
     pl_istream &_stream;
     token_type  _last_type;
     int         _ch;
+    unsigned    _spaces;
 
   public:
     lexer(pl_istream &stream)
-        : _stream{stream}, _last_type{token_type::line_break}, _ch{}
+        : _stream{stream}, _last_type{token_type::line_break}, _ch{}, _spaces{}
     {
     }
 
     result<token>
     get_token();
+
+    unsigned
+    get_spaces() const
+    {
+        return _spaces;
+    }
 
     enum class error_code : uint8_t
     {

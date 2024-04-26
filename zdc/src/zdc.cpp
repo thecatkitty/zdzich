@@ -33,7 +33,8 @@ main(int argc, char *argv[])
             break;
         }
 
-        std::printf("\t%-16s", zd::to_string(token->get_type()).data());
+        std::printf("\t%-3u %-16s", lexer.get_spaces(),
+                    zd::to_string(token->get_type()).data());
         if (zd::token_type::eof == token->get_type())
         {
             break;

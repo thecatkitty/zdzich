@@ -46,6 +46,8 @@ _isnotcrlf(int ch)
 result<token>
 lexer::get_token()
 {
+    _spaces = 0;
+
     if (!_ch)
     {
         RETURN_IF_ERROR(_ch, _stream.read());
@@ -69,6 +71,7 @@ lexer::get_token()
 
     while (_stream && isspace(_ch))
     {
+        _spaces++;
         RETURN_IF_ERROR(_ch, _stream.read());
     }
 
