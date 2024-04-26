@@ -41,6 +41,42 @@ _match_keyword(const ustring &str)
 }
 
 static bool
+_is_register(const ustring &str)
+{
+    if (2 != str.size())
+    {
+        return false;
+    }
+
+    int first = str.data()[0], second = str.data()[1];
+    if (!zd::isalpha(first) || !zd::isalpha(second))
+    {
+        return false;
+    }
+
+    first = tolower(first);
+    second = tolower(second);
+
+    if (('a' == first) || ('b' == first) || ('c' == first))
+    {
+        return ('l' == second) || ('h' == second) || ('x' == second);
+    }
+
+    if ('d' == first)
+    {
+        return ('l' == second) || ('h' == second) || ('x' == second) ||
+               ('i' == second);
+    }
+
+    if ('s' == first)
+    {
+        return ('i' == second);
+    }
+
+    return false;
+}
+
+static bool
 _isnotcrlf(int ch)
 {
     return ('\r' != ch) && ('\n' != ch);
@@ -150,8 +186,14 @@ lexer::get_token()
         return token{_last_type, std::move(string)};
     }
 
-    // String literal
+    // String literal or register name
     RETURN_IF_ERROR_VOID(scan_while(string, _isnotcrlf));
+
+    if (_is_register(string))
+    {
+        return token{_last_type = token_type::name, std::move(string)};
+    }
+
     return token{_last_type = token_type::literal_str, std::move(string)};
 }
 
