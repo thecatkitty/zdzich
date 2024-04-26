@@ -28,6 +28,7 @@ enum class token_type
     compare,   // Porównaj
     constant,  // Stała
     end,       // Koniec
+    increment, // Zwiększ
     jump,      // Skok
     procedure, // Procedura
     variable,  // Zmienna
