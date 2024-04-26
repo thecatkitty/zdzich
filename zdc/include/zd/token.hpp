@@ -26,6 +26,7 @@ enum class token_type
     cpref_ge,  // &>
     comment,   // *, Koment, Komentarz
     compare,   // Porównaj
+    constant,  // Stała
     end,       // Koniec
     jump,      // Skok
     procedure, // Procedura
