@@ -71,6 +71,7 @@ lexer::get_token()
         RETURN_IF_ERROR(_ch, _stream.read());
     }
 
+    // Single-character tokens
     RETURN_IF_CHTOKEN(',', {_last_type = token_type::comma});
     RETURN_IF_CHTOKEN(':', {_last_type = token_type::colon});
     RETURN_IF_CHTOKEN('(', {_last_type = token_type::lbracket});
@@ -78,6 +79,24 @@ lexer::get_token()
     RETURN_IF_CHTOKEN('%', {_last_type = token_type::byval});
     RETURN_IF_CHTOKEN('$', {_last_type = token_type::byref});
     RETURN_IF_CHTOKEN('=', {_last_type = token_type::assign});
+
+    // Conditional prefixes
+    RETURN_IF_CHTOKEN('>', {_last_type = token_type::cpref_gt});
+
+    if ('<' == _ch)
+    {
+        RETURN_IF_ERROR(_ch, _stream.read());
+        RETURN_IF_CHTOKEN('>', {_last_type = token_type::cpref_ne});
+        return {_last_type = token_type::cpref_lt};
+    }
+
+    if ('&' == _ch)
+    {
+        RETURN_IF_ERROR(_ch, _stream.read());
+        RETURN_IF_CHTOKEN('<', {_last_type = token_type::cpref_le});
+        RETURN_IF_CHTOKEN('>', {_last_type = token_type::cpref_ge});
+        return {_last_type = token_type::cpref_eq};
+    }
 
     if ((token_type::line_break == _last_type) && ('*' == _ch))
     {
