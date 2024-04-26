@@ -18,6 +18,12 @@ enum class token_type
     byval,     // %
     byref,     // $
     assign,    // =
+    cpref_eq,  // &
+    cpref_lt,  // <
+    cpref_gt,  // >
+    cpref_ne,  // <>
+    cpref_le,  // &<
+    cpref_ge,  // &>
     comment,   // *, Koment, Komentarz
     end,       // Koniec
     jump,      // Skok
