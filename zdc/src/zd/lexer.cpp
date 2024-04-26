@@ -132,7 +132,8 @@ lexer::get_token()
     }
 
     ustring string{};
-    if ((token_type::name != _last_type) && isalpha(_ch))
+    if ((token_type::name != _last_type) &&
+        (token_type::assign != _last_type) && isalpha(_ch))
     {
         // Keyword, verb, or target
         RETURN_IF_ERROR_VOID(scan_while(string, isalnum));
