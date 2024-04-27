@@ -117,14 +117,22 @@ enum class error_origin : uint8_t
 template <typename T> using result = tl::expected<T, error>;
 
 #define RETURN_IF_ERROR_VOID(expr)                                             \
-    auto __result = (expr);                                                    \
-    if (!__result)                                                             \
     {                                                                          \
-        return tl::make_unexpected(std::move(__result.error()));               \
+        auto __result = (expr);                                                \
+        if (!__result)                                                         \
+        {                                                                      \
+            return tl::make_unexpected(std::move(__result.error()));           \
+        }                                                                      \
     }
 
 #define RETURN_IF_ERROR(out, expr)                                             \
-    RETURN_IF_ERROR_VOID(expr)                                                 \
-    (out) = *__result;
+    {                                                                          \
+        auto __result = (expr);                                                \
+        if (!__result)                                                         \
+        {                                                                      \
+            return tl::make_unexpected(std::move(__result.error()));           \
+        }                                                                      \
+        (out) = std::move(*__result);                                          \
+    }
 
 } // namespace zd
