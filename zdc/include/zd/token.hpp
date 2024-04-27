@@ -24,6 +24,7 @@ enum class token_type
     cpref_ne,  // <>
     cpref_le,  // &<
     cpref_ge,  // &>
+    subscript, // #
     comment,   // *, Koment, Komentarz
     directive, // #,, #Autor, #Wstaw, #WstawBin
     compare,   // Porównaj
