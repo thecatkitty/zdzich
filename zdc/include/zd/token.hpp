@@ -25,6 +25,7 @@ enum class token_type
     cpref_le,  // &<
     cpref_ge,  // &>
     comment,   // *, Koment, Komentarz
+    directive, // #,, #Autor, #Wstaw, #WstawBin
     compare,   // Porównaj
     constant,  // Stała
     decrement, // Zmniejsz
