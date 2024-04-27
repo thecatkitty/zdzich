@@ -171,21 +171,22 @@ lexer::get_token()
     }
 
     ustring string{};
-    if ((token_type::line_break == _last_type) && ('#' == _ch))
+    if ('#' == _ch)
     {
-        // Directive
+        // Directive or subscript
         RETURN_IF_ERROR(_ch, _stream.read());
         if (!isalpha(_ch) && (',' != _ch))
         {
-            return make_error(error_code::unexpected_character, _ch,
-                              token_type::directive);
+            // Subscript
+            return token(token_type::subscript);
         }
 
+        // Directive
         RETURN_IF_ERROR_VOID(scan_while(string, _isnotcrlf));
         return token{_last_type = token_type::directive, std::move(string)};
     }
 
-    if ((token_type::name != _last_type) &&
+    if ((token_type::name != _last_type) && (token_type::comma != _last_type) &&
         (token_type::assign != _last_type) && isalpha(_ch))
     {
         // Keyword, verb, or target
