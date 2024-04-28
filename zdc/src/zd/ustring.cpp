@@ -118,6 +118,16 @@ ustring::append(int codepoint)
     return true;
 }
 
+void
+ustring::clear()
+{
+    _size = 0;
+    if (_data)
+    {
+        *_data = 0;
+    }
+}
+
 bool
 zd::operator==(const ustring &left, const ustring &right)
 {
