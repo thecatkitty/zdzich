@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cstring>
 
 #include <zd/lexer.hpp>
 
@@ -7,8 +8,30 @@ _get_pl_stream(int argc, char *argv[])
 {
     if (1 < argc)
     {
-        zd::ustring path{argv[1]};
-        return zd::pl_istream{zd::min_istream{path}};
+        zd::ustring   path{argv[1]};
+        zd::encoding *encoding{zd::encoding::unknown};
+
+        if (2 < argc)
+        {
+            if (0 == std::strcmp(argv[2], "dos"))
+            {
+                encoding = zd::encoding::ibm852;
+            }
+            else if (0 == std::strcmp(argv[2], "iso"))
+            {
+                encoding = zd::encoding::iso_8859_2;
+            }
+            else if (0 == std::strcmp(argv[2], "utf"))
+            {
+                encoding = zd::encoding::utf_8;
+            }
+            else if (0 == std::strcmp(argv[2], "win"))
+            {
+                encoding = zd::encoding::windows_1250;
+            }
+        }
+
+        return zd::pl_istream{zd::min_istream{path}, encoding};
     }
 
     return zd::pl_istream{zd::min_istream{stdin}};
