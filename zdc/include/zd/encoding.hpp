@@ -27,6 +27,7 @@ struct encoding
     static single_byte_encoding *iso_8859_2;
     static multi_byte_encoding  *utf_8;
     static single_byte_encoding *x_iso_or_windows;
+    static single_byte_encoding *x_mazovia;
 
   protected:
     encoding() = default;

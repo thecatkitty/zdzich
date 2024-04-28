@@ -21,6 +21,10 @@ _get_pl_stream(int argc, char *argv[])
             {
                 encoding = zd::encoding::iso_8859_2;
             }
+            else if (0 == std::strcmp(argv[2], "maz"))
+            {
+                encoding = zd::encoding::x_mazovia;
+            }
             else if (0 == std::strcmp(argv[2], "utf"))
             {
                 encoding = zd::encoding::utf_8;
