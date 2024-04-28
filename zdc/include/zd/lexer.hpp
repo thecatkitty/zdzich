@@ -11,10 +11,12 @@ class lexer
     token_type  _last_type;
     int         _ch;
     unsigned    _spaces;
+    ustring     _head;
 
   public:
     lexer(pl_istream &stream)
-        : _stream{stream}, _last_type{token_type::line_break}, _ch{}, _spaces{}
+        : _stream{stream}, _last_type{token_type::line_break}, _ch{}, _spaces{},
+          _head{}
     {
     }
 
@@ -36,6 +38,9 @@ class lexer
   private:
     result<void>
     scan_while(ustring &out, bool (*predicate)(int));
+
+    result<token>
+    process_string();
 
     static tl::unexpected<error>
     make_error(error_code code)
