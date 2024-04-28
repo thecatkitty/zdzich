@@ -18,7 +18,7 @@ enum class token_type
     byval,     // %
     byref,     // $
     assign,    // =
-    cpref_eq,  // &
+    ampersand, // &
     cpref_lt,  // <
     cpref_gt,  // >
     cpref_ne,  // <>

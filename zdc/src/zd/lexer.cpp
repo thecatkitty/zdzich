@@ -158,7 +158,7 @@ lexer::get_token()
         RETURN_IF_ERROR(_ch, _stream.read());
         RETURN_IF_CHTOKEN('<', {_last_type = token_type::cpref_le});
         RETURN_IF_CHTOKEN('>', {_last_type = token_type::cpref_ge});
-        return {_last_type = token_type::cpref_eq};
+        return {_last_type = token_type::ampersand};
     }
 
     if ((token_type::line_break == _last_type) && ('*' == _ch))
