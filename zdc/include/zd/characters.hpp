@@ -48,4 +48,16 @@ isspace(int ch)
     return isascii(ch) && std::isspace(ch);
 }
 
+static inline bool
+is_name_start(int ch)
+{
+    return isalpha(ch) || ('_' == ch);
+}
+
+static inline bool
+is_name_continuation(int ch)
+{
+    return is_name_start(ch) || ('?' == ch);
+}
+
 } // namespace zd
