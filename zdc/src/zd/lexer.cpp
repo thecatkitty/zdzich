@@ -259,13 +259,26 @@ lexer::process_string()
     }
 
     // String literal or register name
-    RETURN_IF_ERROR_VOID(scan_while(string, _isnotcrlf));
+    while (_stream && _isnotcrlf(_ch))
+    {
+        if (!isalnum(_ch) && _is_register(string))
+        {
+            // Register name (and more)
+            return token{_last_type = token_type::name, std::move(string)};
+        }
+
+        string.append(_ch);
+
+        RETURN_IF_ERROR(_ch, _stream.read());
+    }
 
     if (_is_register(string))
     {
+        // Register name (and nothing else)
         return token{_last_type = token_type::name, std::move(string)};
     }
 
+    // Anything other - string literal
     return token{_last_type = token_type::literal_str, std::move(string)};
 }
 
