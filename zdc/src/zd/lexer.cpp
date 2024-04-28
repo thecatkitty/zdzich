@@ -98,6 +98,21 @@ _chtou(int ch)
     return 10 + ch - 'A';
 }
 
+static bool
+_allows_name_after(token_type type)
+{
+    switch (type)
+    {
+    case token_type::name:
+    case token_type::comma:
+    case token_type::assign:
+    case token_type::rbracket:
+        return false;
+    }
+
+    return true;
+}
+
 result<token>
 lexer::get_token()
 {
@@ -243,8 +258,7 @@ lexer::process_string()
         return token{_last_type = token_type::directive, std::move(string)};
     }
 
-    if ((token_type::name != _last_type) && (token_type::comma != _last_type) &&
-        (token_type::assign != _last_type) && is_name_start(_ch))
+    if (_allows_name_after(_last_type) && is_name_start(_ch))
     {
         // Keyword, verb, or target
         RETURN_IF_ERROR_VOID(scan_while(string, is_name_continuation));
