@@ -57,7 +57,7 @@ is_name_start(int ch)
 static inline bool
 is_name_continuation(int ch)
 {
-    return is_name_start(ch) || ('?' == ch);
+    return is_name_start(ch) || isdigit(ch) || ('?' == ch);
 }
 
 } // namespace zd
