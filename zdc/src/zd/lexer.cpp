@@ -198,7 +198,7 @@ lexer::get_token()
             RETURN_IF_ERROR(_ch, _stream.read());
         }
 
-        if (isalpha(_ch))
+        if (is_name_continuation(_ch))
         {
             if (16 == base)
             {
@@ -244,10 +244,10 @@ lexer::process_string()
     }
 
     if ((token_type::name != _last_type) && (token_type::comma != _last_type) &&
-        (token_type::assign != _last_type) && isalpha(_ch))
+        (token_type::assign != _last_type) && is_name_start(_ch))
     {
         // Keyword, verb, or target
-        RETURN_IF_ERROR_VOID(scan_while(string, isalnum));
+        RETURN_IF_ERROR_VOID(scan_while(string, is_name_continuation));
         _last_type = _match_keyword(string);
         if (token_type::comment == _last_type)
         {
