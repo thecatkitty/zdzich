@@ -31,6 +31,12 @@ isdigit(int ch)
 }
 
 static inline bool
+isxdigit(int ch)
+{
+    return isascii(ch) && std::isxdigit(ch);
+}
+
+static inline bool
 isalnum(int ch)
 {
     return isalpha(ch) || isdigit(ch);

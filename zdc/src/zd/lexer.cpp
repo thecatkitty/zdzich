@@ -82,9 +82,30 @@ _isnotcrlf(int ch)
     return ('\r' != ch) && ('\n' != ch);
 }
 
+static unsigned
+_chtou(int ch)
+{
+    if (zd::isdigit(ch))
+    {
+        return ch - '0';
+    }
+
+    if ('a' <= ch)
+    {
+        return 10 + ch - 'a';
+    }
+
+    return 10 + ch - 'A';
+}
+
 result<token>
 lexer::get_token()
 {
+    if (!_head.empty())
+    {
+        return std::move(process_string());
+    }
+
     _spaces = 0;
 
     if (!_ch)
@@ -120,7 +141,6 @@ lexer::get_token()
     RETURN_IF_CHTOKEN('(', {_last_type = token_type::lbracket});
     RETURN_IF_CHTOKEN(')', {_last_type = token_type::rbracket});
     RETURN_IF_CHTOKEN('%', {_last_type = token_type::byval});
-    RETURN_IF_CHTOKEN('$', {_last_type = token_type::byref});
     RETURN_IF_CHTOKEN('=', {_last_type = token_type::assign});
 
     // Conditional prefixes
@@ -149,28 +169,65 @@ lexer::get_token()
         return token{_last_type = token_type::comment, std::move(comment)};
     }
 
-    if (isdigit(_ch))
+    int base{10};
+    if ('$' == _ch)
+    {
+        // Either reference access or a hexadecimal literal
+        RETURN_IF_ERROR(_ch, _stream.read());
+        if (!isxdigit(_ch))
+        {
+            // Reference access
+            return token{_last_type = token_type::byref};
+        }
+
+        base = 16;
+        // Not sure yet, pass through
+    }
+
+    auto isbdigit = (16 == base) ? isxdigit : isdigit;
+    if (isbdigit(_ch))
     {
         // Integer literal
         int number{0};
 
-        while (isdigit(_ch))
+        while (isbdigit(_ch))
         {
-            number *= 10;
-            number += _ch - '0';
+            number *= base;
+            number += _chtou(_ch);
+            _head.append(_ch); // In case it's not a literal.
             RETURN_IF_ERROR(_ch, _stream.read());
         }
 
         if (isalpha(_ch))
         {
+            if (16 == base)
+            {
+                // It's all name, always have been (keep head)
+                return token{_last_type = token_type::byref};
+            }
+
             return make_error(error_code::unexpected_character, _ch,
                               token_type::literal_int);
         }
 
+        // It was an integer literal indeed (clear head)
+        _head.clear();
         return token{_last_type = token_type::literal_int, number};
     }
 
+    return std::move(process_string());
+}
+
+result<token>
+lexer::process_string()
+{
     ustring string{};
+    if (!_head.empty())
+    {
+        string = _head;
+        _head.clear();
+    }
+
     if ('#' == _ch)
     {
         // Directive or subscript
