@@ -124,6 +124,9 @@ class ustring
     bool
     append(int codepoint);
 
+    void
+    clear();
+
     friend bool
     operator==(const ustring &left, const ustring &right);
 
