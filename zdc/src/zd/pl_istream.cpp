@@ -9,17 +9,18 @@
 
 using namespace zd;
 
-static const int MARKERS_IBM852[]{0xA4, 0xA8, 0x9D, 0xE3, 0xE0, 0x97,
-                                  0x8D, 0xBD, 0x86, 0xA9, 0x88, 0xE4,
-                                  0xA2, 0x98, 0xAB, 0xBE};
+static const int MARKERS_IBM852[]{0xA8, 0x9D, 0xE3, 0xE0, 0x97, 0xBD,
+                                  0xA9, 0x88, 0xE4, 0xAB, 0xBE};
 
-static const int MARKERS_WINDOWS_1250[]{0x8C, 0xB9, 0x9C, 0x9F};
+static const int MARKERS_WINDOWS_1250[]{0x8C, 0xB9, 0x9F};
 
-static const int MARKERS_ISO_8859_2[]{0xA1, 0xA6, 0xAC, 0xB1, 0xB6, 0xBC};
+static const int MARKERS_ISO_8859_2[]{0xAC, 0xB1, 0xB6, 0xBC};
+
+static const int MARKERS_MAZOVIA[]{0x95, 0x90, 0xA0, 0x91, 0x92, 0x9E, 0xA7};
 
 // Codes for Polish letters present in both Windows and ISO encodings
-static const int MARKERS_X_ISO_OR_WINDOWS[]{0xA3, 0xAF, 0xB3, 0xBF, 0xC6, 0xCA,
-                                            0xD1, 0xD3, 0xE6, 0xEA, 0xF1, 0xF3};
+static const int MARKERS_X_ISO_OR_WINDOWS[]{0xAF, 0xB3, 0xBF, 0xC6, 0xCA, 0xD1,
+                                            0xD3, 0xE6, 0xEA, 0xF1, 0xF3};
 
 static encoding *
 _detect_encoding(int ch, min_istream &stream, encoding *&enc)
@@ -62,6 +63,11 @@ _detect_encoding(int ch, min_istream &stream, encoding *&enc)
         if (contains(MARKERS_ISO_8859_2, ch))
         {
             return enc = encoding::iso_8859_2;
+        }
+
+        if (contains(MARKERS_MAZOVIA, ch))
+        {
+            return enc = encoding::x_mazovia;
         }
 
         if (contains(MARKERS_X_ISO_OR_WINDOWS, ch))
