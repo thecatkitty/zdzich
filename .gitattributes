@@ -1,0 +1,4 @@
+# Zdzich is not known to Linguist... yet
+*.ZDI linguist-language=ZAP
+*.INC linguist-language=ZAP
+sample/KURS/*.TXT linguist-language=ZAP
