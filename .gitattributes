@@ -1,0 +1,12 @@
+# Zdzich is not known to Linguist... yet
+*.ZDI linguist-detectable=true
+*.ZDI linguist-documentation=false
+*.ZDI linguist-language=text
+
+*.INC linguist-detectable=true
+*.INC linguist-documentation=false
+*.INC linguist-language=text
+
+sample/KURS/*.TXT linguist-detectable=true
+sample/KURS/*.TXT linguist-documentation=false
+sample/KURS/*.TXT linguist-language=text
