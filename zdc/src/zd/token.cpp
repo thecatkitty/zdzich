@@ -20,6 +20,8 @@ static const char *ENUM_NAMES[]{
     ENUM_NAME_MAPPING(byval, "access by value"),
     ENUM_NAME_MAPPING(byref, "access by reference"),
     ENUM_NAME_MAPPING(assign, "assignment"),
+    ENUM_NAME_MAPPING(plus, "plus sign"),
+    ENUM_NAME_MAPPING(minus, "minus sign"),
     ENUM_NAME_MAPPING(ampersand, "ampersand"),
     ENUM_NAME_MAPPING(cpref_lt, "conditional prefix less than"),
     ENUM_NAME_MAPPING(cpref_gt, "conditional prefix greater than"),

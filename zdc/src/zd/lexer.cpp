@@ -157,6 +157,8 @@ lexer::get_token()
     RETURN_IF_CHTOKEN(')', {_last_type = token_type::rbracket});
     RETURN_IF_CHTOKEN('%', {_last_type = token_type::byval});
     RETURN_IF_CHTOKEN('=', {_last_type = token_type::assign});
+    RETURN_IF_CHTOKEN('+', {_last_type = token_type::plus});
+    RETURN_IF_CHTOKEN('-', {_last_type = token_type::minus});
 
     // Conditional prefixes
     RETURN_IF_CHTOKEN('>', {_last_type = token_type::cpref_gt});
