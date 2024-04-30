@@ -10,6 +10,12 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 ## Zgodność z korpusem
 | Przykład | Lekser |
 | -------- | ------ |
+| **KURS** | - |
+| KURS01 | ✅ |
+| KURS02 | ✅ |
+| KURS03 | ✅ |
+| KURS04 | ✅ |
+| EFEKT | ✅ |
 | LEKCJA01 | ✅ |
 | LEKCJA02 | ✅ |
 | LEKCJA03 | ✅ |
@@ -22,8 +28,14 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | LEKCJA10 | ✅ |
 | LEKCJA11 | ✅ |
 | ZADANIA | ✅ |
-| INC | ✅ |
-| INC\SAVER | |
+| **INC** | - |
+| DOGIER | ✅ |
+| DZWIEK | ✅ |
+| DZWIEK2 | ✅ |
+| KLAWIAT | ✅ |
+| MYSZ | ✅ |
+| SAVER | ✅ |
+| **PRZYKLAD** | - |
 | DOWCIPY | |
 | GRA | |
 | KWADRAT | |
@@ -42,6 +54,8 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | MYSZKA | |
 | MYSZRYS | |
 | PARAMETR | |
+| PLIKI1 | |
+| PLIKI2 | |
 | SKOKI | |
 | TESTMYSZ | |
 | WSTAW | |
