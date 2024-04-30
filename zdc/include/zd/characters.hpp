@@ -45,7 +45,7 @@ isalnum(int ch)
 static inline bool
 isspace(int ch)
 {
-    return isascii(ch) && std::isspace(ch);
+    return (' ' == ch) || ('\t' == ch);
 }
 
 static inline bool
