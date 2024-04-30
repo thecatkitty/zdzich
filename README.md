@@ -57,5 +57,5 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | PLIKI1 | ✅ |
 | PLIKI2 | ✅ |
 | SKOKI | ✅ |
-| TESTMYSZ | |
-| WSTAW | |
+| TESTMYSZ | ✅ |
+| WSTAW | ✅ |
