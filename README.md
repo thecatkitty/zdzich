@@ -36,7 +36,7 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | MYSZ | ✅ |
 | SAVER | ✅ |
 | **PRZYKLAD** | - |
-| DOWCIPY | |
+| DOWCIPY | ✅ |
 | GRA | |
 | KWADRAT | |
 | LINIA | |
