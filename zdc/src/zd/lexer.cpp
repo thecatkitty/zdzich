@@ -157,8 +157,25 @@ lexer::get_token()
     RETURN_IF_CHTOKEN(')', {_last_type = token_type::rbracket});
     RETURN_IF_CHTOKEN('%', {_last_type = token_type::byval});
     RETURN_IF_CHTOKEN('=', {_last_type = token_type::assign});
-    RETURN_IF_CHTOKEN('+', {_last_type = token_type::plus});
-    RETURN_IF_CHTOKEN('-', {_last_type = token_type::minus});
+
+    if (('+' == _ch) || ('-' == _ch))
+    {
+        // Plus sign, minus sign, or a string literal made of them
+        _head.append(_ch);
+        RETURN_IF_ERROR(_ch, _stream.read());
+
+        if (('+' == _ch) || ('-' == _ch))
+        {
+            // A string literal (keep head)
+            return std::move(process_string());
+        }
+
+        // A single character!
+        token_type type =
+            ('+' == *_head.data()) ? token_type::plus : token_type::minus;
+        _head.clear();
+        return {_last_type = type};
+    }
 
     // Conditional prefixes
     RETURN_IF_CHTOKEN('>', {_last_type = token_type::cpref_gt});
