@@ -221,6 +221,12 @@ lexer::get_token()
                 return token{_last_type = token_type::byref};
             }
 
+            if (token_type::colon == _last_type)
+            {
+                // :3Opcja is a valid label in ZDZICH4
+                return std::move(process_string());
+            }
+
             return make_error(error_code::unexpected_character, _ch,
                               token_type::literal_int);
         }
@@ -258,7 +264,9 @@ lexer::process_string()
         return token{_last_type = token_type::directive, std::move(string)};
     }
 
-    if (_allows_name_after(_last_type) && is_name_start(_ch))
+    if (_allows_name_after(_last_type) &&
+        ((token_type::colon == _last_type) ? is_name_continuation(_ch)
+                                           : is_name_start(_ch)))
     {
         // Keyword, verb, or target
         RETURN_IF_ERROR_VOID(scan_while(string, is_name_continuation));
