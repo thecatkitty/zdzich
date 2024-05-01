@@ -1,0 +1,8 @@
+target_sources(zdc PRIVATE encoding/ibm852.cpp)
+target_sources(zdc PRIVATE encoding/iso_8859_2.cpp)
+target_sources(zdc PRIVATE encoding/utf_8.cpp)
+target_sources(zdc PRIVATE encoding/windows_1250.cpp)
+target_sources(zdc PRIVATE encoding/x_iso_or_windows.cpp)
+target_sources(zdc PRIVATE encoding/x_mazovia.cpp)
+target_sources(zdc PRIVATE encoding.cpp)
+target_sources(zdc PRIVATE pl_string.cpp)

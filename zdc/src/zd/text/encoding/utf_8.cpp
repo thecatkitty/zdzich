@@ -1,4 +1,4 @@
-#include <zd/encoding.hpp>
+#include <zd/text/encoding.hpp>
 
 using namespace zd;
 
@@ -7,7 +7,7 @@ static const unsigned char LEAD_MASK[]{0, 0x1F, 0x0F, 0x07, 0x03};
 static const unsigned char CONTINUATION_PREAMBLE{0x80};
 static const unsigned char CONTINUATION_MASK{0x3F};
 
-struct _utf8_encoding : public multi_byte_encoding
+struct _utf8_encoding : public text::multi_byte_encoding
 {
     virtual size_t
     decode(const char *buff, int &codepoint) override
@@ -117,4 +117,4 @@ struct _utf8_encoding : public multi_byte_encoding
 
 static _utf8_encoding _encoding{};
 
-multi_byte_encoding *encoding::utf_8 = &_encoding;
+text::multi_byte_encoding *text::encoding::utf_8 = &_encoding;

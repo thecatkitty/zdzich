@@ -1,9 +1,9 @@
 #include <zd/containers.hpp>
-#include <zd/encoding.hpp>
+#include <zd/text/encoding.hpp>
 
 using namespace zd;
 
-struct _unknown_encoding : public encoding
+struct _unknown_encoding : public text::encoding
 {
     virtual size_t
     decode(const char *buff, int &codepoint) override
@@ -28,10 +28,10 @@ struct _unknown_encoding : public encoding
 
 static _unknown_encoding _encoding{};
 
-encoding *encoding::unknown = &_encoding;
+text::encoding *text::encoding::unknown = &_encoding;
 
 size_t
-single_byte_encoding::decode(const char *buff, int &codepoint)
+text::single_byte_encoding::decode(const char *buff, int &codepoint)
 {
     auto ch = *reinterpret_cast<const uint8_t *>(buff);
     codepoint = (ch < 0x80) ? ch : _mapping[ch - 0x80];
@@ -39,7 +39,7 @@ single_byte_encoding::decode(const char *buff, int &codepoint)
 }
 
 size_t
-single_byte_encoding::encode(char *buff, int codepoint)
+text::single_byte_encoding::encode(char *buff, int codepoint)
 {
     if (0x80 > codepoint)
     {

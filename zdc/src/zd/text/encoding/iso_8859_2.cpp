@@ -1,4 +1,4 @@
-#include <zd/encoding.hpp>
+#include <zd/text/encoding.hpp>
 
 static const int ISO_8859_2[]{
     /* 0x80 */ 0x0080, // <control>
@@ -131,6 +131,6 @@ static const int ISO_8859_2[]{
     /* 0xFF */ 0x02D9, // DOT ABOVE
 };
 
-static zd::single_byte_encoding _encoding{"iso-8859-2", ISO_8859_2};
+static zd::text::single_byte_encoding _encoding{"iso-8859-2", ISO_8859_2};
 
-zd::single_byte_encoding *zd::encoding::iso_8859_2 = &_encoding;
+zd::text::single_byte_encoding *zd::text::encoding::iso_8859_2 = &_encoding;

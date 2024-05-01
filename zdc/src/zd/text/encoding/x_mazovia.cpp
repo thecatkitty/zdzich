@@ -1,4 +1,4 @@
-#include <zd/encoding.hpp>
+#include <zd/text/encoding.hpp>
 
 static const int X_MAZOVIA[]{
     /* 0x80 */ 0x00C7, // LATIN CAPITAL LETTER C WITH CEDILLA
@@ -131,6 +131,6 @@ static const int X_MAZOVIA[]{
     /* 0xFF */ 0x00A0, // NO-BREAK SPACE
 };
 
-static zd::single_byte_encoding _encoding{"x-mazovia", X_MAZOVIA};
+static zd::text::single_byte_encoding _encoding{"x-mazovia", X_MAZOVIA};
 
-zd::single_byte_encoding *zd::encoding::x_mazovia = &_encoding;
+zd::text::single_byte_encoding *zd::text::encoding::x_mazovia = &_encoding;

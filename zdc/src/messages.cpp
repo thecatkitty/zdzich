@@ -3,14 +3,15 @@
 #include <cstdio>
 
 #include <zd/error.hpp>
-#include <zd/lexer.hpp>
-#include <zd/pl_istream.hpp>
+#include <zd/lex/lexer.hpp>
+#include <zd/lex/pl_istream.hpp>
 
 #ifdef __GNUC__
 #pragma GCC diagnostic ignored "-Wformat-security"
 #endif
 
 using namespace zd;
+using namespace zd::lex;
 
 template <typename Torig, typename Tord>
 static constexpr uint16_t

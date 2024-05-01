@@ -1,8 +1,8 @@
 #include <cstdio>
 #include <new>
 
-#include <zd/encoding.hpp>
-#include <zd/token.hpp>
+#include <zd/lex/token.hpp>
+#include <zd/text/encoding.hpp>
 
 #define ENUM_NAME_MAPPING(name, description) #name
 
@@ -42,7 +42,7 @@ static const char *ENUM_NAMES[]{
 };
 
 zd::ustring
-zd::to_string(token_type tok)
+zd::to_string(lex::token_type tok)
 {
     if (auto cstr = to_cstr(tok))
     {
@@ -55,7 +55,7 @@ zd::to_string(token_type tok)
 }
 
 const char *
-zd::to_cstr(token_type tok)
+zd::to_cstr(lex::token_type tok)
 {
     auto i = static_cast<int>(tok);
     if (0 <= i)
@@ -66,7 +66,7 @@ zd::to_cstr(token_type tok)
     return nullptr;
 }
 
-zd::token::~token()
+zd::lex::token::~token()
 {
     if (_value_type::text == _vtype)
     {
@@ -74,7 +74,7 @@ zd::token::~token()
     }
 }
 
-zd::token::token(const token &that)
+zd::lex::token::token(const token &that)
     : _vtype{that._vtype}, _ttype{that._ttype}, _number{that._number}
 {
     if (_value_type::text == _vtype)
@@ -83,7 +83,7 @@ zd::token::token(const token &that)
     }
 }
 
-zd::token::token(token &&that) noexcept
+zd::lex::token::token(token &&that) noexcept
     : _vtype{that._vtype}, _ttype{that._ttype}, _number{that._number}
 {
     if (_value_type::text == _vtype)
@@ -92,8 +92,8 @@ zd::token::token(token &&that) noexcept
     }
 }
 
-zd::token &
-zd::token::operator=(const token &that)
+zd::lex::token &
+zd::lex::token::operator=(const token &that)
 {
     if (this == &that)
     {
@@ -113,8 +113,8 @@ zd::token::operator=(const token &that)
     return *this;
 }
 
-zd::token &
-zd::token::operator=(token &&that) noexcept
+zd::lex::token &
+zd::lex::token::operator=(token &&that) noexcept
 {
     if (this == &that)
     {

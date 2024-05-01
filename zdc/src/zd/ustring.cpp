@@ -2,7 +2,7 @@
 #include <cstring>
 #include <new>
 
-#include <zd/encoding.hpp>
+#include <zd/text/encoding.hpp>
 #include <zd/ustring.hpp>
 
 #define USTR_ALIGNMENT 16
@@ -104,7 +104,7 @@ bool
 ustring::append(int codepoint)
 {
     char sequence[5]{};
-    auto length = encoding::utf_8->encode(sequence, codepoint);
+    auto length = text::encoding::utf_8->encode(sequence, codepoint);
     if (_capacity < (_size + length))
     {
         if (!reserve(_size + length))
@@ -145,7 +145,7 @@ zd::ustring::iterator::operator*() const
 #else
     int codepoint{0x00FFFD};
 #endif
-    encoding::utf_8->decode(_ptr, codepoint);
+    text::encoding::utf_8->decode(_ptr, codepoint);
     return codepoint;
 }
 
@@ -153,7 +153,7 @@ zd::ustring::iterator &
 zd::ustring::iterator::operator++()
 {
     size_t length{0};
-    while (0 == (length = encoding::utf_8->get_sequence_length(_ptr)))
+    while (0 == (length = text::encoding::utf_8->get_sequence_length(_ptr)))
     {
         _ptr++;
     }

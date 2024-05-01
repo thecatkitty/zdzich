@@ -5,7 +5,7 @@
 #endif
 
 #include <zd/containers.hpp>
-#include <zd/pl_istream.hpp>
+#include <zd/lex/pl_istream.hpp>
 
 using namespace zd;
 
@@ -22,24 +22,25 @@ static const int MARKERS_MAZOVIA[]{0x95, 0x90, 0xA0, 0x91, 0x92, 0x9E, 0xA7};
 static const int MARKERS_X_ISO_OR_WINDOWS[]{0xAF, 0xB3, 0xBF, 0xC6, 0xCA, 0xD1,
                                             0xD3, 0xE6, 0xEA, 0xF1, 0xF3};
 
-static encoding *
-_detect_encoding(int ch, min_istream &stream, encoding *&enc)
+static text::encoding *
+_detect_encoding(int ch, io::min_istream &stream, text::encoding *&enc)
 {
-    if ((encoding::unknown != enc) && (encoding::x_iso_or_windows != enc))
+    if ((text::encoding::unknown != enc) &&
+        (text::encoding::x_iso_or_windows != enc))
     {
         return enc;
     }
 
-    if (encoding::x_iso_or_windows == enc)
+    if (text::encoding::x_iso_or_windows == enc)
     {
         if (contains(MARKERS_WINDOWS_1250, ch))
         {
-            return enc = encoding::windows_1250;
+            return enc = text::encoding::windows_1250;
         }
 
         if (contains(MARKERS_ISO_8859_2, ch))
         {
-            return enc = encoding::iso_8859_2;
+            return enc = text::encoding::iso_8859_2;
         }
 
         // Hard to tell
@@ -52,27 +53,27 @@ _detect_encoding(int ch, min_istream &stream, encoding *&enc)
         // We can't have a UTF-8 continuation byte outside of sequence
         if (contains(MARKERS_IBM852, ch))
         {
-            return enc = encoding::ibm852;
+            return enc = text::encoding::ibm852;
         }
 
         if (contains(MARKERS_WINDOWS_1250, ch))
         {
-            return enc = encoding::windows_1250;
+            return enc = text::encoding::windows_1250;
         }
 
         if (contains(MARKERS_ISO_8859_2, ch))
         {
-            return enc = encoding::iso_8859_2;
+            return enc = text::encoding::iso_8859_2;
         }
 
         if (contains(MARKERS_MAZOVIA, ch))
         {
-            return enc = encoding::x_mazovia;
+            return enc = text::encoding::x_mazovia;
         }
 
         if (contains(MARKERS_X_ISO_OR_WINDOWS, ch))
         {
-            return enc = encoding::x_iso_or_windows;
+            return enc = text::encoding::x_iso_or_windows;
         }
 
         // Hard to tell
@@ -88,7 +89,7 @@ _detect_encoding(int ch, min_istream &stream, encoding *&enc)
         // It is certainly not a UTF-8 sequence
         if (contains(MARKERS_X_ISO_OR_WINDOWS, ch))
         {
-            return enc = encoding::x_iso_or_windows;
+            return enc = text::encoding::x_iso_or_windows;
         }
 
         // Hard to tell
@@ -96,11 +97,11 @@ _detect_encoding(int ch, min_istream &stream, encoding *&enc)
     }
 
     // We can assume UTF-8 at this point
-    return enc = encoding::utf_8;
+    return enc = text::encoding::utf_8;
 }
 
 result<int>
-pl_istream::read() noexcept
+lex::pl_istream::read() noexcept
 {
     auto ch = _stream.getc();
     if (!_stream.good())
@@ -119,7 +120,7 @@ pl_istream::read() noexcept
     _detect_encoding(ch, _stream, _encoding);
 
     int codepoint{};
-    if (encoding::utf_8 != _encoding)
+    if (text::encoding::utf_8 != _encoding)
     {
         char byte = ch & 0xFF;
         _encoding->decode(&byte, codepoint);
@@ -136,7 +137,7 @@ pl_istream::read() noexcept
     // UTF-8
     char buffer[4]{static_cast<char>(ch)};
 
-    auto length = encoding::utf_8->get_sequence_length(buffer);
+    auto length = text::encoding::utf_8->get_sequence_length(buffer);
     if (0 == length)
     {
         return make_error(error_code::invalid_sequence);

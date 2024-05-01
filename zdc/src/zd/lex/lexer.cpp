@@ -1,17 +1,17 @@
-#include <zd/characters.hpp>
-#include <zd/lexer.hpp>
-#include <zd/pl_string.hpp>
+#include <zd/lex/lexer.hpp>
+#include <zd/text/characters.hpp>
+#include <zd/text/pl_string.hpp>
 
 using namespace zd;
 
 #define RETURN_IF_STREQI(left, right, value)                                   \
-    if (pl_streqi((left), (right)))                                            \
+    if (text::pl_streqi((left), (right)))                                      \
     {                                                                          \
         return value;                                                          \
     }
 
 #define RETURN_IF_STREQAI(left, right, value)                                  \
-    if (pl_streqai((left), (right)))                                           \
+    if (text::pl_streqai((left), (right)))                                     \
     {                                                                          \
         return value;                                                          \
     }
@@ -23,21 +23,21 @@ using namespace zd;
         return value;                                                          \
     };
 
-static token_type
+static lex::token_type
 _match_keyword(const ustring &str)
 {
-    RETURN_IF_STREQI(str, "Koment", token_type::comment);
-    RETURN_IF_STREQI(str, "Komentarz", token_type::comment);
-    RETURN_IF_STREQAI(str, "Porównaj", token_type::compare)
-    RETURN_IF_STREQAI(str, "Stała", token_type::constant)
-    RETURN_IF_STREQI(str, "Zmniejsz", token_type::decrement);
-    RETURN_IF_STREQI(str, "Koniec", token_type::end);
-    RETURN_IF_STREQAI(str, "Zwiększ", token_type::increment);
-    RETURN_IF_STREQI(str, "Skok", token_type::jump);
-    RETURN_IF_STREQI(str, "Procedura", token_type::procedure);
-    RETURN_IF_STREQI(str, "Zmienna", token_type::variable);
+    RETURN_IF_STREQI(str, "Koment", lex::token_type::comment);
+    RETURN_IF_STREQI(str, "Komentarz", lex::token_type::comment);
+    RETURN_IF_STREQAI(str, "Porównaj", lex::token_type::compare)
+    RETURN_IF_STREQAI(str, "Stała", lex::token_type::constant)
+    RETURN_IF_STREQI(str, "Zmniejsz", lex::token_type::decrement);
+    RETURN_IF_STREQI(str, "Koniec", lex::token_type::end);
+    RETURN_IF_STREQAI(str, "Zwiększ", lex::token_type::increment);
+    RETURN_IF_STREQI(str, "Skok", lex::token_type::jump);
+    RETURN_IF_STREQI(str, "Procedura", lex::token_type::procedure);
+    RETURN_IF_STREQI(str, "Zmienna", lex::token_type::variable);
 
-    return token_type::name;
+    return lex::token_type::name;
 }
 
 static bool
@@ -49,7 +49,7 @@ _is_register(const ustring &str)
     }
 
     int first = str.data()[0], second = str.data()[1];
-    if (!zd::isalpha(first) || !zd::isalpha(second))
+    if (!text::isalpha(first) || !text::isalpha(second))
     {
         return false;
     }
@@ -85,7 +85,7 @@ _isnotcrlf(int ch)
 static unsigned
 _chtou(int ch)
 {
-    if (zd::isdigit(ch))
+    if (text::isdigit(ch))
     {
         return ch - '0';
     }
@@ -99,22 +99,22 @@ _chtou(int ch)
 }
 
 static bool
-_allows_name_after(token_type type)
+_allows_name_after(lex::token_type type)
 {
     switch (type)
     {
-    case token_type::name:
-    case token_type::comma:
-    case token_type::assign:
-    case token_type::rbracket:
+    case lex::token_type::name:
+    case lex::token_type::comma:
+    case lex::token_type::assign:
+    case lex::token_type::rbracket:
         return false;
     }
 
     return true;
 }
 
-result<token>
-lexer::get_token()
+result<lex::token>
+lex::lexer::get_token()
 {
     if (!_head.empty())
     {
@@ -232,7 +232,7 @@ lexer::get_token()
             RETURN_IF_ERROR(_ch, _stream.read());
         }
 
-        if (is_name_continuation(_ch))
+        if (text::is_name_continuation(_ch))
         {
             if (16 == base)
             {
@@ -258,8 +258,8 @@ lexer::get_token()
     return std::move(process_string());
 }
 
-result<token>
-lexer::process_string()
+result<lex::token>
+lex::lexer::process_string()
 {
     ustring string{};
     if (!_head.empty())
@@ -284,11 +284,11 @@ lexer::process_string()
     }
 
     if (_allows_name_after(_last_type) &&
-        ((token_type::colon == _last_type) ? is_name_continuation(_ch)
-                                           : is_name_start(_ch)))
+        ((token_type::colon == _last_type) ? text::is_name_continuation(_ch)
+                                           : text::is_name_start(_ch)))
     {
         // Keyword, verb, or target
-        RETURN_IF_ERROR_VOID(scan_while(string, is_name_continuation));
+        RETURN_IF_ERROR_VOID(scan_while(string, text::is_name_continuation));
         _last_type = _match_keyword(string);
         if (token_type::comment == _last_type)
         {
@@ -324,7 +324,7 @@ lexer::process_string()
 }
 
 result<void>
-lexer::scan_while(ustring &out, bool (*predicate)(int))
+lex::lexer::scan_while(ustring &out, bool (*predicate)(int))
 {
     while (_stream && predicate(_ch))
     {
