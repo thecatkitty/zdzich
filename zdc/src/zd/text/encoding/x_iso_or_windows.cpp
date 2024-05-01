@@ -1,4 +1,4 @@
-#include <zd/encoding.hpp>
+#include <zd/text/encoding.hpp>
 
 static const int X_ISO_OR_WINDOWS[]{
     /* 0x80 */ -1,
@@ -131,6 +131,8 @@ static const int X_ISO_OR_WINDOWS[]{
     /* 0xFF */ 0x02D9, // DOT ABOVE
 };
 
-static zd::single_byte_encoding _encoding{"x-iso-or-windows", X_ISO_OR_WINDOWS};
+static zd::text::single_byte_encoding _encoding{"x-iso-or-windows",
+                                                X_ISO_OR_WINDOWS};
 
-zd::single_byte_encoding *zd::encoding::x_iso_or_windows = &_encoding;
+zd::text::single_byte_encoding *zd::text::encoding::x_iso_or_windows =
+    &_encoding;

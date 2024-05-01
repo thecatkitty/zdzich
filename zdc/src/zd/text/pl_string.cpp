@@ -1,8 +1,8 @@
 #include <algorithm>
 
-#include <zd/characters.hpp>
-#include <zd/encoding.hpp>
-#include <zd/pl_string.hpp>
+#include <zd/text/characters.hpp>
+#include <zd/text/encoding.hpp>
+#include <zd/text/pl_string.hpp>
 
 static const struct _code_mapping
 {
@@ -16,13 +16,13 @@ static const struct _code_mapping
 };
 
 bool
-zd::isplalpha(int codepoint)
+zd::text::isplalpha(int codepoint)
 {
     return pl_toascii(codepoint) != codepoint;
 }
 
 int
-zd::pl_toascii(int codepoint)
+zd::text::pl_toascii(int codepoint)
 {
     if (0x80 > codepoint)
     {
@@ -48,7 +48,7 @@ zd::pl_toascii(int codepoint)
 static bool
 _load_codepoint(const char *&ptr, int &codepoint)
 {
-    auto length = zd::encoding::utf_8->decode(ptr, codepoint);
+    auto length = zd::text::encoding::utf_8->decode(ptr, codepoint);
     if (0 == length)
     {
         return false;
@@ -59,7 +59,7 @@ _load_codepoint(const char *&ptr, int &codepoint)
 }
 
 bool
-zd::pl_streqi(const ustring &left, const ustring &right)
+zd::text::pl_streqi(const ustring &left, const ustring &right)
 {
     return std::equal(left.begin(), left.end(), right.begin(), right.end(),
                       [](int a, int b) -> bool {
@@ -74,7 +74,7 @@ zd::pl_streqi(const ustring &left, const ustring &right)
 }
 
 bool
-zd::pl_streqai(const ustring &left, const ustring &right)
+zd::text::pl_streqai(const ustring &left, const ustring &right)
 {
     auto ptr_left = left.data();
     auto ptr_right = right.data();

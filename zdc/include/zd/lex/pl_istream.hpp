@@ -1,24 +1,29 @@
 #pragma once
 
-#include <zd/encoding.hpp>
 #include <zd/error.hpp>
-#include <zd/min_istream.hpp>
+#include <zd/io/min_istream.hpp>
+#include <zd/text/encoding.hpp>
 
 namespace zd
 {
 
+namespace lex
+{
+
 class pl_istream
 {
-    min_istream _stream;
-    encoding   *_encoding;
+    io::min_istream _stream;
+    text::encoding *_encoding;
 
   public:
-    pl_istream(min_istream &&stream, encoding *enc = encoding::unknown)
+    pl_istream(io::min_istream &&stream,
+               text::encoding   *enc = text::encoding::unknown)
         : _stream{std::move(stream)}, _encoding{enc}
     {
     }
 
-    pl_istream(const ustring &name, encoding *enc = encoding::unknown) noexcept
+    pl_istream(const ustring  &name,
+               text::encoding *enc = text::encoding::unknown) noexcept
         : _stream{name}, _encoding{enc}
     {
     }
@@ -31,7 +36,7 @@ class pl_istream
     result<int>
     read() noexcept;
 
-    encoding *
+    text::encoding *
     get_encoding() const
     {
         return _encoding;
@@ -61,5 +66,7 @@ class pl_istream
                   static_cast<uint8_t>(code), byte, encoding});
     }
 };
+
+} // namespace lex
 
 } // namespace zd

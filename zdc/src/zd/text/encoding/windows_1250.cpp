@@ -1,4 +1,4 @@
-#include <zd/encoding.hpp>
+#include <zd/text/encoding.hpp>
 
 static const int WINDOWS_1250[]{
     /* 0x80 */ 0x20AC, // EURO SIGN
@@ -131,6 +131,6 @@ static const int WINDOWS_1250[]{
     /* 0xFF */ 0x02D9, // DOT ABOVE
 };
 
-static zd::single_byte_encoding _encoding{"windows-1250", WINDOWS_1250};
+static zd::text::single_byte_encoding _encoding{"windows-1250", WINDOWS_1250};
 
-zd::single_byte_encoding *zd::encoding::windows_1250 = &_encoding;
+zd::text::single_byte_encoding *zd::text::encoding::windows_1250 = &_encoding;

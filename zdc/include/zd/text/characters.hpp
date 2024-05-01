@@ -9,6 +9,9 @@
 namespace zd
 {
 
+namespace text
+{
+
 static inline bool
 isascii(int ch)
 {
@@ -59,5 +62,7 @@ is_name_continuation(int ch)
 {
     return is_name_start(ch) || isdigit(ch) || ('?' == ch);
 }
+
+} // namespace text
 
 } // namespace zd

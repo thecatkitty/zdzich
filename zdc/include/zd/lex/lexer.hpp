@@ -1,8 +1,11 @@
 #include <zd/error.hpp>
-#include <zd/pl_istream.hpp>
-#include <zd/token.hpp>
+#include <zd/lex/pl_istream.hpp>
+#include <zd/lex/token.hpp>
 
 namespace zd
+{
+
+namespace lex
 {
 
 class lexer
@@ -58,5 +61,7 @@ class lexer
                   static_cast<uint8_t>(code), character, to_cstr(ttype)});
     }
 };
+
+} // namespace lex
 
 } // namespace zd

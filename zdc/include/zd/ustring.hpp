@@ -2,7 +2,7 @@
 
 #include <iterator>
 
-#include <zd/encoding.hpp>
+#include <zd/text/encoding.hpp>
 
 namespace zd
 {

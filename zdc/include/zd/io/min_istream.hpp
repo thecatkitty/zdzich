@@ -8,6 +8,9 @@
 namespace zd
 {
 
+namespace io
+{
+
 class min_istream
 {
     std::FILE *_file;
@@ -21,8 +24,7 @@ class min_istream
     {
     }
 
-    min_istream(const ustring &name) noexcept
-        : _file{fopen(name.data(), "rb")}
+    min_istream(const ustring &name) noexcept : _file{fopen(name.data(), "rb")}
     {
     }
 
@@ -86,5 +88,7 @@ class min_istream
         return (nullptr != _file) && !std::feof(_file) && !std::ferror(_file);
     }
 };
+
+} // namespace io
 
 } // namespace zd

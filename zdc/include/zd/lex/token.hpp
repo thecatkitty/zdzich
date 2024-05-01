@@ -3,6 +3,9 @@
 namespace zd
 {
 
+namespace lex
+{
+
 enum class token_type
 {
     unknown,
@@ -38,12 +41,6 @@ enum class token_type
     procedure, // Procedura
     variable,  // Zmienna
 };
-
-ustring
-to_string(token_type tok);
-
-const char *
-to_cstr(token_type tok);
 
 class token
 {
@@ -111,5 +108,13 @@ class token
         return (_value_type::text == _vtype) ? _text : std::move(ustring{});
     }
 };
+
+} // namespace lex
+
+ustring
+to_string(lex::token_type tok);
+
+const char *
+to_cstr(lex::token_type tok);
 
 } // namespace zd

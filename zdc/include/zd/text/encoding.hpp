@@ -1,9 +1,9 @@
 #pragma once
 
-#include <zd/min_istream.hpp>
-#include <zd/ustring.hpp>
-
 namespace zd
+{
+
+namespace text
 {
 
 struct encoding;
@@ -66,5 +66,7 @@ class multi_byte_encoding : public encoding
   protected:
     multi_byte_encoding() = default;
 };
+
+} // namespace text
 
 } // namespace zd
