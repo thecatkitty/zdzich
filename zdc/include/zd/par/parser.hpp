@@ -1,0 +1,56 @@
+#pragma once
+
+#include <zd/lex/lexer.hpp>
+#include <zd/par/node.hpp>
+
+namespace zd
+{
+
+namespace par
+{
+
+class parser
+{
+    lex::lexer &_lexer;
+
+  public:
+    parser(lex::lexer &lexer) : _lexer{lexer}
+    {
+    }
+
+    result<unique_node>
+    handle();
+
+    enum class error_code : uint8_t
+    {
+        eof = 0,
+        unexpected_token = 1,
+    };
+
+  private:
+    result<unique_node>
+    handle_call(const ustring &callee);
+
+    result<unique_node>
+    handle_string(const ustring &str);
+
+    static tl::unexpected<error>
+    make_error(error_code code)
+    {
+        return tl::make_unexpected(
+            error{static_cast<uint8_t>(error_origin::parser),
+                  static_cast<uint8_t>(code)});
+    }
+
+    static tl::unexpected<error>
+    make_error(error_code code, lex::token_type ttype)
+    {
+        return tl::make_unexpected(
+            error{static_cast<uint8_t>(error_origin::parser),
+                  static_cast<uint8_t>(code), to_cstr(ttype)});
+    }
+};
+
+} // namespace par
+
+} // namespace zd
