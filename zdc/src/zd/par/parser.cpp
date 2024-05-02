@@ -21,11 +21,14 @@ par::parser::handle()
         case lex::token_type::eof:
             return make_error(error_code::eof);
 
+        case lex::token_type::end:
+            return std::make_unique<end_node>();
+
         case lex::token_type::name:
             return handle_call(token.get_text());
 
-        case lex::token_type::end:
-            return std::make_unique<end_node>();
+        case lex::token_type::variable:
+            return handle_declaration();
 
         default:
             return make_error(error_code::unexpected_token, token.get_type());
@@ -66,6 +69,48 @@ par::parser::handle_call(const ustring &callee)
     }
 
     return std::make_unique<call_node>(callee, std::move(arguments));
+}
+
+result<par::unique_node>
+par::parser::handle_declaration()
+{
+    lex::token  token{};
+    object_type type{};
+
+    RETURN_IF_ERROR(token, _lexer.get_token());
+    switch (token.get_type())
+    {
+    case lex::token_type::byref:
+        type = object_type::text;
+        break;
+
+    default:
+        return make_error(error_code::unexpected_token, token.get_type());
+    }
+
+    unique_node object{};
+    RETURN_IF_ERROR(object, handle_object(type));
+    return std::make_unique<declaration_node>(std::move(object));
+}
+
+result<par::unique_node>
+par::parser::handle_object(object_type type)
+{
+    lex::token token{};
+    ustring    name{};
+
+    RETURN_IF_ERROR(token, _lexer.get_token());
+    switch (token.get_type())
+    {
+    case lex::token_type::name:
+        name = std::move(token.get_text());
+        break;
+
+    default:
+        return make_error(error_code::unexpected_token, token.get_type());
+    }
+
+    return std::make_unique<object_node>(name, type);
 }
 
 result<par::unique_node>

@@ -32,6 +32,12 @@ class parser
     handle_call(const ustring &callee);
 
     result<unique_node>
+    handle_declaration();
+
+    result<unique_node>
+    handle_object(object_type type);
+
+    result<unique_node>
     handle_string(const ustring &str);
 
     static tl::unexpected<error>
