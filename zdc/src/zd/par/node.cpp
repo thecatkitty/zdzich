@@ -82,6 +82,33 @@ par::object_node::to_string()
 }
 
 ustring
+par::register_node::to_string()
+{
+    ustring str{"<register "};
+
+    str.append("ABCDSD"[static_cast<uint16_t>(_reg) & 0xFF]);
+    switch (static_cast<uint16_t>(_reg) & 0xFF00)
+    {
+    case cpu_register_lbyte:
+        str.append('L');
+        break;
+
+    case cpu_register_hbyte:
+        str.append('H');
+        break;
+
+    case cpu_register_word:
+        str.append(((cpu_register::si == _reg) || (cpu_register::di == _reg))
+                       ? 'I'
+                       : 'X');
+        break;
+    }
+
+    str.append('>');
+    return str;
+}
+
+ustring
 par::string_node::to_string()
 {
     ustring str{"<string "};

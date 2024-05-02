@@ -151,6 +151,19 @@ class object_node : public node
     to_string() override;
 };
 
+class register_node : public node
+{
+    cpu_register _reg;
+
+  public:
+    register_node(cpu_register reg) : _reg{reg}
+    {
+    }
+
+    virtual ustring
+    to_string() override;
+};
+
 class string_node : public node
 {
     ustring _value;
