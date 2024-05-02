@@ -85,6 +85,15 @@ par::end_node::to_string()
 }
 
 ustring
+par::jump_node::to_string()
+{
+    ustring str{"<jump "};
+    str.append(_target->to_string());
+    str.append('>');
+    return str;
+}
+
+ustring
 par::label_node::to_string()
 {
     ustring str{"<label "};

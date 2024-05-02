@@ -135,6 +135,19 @@ class end_node : public node
     to_string() override;
 };
 
+class jump_node : public node
+{
+    unique_node _target;
+
+  public:
+    jump_node(unique_node target) : _target{std::move(target)}
+    {
+    }
+
+    virtual ustring
+    to_string() override;
+};
+
 class label_node : public node
 {
     ustring _name;
