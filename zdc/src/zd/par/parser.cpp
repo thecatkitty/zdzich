@@ -85,20 +85,44 @@ result<par::unique_node>
 par::parser::handle_call(const ustring &callee)
 {
     node_list  arguments{};
+    bool       enclosed{false};
     bool       more{true};
     lex::token token{};
 
     while (more)
     {
-        unique_node arg{};
-        RETURN_IF_ERROR(arg, handle_value());
+        auto result = handle_value();
+        if (!result)
+        {
+            auto err = std::move(result.error());
+            if (err.is(error_origin::parser, error_code::unexpected_token))
+            {
+                auto tts = reinterpret_cast<const char *>(err[0]);
+                if (!enclosed && to_cstr(lex::token_type::lbracket) == tts)
+                {
+                    // Opening bracket
+                    enclosed = true;
+                    continue;
+                }
+
+                if (enclosed && to_cstr(lex::token_type::rbracket) == tts)
+                {
+                    // Closing bracket
+                    enclosed = false;
+                    continue;
+                }
+            }
+
+            return tl::make_unexpected(std::move(result.error()));
+        }
+
+        unique_node arg = std::move(*result);
         if (!arg)
         {
             // End of arguments
             break;
         }
 
-        lex::token token{};
         RETURN_IF_ERROR(token, _lexer.get_token());
         switch (token.get_type())
         {
@@ -268,7 +292,8 @@ par::parser::handle_operation(lex::token_type ttype)
     unique_node right{};
     RETURN_IF_ERROR(right, handle_value());
 
-    return std::make_unique<operation_node>(op, std::move(left), std::move(right));
+    return std::make_unique<operation_node>(op, std::move(left),
+                                            std::move(right));
 }
 
 result<par::unique_node>
