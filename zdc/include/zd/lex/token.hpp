@@ -1,3 +1,5 @@
+#pragma once
+
 #include <zd/ustring.hpp>
 
 namespace zd
