@@ -29,6 +29,9 @@ class parser
 
   private:
     result<unique_node>
+    handle_assignment(lex::token_type ttype);
+
+    result<unique_node>
     handle_call(const ustring &callee);
 
     result<unique_node>

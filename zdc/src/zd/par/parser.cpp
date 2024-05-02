@@ -30,6 +30,10 @@ par::parser::handle()
         case lex::token_type::cpref_ge:
             return handle_condition(token.get_type());
 
+        case lex::token_type::byref:
+        case lex::token_type::byval:
+            return handle_assignment(token.get_type());
+
         case lex::token_type::end:
             return std::make_unique<end_node>();
 
@@ -52,6 +56,27 @@ par::parser::handle()
             return make_error(error_code::unexpected_token, token.get_type());
         }
     }
+}
+
+result<par::unique_node>
+par::parser::handle_assignment(lex::token_type ttype)
+{
+    unique_node target{};
+    RETURN_IF_ERROR(target, handle_object(ttype));
+
+    lex::token token{};
+
+    RETURN_IF_ERROR(token, _lexer.get_token());
+    if (lex::token_type::assign != token.get_type())
+    {
+        return make_error(error_code::unexpected_token, token.get_type());
+    }
+
+    unique_node source{};
+    RETURN_IF_ERROR(source, handle_value());
+
+    return std::make_unique<assignment_node>(std::move(target),
+                                             std::move(source));
 }
 
 result<par::unique_node>
@@ -188,6 +213,10 @@ par::parser::handle_object(lex::token_type ttype)
         type = object_type::text;
         break;
 
+    case lex::token_type::byval:
+        type = object_type::word;
+        break;
+
     default:
         return make_error(error_code::unexpected_token, ttype);
     }
@@ -308,7 +337,8 @@ par::parser::handle_value()
         break;
     }
 
-    case lex::token_type::byref: {
+    case lex::token_type::byref:
+    case lex::token_type::byval: {
         RETURN_IF_ERROR(value, handle_object(token.get_type()));
         break;
     }
