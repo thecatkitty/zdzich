@@ -32,6 +32,44 @@ par::comparison_node::to_string()
 }
 
 ustring
+par::condition_node::to_string()
+{
+    ustring str{"<condition "};
+    switch (_condition)
+    {
+    case condition::equal:
+        str.append("eq");
+        break;
+
+    case condition::less_than:
+        str.append("lt");
+        break;
+
+    case condition::greater_than:
+        str.append("gt");
+        break;
+
+    case condition::nonequal:
+        str.append("ne");
+        break;
+
+    case condition::less_or_equal:
+        str.append("le");
+        break;
+
+    case condition::greater_or_equal:
+        str.append("ge");
+        break;
+    }
+
+    str.append(' ');
+    str.append(_action->to_string());
+
+    str.append('>');
+    return str;
+}
+
+ustring
 par::declaration_node::to_string()
 {
     ustring str{"<declaration "};

@@ -35,6 +35,9 @@ class parser
     handle_comparison();
 
     result<unique_node>
+    handle_condition(lex::token_type ttype);
+
+    result<unique_node>
     handle_declaration();
 
     result<unique_node>

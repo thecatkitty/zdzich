@@ -22,6 +22,14 @@ par::parser::handle()
         case lex::token_type::eof:
             return make_error(error_code::eof);
 
+        case lex::token_type::ampersand:
+        case lex::token_type::cpref_lt:
+        case lex::token_type::cpref_gt:
+        case lex::token_type::cpref_ne:
+        case lex::token_type::cpref_le:
+        case lex::token_type::cpref_ge:
+            return handle_condition(token.get_type());
+
         case lex::token_type::end:
             return std::make_unique<end_node>();
 
@@ -152,6 +160,42 @@ par::parser::handle_comparison()
     }
 
     return std::make_unique<comparison_node>(std::move(left), std::move(right));
+}
+
+result<par::unique_node>
+par::parser::handle_condition(lex::token_type ttype)
+{
+    condition cond{};
+    switch (ttype)
+    {
+    case lex::token_type::ampersand:
+        cond = condition::equal;
+        break;
+
+    case lex::token_type::cpref_lt:
+        cond = condition::less_than;
+        break;
+
+    case lex::token_type::cpref_gt:
+        cond = condition::greater_than;
+        break;
+
+    case lex::token_type::cpref_ne:
+        cond = condition::nonequal;
+        break;
+
+    case lex::token_type::cpref_le:
+        cond = condition::less_or_equal;
+        break;
+
+    case lex::token_type::cpref_ge:
+        cond = condition::greater_or_equal;
+        break;
+    }
+
+    unique_node action{};
+    RETURN_IF_ERROR(action, handle());
+    return std::make_unique<condition_node>(cond, std::move(action));
 }
 
 result<par::unique_node>

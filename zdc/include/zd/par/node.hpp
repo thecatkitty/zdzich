@@ -26,6 +26,16 @@ enum class object_type
     text,
 };
 
+enum class condition
+{
+    equal,
+    less_than,
+    greater_than,
+    nonequal,
+    less_or_equal,
+    greater_or_equal,
+};
+
 static const uint16_t cpu_register_lbyte = 0x0000;
 static const uint16_t cpu_register_hbyte = 0x0100;
 static const uint16_t cpu_register_word = 0x0200;
@@ -83,6 +93,21 @@ class comparison_node : public node
   public:
     comparison_node(unique_node left, unique_node right)
         : _left{std::move(left)}, _right{std::move(right)}
+    {
+    }
+
+    virtual ustring
+    to_string() override;
+};
+
+class condition_node : public node
+{
+    condition   _condition;
+    unique_node _action;
+
+  public:
+    condition_node(condition cond, unique_node action)
+        : _condition{cond}, _action{std::move(action)}
     {
     }
 
