@@ -67,12 +67,12 @@ class end_node : public node
     to_string() override;
 };
 
-class string_node : public node
+class number_node : public node
 {
-    ustring _value;
+    int _value;
 
   public:
-    string_node(const ustring &value) : _value{value}
+    number_node(int value) : _value{value}
     {
     }
 
@@ -88,6 +88,19 @@ class object_node : public node
   public:
     object_node(const ustring &name, object_type type)
         : _name{name}, _type{type}
+    {
+    }
+
+    virtual ustring
+    to_string() override;
+};
+
+class string_node : public node
+{
+    ustring _value;
+
+  public:
+    string_node(const ustring &value) : _value{value}
     {
     }
 

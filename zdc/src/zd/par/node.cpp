@@ -1,3 +1,5 @@
+#include <cstdio>
+
 #include <zd/par/node.hpp>
 
 using namespace zd;
@@ -31,6 +33,14 @@ ustring
 par::end_node::to_string()
 {
     return "<end>";
+}
+
+ustring
+par::number_node::to_string()
+{
+    char buff[32];
+    std::snprintf(buff, 32, "<number %d>", _value);
+    return buff;
 }
 
 ustring
