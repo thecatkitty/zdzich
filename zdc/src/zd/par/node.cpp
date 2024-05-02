@@ -3,21 +3,6 @@
 using namespace zd;
 
 ustring
-par::string_node::to_string()
-{
-    ustring str{"<string "};
-    str.append(_value);
-    str.append('>');
-    return str;
-}
-
-ustring
-par::end_node::to_string()
-{
-    return "<end>";
-}
-
-ustring
 par::call_node::to_string()
 {
     ustring str{"<call "};
@@ -29,6 +14,48 @@ par::call_node::to_string()
         str.append(argument->to_string());
     }
 
+    str.append('>');
+    return str;
+}
+
+ustring
+par::declaration_node::to_string()
+{
+    ustring str{"<declaration "};
+    str.append(_target->to_string());
+    str.append('>');
+    return str;
+}
+
+ustring
+par::end_node::to_string()
+{
+    return "<end>";
+}
+
+ustring
+par::object_node::to_string()
+{
+    ustring str{"<variable "};
+    str.append(_name);
+
+    str.append(':');
+    switch (_type)
+    {
+    case object_type::text:
+        str.append("text");
+        break;
+    }
+
+    str.append('>');
+    return str;
+}
+
+ustring
+par::string_node::to_string()
+{
+    ustring str{"<string "};
+    str.append(_value);
     str.append('>');
     return str;
 }
