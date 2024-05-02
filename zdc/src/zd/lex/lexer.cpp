@@ -272,7 +272,7 @@ lex::lexer::process_string()
     {
         // Directive or subscript
         RETURN_IF_ERROR(_ch, _stream.read());
-        if (!isalpha(_ch) && (',' != _ch))
+        if (!text::isalpha(_ch) && (',' != _ch))
         {
             // Subscript
             return token(token_type::subscript);
@@ -302,7 +302,7 @@ lex::lexer::process_string()
     // String literal or register name
     while (_stream && _isnotcrlf(_ch))
     {
-        if (!isalnum(_ch) && _is_register(string))
+        if (!text::isalnum(_ch) && _is_register(string))
         {
             // Register name (and more)
             return token{_last_type = token_type::name, std::move(string)};
