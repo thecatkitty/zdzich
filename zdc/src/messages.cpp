@@ -5,13 +5,13 @@
 #include <zd/error.hpp>
 #include <zd/lex/lexer.hpp>
 #include <zd/lex/pl_istream.hpp>
+#include <zd/par/parser.hpp>
 
 #ifdef __GNUC__
 #pragma GCC diagnostic ignored "-Wformat-security"
 #endif
 
 using namespace zd;
-using namespace zd::lex;
 
 template <typename Torig, typename Tord>
 static constexpr uint16_t
@@ -27,18 +27,26 @@ const struct _msg
     const char *fmt;
 } MESSAGES[]{
     // Stream
-    {make_id(error_origin::stream, pl_istream::error_code::unexpected_byte),
+    {make_id(error_origin::stream,
+             lex::pl_istream::error_code::unexpected_byte),
      "unexpected byte %u in the encoding '%s'"},
-    {make_id(error_origin::stream, pl_istream::error_code::invalid_sequence),
+    {make_id(error_origin::stream,
+             lex::pl_istream::error_code::invalid_sequence),
      "invalid multi-byte sequence"},
-    {make_id(error_origin::stream, pl_istream::error_code::read_error),
+    {make_id(error_origin::stream, lex::pl_istream::error_code::read_error),
      "read error in a multi-byte sequence"},
 
     // Lexer
-    {make_id(error_origin::lexer, lexer::error_code::invalid_newline),
+    {make_id(error_origin::lexer, lex::lexer::error_code::invalid_newline),
      "invalid line break"},
-    {make_id(error_origin::lexer, lexer::error_code::unexpected_character),
+    {make_id(error_origin::lexer, lex::lexer::error_code::unexpected_character),
      "unexpected character %d in a token '%s'"},
+
+    // Parser
+    {make_id(error_origin::parser, par::parser::error_code::eof),
+     "end of file"},
+    {make_id(error_origin::parser, par::parser::error_code::unexpected_token),
+     "unexpected token '%s'"},
 };
 
 static const char *
