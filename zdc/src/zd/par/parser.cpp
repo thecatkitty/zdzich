@@ -39,6 +39,9 @@ par::parser::handle()
         case lex::token_type::compare:
             return handle_comparison();
 
+        case lex::token_type::jump:
+            return handle_jump();
+
         case lex::token_type::name:
             return handle_call(token.get_text());
 
@@ -207,6 +210,21 @@ par::parser::handle_declaration()
     unique_node object{};
     RETURN_IF_ERROR(object, handle_object(token.get_type()));
     return std::make_unique<declaration_node>(std::move(object));
+}
+
+result<par::unique_node>
+par::parser::handle_jump()
+{
+    lex::token token{};
+    RETURN_IF_ERROR(token, _lexer.get_token());
+    if (lex::token_type::colon != token.get_type())
+    {
+        return make_error(error_code::unexpected_token, token.get_type());
+    }
+
+    unique_node target{};
+    RETURN_IF_ERROR(target, handle_label());
+    return std::make_unique<jump_node>(std::move(target));
 }
 
 result<par::unique_node>

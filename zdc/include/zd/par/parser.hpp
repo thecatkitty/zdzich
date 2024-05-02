@@ -41,6 +41,9 @@ class parser
     handle_declaration();
 
     result<unique_node>
+    handle_jump();
+
+    result<unique_node>
     handle_label();
 
     result<unique_node>
