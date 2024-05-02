@@ -47,6 +47,9 @@ class parser
     handle_object(lex::token_type ttype);
 
     result<unique_node>
+    handle_register(const ustring &name);
+
+    result<unique_node>
     handle_string(const ustring &str);
 
     static tl::unexpected<error>
