@@ -58,6 +58,9 @@ class parser
     result<unique_node>
     handle_string(const ustring &str);
 
+    result<unique_node>
+    handle_value();
+
     static tl::unexpected<error>
     make_error(error_code code)
     {
