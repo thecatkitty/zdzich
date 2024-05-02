@@ -1,3 +1,4 @@
+#include <cctype>
 #include <cstdio>
 
 #include <zd/par/parser.hpp>
@@ -26,6 +27,9 @@ par::parser::handle()
 
         case lex::token_type::colon:
             return handle_label();
+
+        case lex::token_type::compare:
+            return handle_comparison();
 
         case lex::token_type::name:
             return handle_call(token.get_text());
@@ -86,6 +90,58 @@ par::parser::handle_call(const ustring &callee)
     }
 
     return std::make_unique<call_node>(callee, std::move(arguments));
+}
+
+result<par::unique_node>
+par::parser::handle_comparison()
+{
+    lex::token token{};
+
+    unique_node left{};
+    RETURN_IF_ERROR(token, _lexer.get_token());
+    switch (token.get_type())
+    {
+    case lex::token_type::literal_int: {
+        RETURN_IF_ERROR(left, handle_number(token.get_number()));
+        break;
+    }
+
+    case lex::token_type::byref: {
+        RETURN_IF_ERROR(left, handle_object(token.get_type()));
+        break;
+    }
+
+    default: {
+        return make_error(error_code::unexpected_token, token.get_type());
+    }
+    }
+
+    RETURN_IF_ERROR(token, _lexer.get_token());
+    if (lex::token_type::comma != token.get_type())
+    {
+        return make_error(error_code::unexpected_token, token.get_type());
+    }
+
+    unique_node right{};
+    RETURN_IF_ERROR(token, _lexer.get_token());
+    switch (token.get_type())
+    {
+    case lex::token_type::literal_int: {
+        RETURN_IF_ERROR(right, handle_number(token.get_number()));
+        break;
+    }
+
+    case lex::token_type::byref: {
+        RETURN_IF_ERROR(right, handle_object(token.get_type()));
+        break;
+    }
+
+    default: {
+        return make_error(error_code::unexpected_token, token.get_type());
+    }
+    }
+
+    return std::make_unique<comparison_node>(std::move(left), std::move(right));
 }
 
 result<par::unique_node>

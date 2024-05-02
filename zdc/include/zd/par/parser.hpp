@@ -32,6 +32,9 @@ class parser
     handle_call(const ustring &callee);
 
     result<unique_node>
+    handle_comparison();
+
+    result<unique_node>
     handle_declaration();
 
     result<unique_node>

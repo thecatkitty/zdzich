@@ -21,6 +21,17 @@ par::call_node::to_string()
 }
 
 ustring
+par::comparison_node::to_string()
+{
+    ustring str{"<comparison "};
+    str.append(_left->to_string());
+    str.append(' ');
+    str.append(_right->to_string());
+    str.append('>');
+    return str;
+}
+
+ustring
 par::declaration_node::to_string()
 {
     ustring str{"<declaration "};
