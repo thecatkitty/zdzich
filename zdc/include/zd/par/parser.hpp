@@ -35,6 +35,9 @@ class parser
     handle_declaration();
 
     result<unique_node>
+    handle_number(int number);
+
+    result<unique_node>
     handle_object(object_type type);
 
     result<unique_node>

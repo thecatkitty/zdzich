@@ -56,6 +56,13 @@ par::parser::handle_call(const ustring &callee)
             break;
         }
 
+        case lex::token_type::literal_int: {
+            unique_node num{};
+            RETURN_IF_ERROR(num, handle_number(token.get_number()));
+            arguments.push_back(std::move(num));
+            break;
+        }
+
         case lex::token_type::line_break:
         case lex::token_type::eof: {
             more = false;
@@ -91,6 +98,12 @@ par::parser::handle_declaration()
     unique_node object{};
     RETURN_IF_ERROR(object, handle_object(type));
     return std::make_unique<declaration_node>(std::move(object));
+}
+
+result<par::unique_node>
+par::parser::handle_number(int number)
+{
+    return std::make_unique<number_node>(number);
 }
 
 result<par::unique_node>
