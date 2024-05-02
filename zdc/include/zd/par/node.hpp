@@ -67,6 +67,19 @@ class end_node : public node
     to_string() override;
 };
 
+class label_node : public node
+{
+    ustring _name;
+
+  public:
+    label_node(const ustring &name) : _name{name}
+    {
+    }
+
+    virtual ustring
+    to_string() override;
+};
+
 class number_node : public node
 {
     int _value;

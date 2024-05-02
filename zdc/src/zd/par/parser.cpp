@@ -24,6 +24,9 @@ par::parser::handle()
         case lex::token_type::end:
             return std::make_unique<end_node>();
 
+        case lex::token_type::colon:
+            return handle_label();
+
         case lex::token_type::name:
             return handle_call(token.get_text());
 
@@ -94,6 +97,20 @@ par::parser::handle_declaration()
     unique_node object{};
     RETURN_IF_ERROR(object, handle_object(token.get_type()));
     return std::make_unique<declaration_node>(std::move(object));
+}
+
+result<par::unique_node>
+par::parser::handle_label()
+{
+    lex::token token{};
+    RETURN_IF_ERROR(token, _lexer.get_token());
+
+    if (lex::token_type::name != token.get_type())
+    {
+        return make_error(error_code::unexpected_token, token.get_type());
+    }
+
+    return std::make_unique<label_node>(std::move(token.get_text()));
 }
 
 result<par::unique_node>

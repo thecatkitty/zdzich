@@ -36,6 +36,15 @@ par::end_node::to_string()
 }
 
 ustring
+par::label_node::to_string()
+{
+    ustring str{"<label "};
+    str.append(_name);
+    str.append('>');
+    return str;
+}
+
+ustring
 par::number_node::to_string()
 {
     char buff[32];
