@@ -76,7 +76,7 @@ ustring::reserve(size_t new_cap)
 {
     if (_capacity >= new_cap)
     {
-        return false;
+        return true;
     }
 
     auto aligned_cap = (new_cap / USTR_ALIGNMENT + 1) * USTR_ALIGNMENT - 1;
@@ -115,6 +115,19 @@ ustring::append(int codepoint)
 
     std::copy_n(sequence, length + 1, _data + _size);
     _size += length;
+    return true;
+}
+
+bool
+ustring::append(const ustring &tail)
+{
+    if (!reserve(_size + tail._size))
+    {
+        return false;
+    }
+
+    std::copy_n(tail._data, tail._size + 1, _data + _size);
+    _size += tail._size;
     return true;
 }
 

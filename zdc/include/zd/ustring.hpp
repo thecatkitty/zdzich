@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iterator>
+#include <utility>
 
 #include <zd/text/encoding.hpp>
 
@@ -123,6 +124,9 @@ class ustring
 
     bool
     append(int codepoint);
+
+    bool
+    append(const ustring &tail);
 
     void
     clear();
