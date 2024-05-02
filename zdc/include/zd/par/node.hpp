@@ -76,6 +76,19 @@ struct node
 {
     virtual ustring
     to_string() = 0;
+
+    template <typename T>
+    inline bool
+    is()
+    {
+#ifdef __ia16__
+        T specimen{};
+        return *reinterpret_cast<void ***>(&specimen) ==
+               *reinterpret_cast<void ***>(this);
+#else
+        return !!dynamic_cast<T *>(this);
+#endif
+    }
 };
 
 class assignment_node : public node
@@ -138,9 +151,23 @@ class declaration_node : public node
 
 class end_node : public node
 {
+    ustring _name;
+
   public:
+    end_node() = default;
+
+    end_node(const ustring &name) : _name{name}
+    {
+    }
+
     virtual ustring
     to_string() override;
+
+    const ustring &
+    get_name() const
+    {
+        return _name;
+    }
 };
 
 class jump_node : public node
@@ -206,6 +233,21 @@ class operation_node : public node
   public:
     operation_node(operation op, unique_node left, unique_node right)
         : _op{op}, _left{std::move(left)}, _right{std::move(right)}
+    {
+    }
+
+    virtual ustring
+    to_string() override;
+};
+
+class procedure_node : public node
+{
+    ustring   _name;
+    node_list _body;
+
+  public:
+    procedure_node(const ustring &name, node_list body)
+        : _name{name}, _body{std::move(body)}
     {
     }
 

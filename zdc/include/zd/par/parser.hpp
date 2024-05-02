@@ -25,6 +25,7 @@ class parser
     {
         eof = 0,
         unexpected_token = 1,
+        unexpected_eof = 2,
     };
 
   private:
@@ -41,6 +42,9 @@ class parser
     handle_declaration();
 
     result<unique_node>
+    handle_end();
+
+    result<unique_node>
     handle_jump();
 
     result<unique_node>
@@ -54,6 +58,9 @@ class parser
 
     result<unique_node>
     handle_operation(lex::token_type ttype);
+
+    result<unique_node>
+    handle_procedure();
 
     result<unique_node>
     handle_register(const ustring &name);

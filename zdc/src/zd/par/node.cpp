@@ -108,7 +108,15 @@ par::declaration_node::to_string()
 ustring
 par::end_node::to_string()
 {
-    return "<end>";
+    if (_name.empty())
+    {
+        return "<end>";
+    }
+
+    ustring str{"<end "};
+    str.append(_name);
+    str.append('>');
+    return str;
 }
 
 ustring
@@ -153,6 +161,22 @@ par::object_node::to_string()
     case object_type::word:
         str.append("word");
         break;
+    }
+
+    str.append('>');
+    return str;
+}
+
+ustring
+par::procedure_node::to_string()
+{
+    ustring str{"<procedure "};
+    str.append(_name);
+
+    for (auto &item : _body)
+    {
+        str.append(' ');
+        str.append(item->to_string());
     }
 
     str.append('>');
