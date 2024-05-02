@@ -26,6 +26,34 @@ enum class object_type
     text,
 };
 
+static const uint16_t cpu_register_lbyte = 0x0000;
+static const uint16_t cpu_register_hbyte = 0x0100;
+static const uint16_t cpu_register_word = 0x0200;
+
+enum class cpu_register : uint16_t
+{
+    a,
+    b,
+    c,
+    d,
+    src,
+    dst,
+    al = a | cpu_register_lbyte,
+    bl = b | cpu_register_lbyte,
+    cl = c | cpu_register_lbyte,
+    dl = d | cpu_register_lbyte,
+    ah = a | cpu_register_hbyte,
+    bh = b | cpu_register_hbyte,
+    ch = c | cpu_register_hbyte,
+    dh = d | cpu_register_hbyte,
+    ax = a | cpu_register_word,
+    bx = b | cpu_register_word,
+    cx = c | cpu_register_word,
+    dx = d | cpu_register_word,
+    si = src | cpu_register_word,
+    di = dst | cpu_register_word,
+};
+
 struct node
 {
     virtual ustring
@@ -40,6 +68,21 @@ class call_node : public node
   public:
     call_node(const ustring &callee, node_list arguments)
         : _callee{callee}, _arguments{std::move(arguments)}
+    {
+    }
+
+    virtual ustring
+    to_string() override;
+};
+
+class comparison_node : public node
+{
+    unique_node _left;
+    unique_node _right;
+
+  public:
+    comparison_node(unique_node left, unique_node right)
+        : _left{std::move(left)}, _right{std::move(right)}
     {
     }
 
