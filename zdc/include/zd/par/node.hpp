@@ -24,6 +24,7 @@ struct string_node;
 enum class object_type
 {
     text,
+    word,
 };
 
 enum class condition
@@ -68,6 +69,21 @@ struct node
 {
     virtual ustring
     to_string() = 0;
+};
+
+class assignment_node : public node
+{
+    unique_node _target;
+    unique_node _source;
+
+  public:
+    assignment_node(unique_node target, unique_node source)
+        : _target{std::move(target)}, _source{std::move(source)}
+    {
+    }
+
+    virtual ustring
+    to_string() override;
 };
 
 class call_node : public node

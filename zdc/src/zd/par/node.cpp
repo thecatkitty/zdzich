@@ -5,6 +5,17 @@
 using namespace zd;
 
 ustring
+par::assignment_node::to_string()
+{
+    ustring str{"<assignment "};
+    str.append(_target->to_string());
+    str.append(' ');
+    str.append(_source->to_string());
+    str.append('>');
+    return str;
+}
+
+ustring
 par::call_node::to_string()
 {
     ustring str{"<call "};
@@ -121,6 +132,10 @@ par::object_node::to_string()
     {
     case object_type::text:
         str.append("text");
+        break;
+
+    case object_type::word:
+        str.append("word");
         break;
     }
 
