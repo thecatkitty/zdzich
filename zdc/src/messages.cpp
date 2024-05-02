@@ -47,6 +47,8 @@ const struct _msg
      "end of file"},
     {make_id(error_origin::parser, par::parser::error_code::unexpected_token),
      "unexpected token '%s'"},
+    {make_id(error_origin::parser, par::parser::error_code::unexpected_eof),
+     "unexpected end of file while processing '%s'"},
 };
 
 static const char *
