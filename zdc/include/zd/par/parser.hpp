@@ -38,7 +38,7 @@ class parser
     handle_number(int number);
 
     result<unique_node>
-    handle_object(object_type type);
+    handle_object(lex::token_type ttype);
 
     result<unique_node>
     handle_string(const ustring &str);
