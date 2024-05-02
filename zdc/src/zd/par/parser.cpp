@@ -41,7 +41,9 @@ par::parser::handle()
             return handle_label();
 
         case lex::token_type::compare:
-            return handle_comparison();
+        case lex::token_type::decrement:
+        case lex::token_type::increment:
+            return handle_operation(token.get_type());
 
         case lex::token_type::jump:
             return handle_jump();
@@ -115,26 +117,6 @@ par::parser::handle_call(const ustring &callee)
     }
 
     return std::make_unique<call_node>(callee, std::move(arguments));
-}
-
-result<par::unique_node>
-par::parser::handle_comparison()
-{
-    lex::token token{};
-
-    unique_node left{};
-    RETURN_IF_ERROR(left, handle_value());
-
-    RETURN_IF_ERROR(token, _lexer.get_token());
-    if (lex::token_type::comma != token.get_type())
-    {
-        return make_error(error_code::unexpected_token, token.get_type());
-    }
-
-    unique_node right{};
-    RETURN_IF_ERROR(right, handle_value());
-
-    return std::make_unique<comparison_node>(std::move(left), std::move(right));
 }
 
 result<par::unique_node>
@@ -252,6 +234,41 @@ par::parser::handle_object(lex::token_type ttype)
     }
 
     return std::make_unique<object_node>(name, type);
+}
+
+result<par::unique_node>
+par::parser::handle_operation(lex::token_type ttype)
+{
+    operation op{};
+    switch (ttype)
+    {
+    case lex::token_type::compare:
+        op = operation::compare;
+        break;
+
+    case lex::token_type::decrement:
+        op = operation::subtract;
+        break;
+
+    case lex::token_type::increment:
+        op = operation::add;
+        break;
+    }
+
+    unique_node left{};
+    RETURN_IF_ERROR(left, handle_value());
+
+    lex::token token{};
+    RETURN_IF_ERROR(token, _lexer.get_token());
+    if (lex::token_type::comma != token.get_type())
+    {
+        return make_error(error_code::unexpected_token, token.get_type());
+    }
+
+    unique_node right{};
+    RETURN_IF_ERROR(right, handle_value());
+
+    return std::make_unique<operation_node>(op, std::move(left), std::move(right));
 }
 
 result<par::unique_node>

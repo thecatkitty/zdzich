@@ -37,6 +37,13 @@ enum class condition
     greater_or_equal,
 };
 
+enum class operation
+{
+    add,
+    compare,
+    subtract,
+};
+
 static const uint16_t cpu_register_lbyte = 0x0000;
 static const uint16_t cpu_register_hbyte = 0x0100;
 static const uint16_t cpu_register_word = 0x0200;
@@ -94,21 +101,6 @@ class call_node : public node
   public:
     call_node(const ustring &callee, node_list arguments)
         : _callee{callee}, _arguments{std::move(arguments)}
-    {
-    }
-
-    virtual ustring
-    to_string() override;
-};
-
-class comparison_node : public node
-{
-    unique_node _left;
-    unique_node _right;
-
-  public:
-    comparison_node(unique_node left, unique_node right)
-        : _left{std::move(left)}, _right{std::move(right)}
     {
     }
 
@@ -198,6 +190,22 @@ class object_node : public node
   public:
     object_node(const ustring &name, object_type type)
         : _name{name}, _type{type}
+    {
+    }
+
+    virtual ustring
+    to_string() override;
+};
+
+class operation_node : public node
+{
+    operation   _op;
+    unique_node _left;
+    unique_node _right;
+
+  public:
+    operation_node(operation op, unique_node left, unique_node right)
+        : _op{op}, _left{std::move(left)}, _right{std::move(right)}
     {
     }
 

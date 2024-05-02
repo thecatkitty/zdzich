@@ -35,9 +35,6 @@ class parser
     handle_call(const ustring &callee);
 
     result<unique_node>
-    handle_comparison();
-
-    result<unique_node>
     handle_condition(lex::token_type ttype);
 
     result<unique_node>
@@ -54,6 +51,9 @@ class parser
 
     result<unique_node>
     handle_object(lex::token_type ttype);
+
+    result<unique_node>
+    handle_operation(lex::token_type ttype);
 
     result<unique_node>
     handle_register(const ustring &name);

@@ -32,9 +32,25 @@ par::call_node::to_string()
 }
 
 ustring
-par::comparison_node::to_string()
+par::operation_node::to_string()
 {
-    ustring str{"<comparison "};
+    ustring str{"<operation "};
+    switch (_op)
+    {
+    case operation::add:
+        str.append("add");
+        break;
+
+    case operation::compare:
+        str.append("cmp");
+        break;
+
+    case operation::subtract:
+        str.append("sub");
+        break;
+    }
+
+    str.append(' ');
     str.append(_left->to_string());
     str.append(' ');
     str.append(_right->to_string());
