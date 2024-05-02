@@ -106,6 +106,14 @@ class error
     {
         to_argv(_argv, args...);
     }
+
+    template <typename Torig, typename Tord>
+    inline bool
+    is(Torig orig, Tord ord)
+    {
+        return (static_cast<uint8_t>(orig) == origin()) &&
+               (static_cast<uint8_t>(ord) == ordinal());
+    }
 };
 
 enum class error_origin : uint8_t

@@ -120,10 +120,8 @@ action_parser(zd::lex::lexer &lexer)
         if (!result)
         {
             zd::error err = std::move(result.error());
-            if ((static_cast<uint8_t>(zd::error_origin::parser) ==
-                 err.origin()) &&
-                (static_cast<uint8_t>(zd::par::parser::error_code::eof) ==
-                 err.ordinal()))
+            if (err.is(zd::error_origin::parser,
+                       zd::par::parser::error_code::eof))
             {
                 // End of file
                 return 0;
