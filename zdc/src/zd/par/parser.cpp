@@ -83,9 +83,10 @@ result<par::unique_node>
 par::parser::handle_call(const ustring &callee)
 {
     node_list  arguments{};
+    bool       more{true};
     lex::token token{};
 
-    while (true)
+    while (more)
     {
         unique_node arg{};
         RETURN_IF_ERROR(arg, handle_value());
@@ -95,7 +96,22 @@ par::parser::handle_call(const ustring &callee)
             break;
         }
 
-        arguments.push_back(std::move(arg));
+        lex::token token{};
+        RETURN_IF_ERROR(token, _lexer.get_token());
+        switch (token.get_type())
+        {
+        case lex::token_type::eof:
+        case lex::token_type::line_break:
+            more = false;
+            // Pass through
+        case lex::token_type::comma:
+            arguments.push_back(std::move(arg));
+            continue;
+
+        default: {
+            return make_error(error_code::unexpected_token, token.get_type());
+        }
+        }
     }
 
     return std::make_unique<call_node>(callee, std::move(arguments));
