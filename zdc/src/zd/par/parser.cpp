@@ -498,6 +498,14 @@ par::parser::handle_string(const ustring &str)
 }
 
 result<par::unique_node>
+par::parser::handle_subscript()
+{
+    unique_node value{};
+    RETURN_IF_ERROR(value, handle_value());
+    return std::make_unique<subscript_node>(std::move(value));
+}
+
+result<par::unique_node>
 par::parser::handle_value()
 {
     lex::token  token{};
@@ -526,6 +534,10 @@ par::parser::handle_value()
         RETURN_IF_ERROR(value, handle_object(token.get_type()));
         break;
     }
+
+    case lex::token_type::subscript:
+        RETURN_IF_ERROR(value, handle_subscript());
+        break;
 
     case lex::token_type::eof:
     case lex::token_type::line_break: {

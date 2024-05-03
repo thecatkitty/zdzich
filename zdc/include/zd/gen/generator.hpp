@@ -19,6 +19,7 @@ struct operation_node;
 struct procedure_node;
 struct register_node;
 struct string_node;
+struct subscript_node;
 
 } // namespace par
 
@@ -66,6 +67,9 @@ struct generator
 
     virtual bool
     process(const par::string_node &node) = 0;
+
+    virtual bool
+    process(const par::subscript_node &node) = 0;
 };
 
 } // namespace gen

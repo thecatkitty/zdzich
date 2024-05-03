@@ -69,6 +69,9 @@ class parser
     handle_string(const ustring &str);
 
     result<unique_node>
+    handle_subscript();
+
+    result<unique_node>
     handle_value();
 
     static tl::unexpected<error>
