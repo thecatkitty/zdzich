@@ -20,7 +20,7 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | LEKCJA02 | ✅ | ✅ |
 | LEKCJA03 | ✅ | ✅ |
 | LEKCJA04 | ✅ | ✅ |
-| LEKCJA05 | ✅ |
+| LEKCJA05 | ✅ | ✅ |
 | LEKCJA06 | ✅ |
 | LEKCJA07 | ✅ |
 | LEKCJA08 | ✅ |

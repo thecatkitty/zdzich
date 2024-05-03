@@ -138,6 +138,24 @@ par::parser::handle_call(const ustring &callee)
             arguments.push_back(std::move(arg));
             continue;
 
+        case lex::token_type::literal_str:
+            // Irregular string literal reconstruction
+            if (arg->is<number_node>())
+            {
+                auto arg_num = reinterpret_cast<number_node *>(arg.get());
+
+                char buff[20]{};
+                std::snprintf(buff, sizeof(buff), "%d%*s", arg_num->value,
+                              _lexer.get_spaces(), "");
+
+                ustring str{buff};
+                str.append(token.get_text());
+
+                arguments.push_back(std::make_unique<string_node>(str));
+                continue;
+            }
+
+            // Pass through
         default: {
             return make_error(error_code::unexpected_token, token.get_type());
         }
