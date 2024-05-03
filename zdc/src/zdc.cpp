@@ -2,6 +2,7 @@
 #include <cstring>
 
 #include <zd/containers.hpp>
+#include <zd/gen/text_generator.hpp>
 #include <zd/lex/lexer.hpp>
 #include <zd/par/parser.hpp>
 
@@ -111,7 +112,8 @@ action_lexer(zd::lex::lexer &lexer)
 int
 action_parser(zd::lex::lexer &lexer)
 {
-    zd::par::parser parser{lexer};
+    zd::par::parser         parser{lexer};
+    zd::gen::text_generator generator{stdout};
 
     zd::result<zd::par::unique_node> result{};
     while (true)
@@ -132,6 +134,7 @@ action_parser(zd::lex::lexer &lexer)
         }
 
         auto &node = *result;
-        std::puts(node->to_string().data());
+        node->generate(&generator);
+        std::puts("");
     }
 }

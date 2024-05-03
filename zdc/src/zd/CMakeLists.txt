@@ -1,3 +1,4 @@
+add_subdirectory(gen)
 add_subdirectory(lex)
 add_subdirectory(par)
 add_subdirectory(text)
