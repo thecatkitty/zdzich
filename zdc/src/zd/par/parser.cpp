@@ -381,8 +381,7 @@ par::parser::handle_procedure()
         if (node->is<end_node>())
         {
             auto end = reinterpret_cast<end_node *>(node.get());
-            if (!end->get_name().empty() &&
-                text::pl_streqai(name, end->get_name()))
+            if (!end->name.empty() && text::pl_streqai(name, end->name))
             {
                 break;
             }
