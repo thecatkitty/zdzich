@@ -117,7 +117,7 @@ par::parser::handle_call(const ustring &callee)
                 }
             }
 
-            return tl::make_unexpected(std::move(result.error()));
+            return tl::make_unexpected(std::move(err));
         }
 
         unique_node arg = std::move(*result);
