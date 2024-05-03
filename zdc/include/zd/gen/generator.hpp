@@ -1,0 +1,73 @@
+#pragma once
+
+namespace zd
+{
+
+namespace par
+{
+
+struct assignment_node;
+struct call_node;
+struct condition_node;
+struct declaration_node;
+struct end_node;
+struct jump_node;
+struct label_node;
+struct number_node;
+struct object_node;
+struct operation_node;
+struct procedure_node;
+struct register_node;
+struct string_node;
+
+} // namespace par
+
+namespace gen
+{
+
+// Output generator interface
+struct generator
+{
+    virtual bool
+    process(const par::assignment_node &node) = 0;
+
+    virtual bool
+    process(const par::call_node &node) = 0;
+
+    virtual bool
+    process(const par::condition_node &node) = 0;
+
+    virtual bool
+    process(const par::declaration_node &node) = 0;
+
+    virtual bool
+    process(const par::end_node &node) = 0;
+
+    virtual bool
+    process(const par::jump_node &node) = 0;
+
+    virtual bool
+    process(const par::label_node &node) = 0;
+
+    virtual bool
+    process(const par::number_node &node) = 0;
+
+    virtual bool
+    process(const par::object_node &node) = 0;
+
+    virtual bool
+    process(const par::operation_node &node) = 0;
+
+    virtual bool
+    process(const par::procedure_node &node) = 0;
+
+    virtual bool
+    process(const par::register_node &node) = 0;
+
+    virtual bool
+    process(const par::string_node &node) = 0;
+};
+
+} // namespace gen
+
+} // namespace zd

@@ -3,6 +3,7 @@
 #include <list>
 #include <memory>
 
+#include <zd/gen/generator.hpp>
 #include <zd/ustring.hpp>
 
 namespace zd
@@ -14,20 +15,6 @@ namespace par
 struct node;
 using unique_node = std::unique_ptr<node>;
 using node_list = std::list<unique_node>;
-
-struct assignment_node;
-struct call_node;
-struct condition_node;
-struct declaration_node;
-struct end_node;
-struct jump_node;
-struct label_node;
-struct number_node;
-struct object_node;
-struct operation_node;
-struct procedure_node;
-struct register_node;
-struct string_node;
 
 enum class object_type
 {
@@ -80,10 +67,16 @@ enum class cpu_register : uint16_t
     di = dst | cpu_register_word,
 };
 
+#define IMPLEMENT_GENERATOR_ACCESS                                             \
+    virtual bool generate(gen::generator *generator) override                  \
+    {                                                                          \
+        return generator->process(*this);                                      \
+    }
+
 struct node
 {
-    virtual ustring
-    to_string() = 0;
+    virtual bool
+    generate(gen::generator *generator) = 0;
 
     template <typename T>
     inline bool
@@ -109,8 +102,7 @@ struct assignment_node : public node
     {
     }
 
-    virtual ustring
-    to_string() override;
+    IMPLEMENT_GENERATOR_ACCESS;
 };
 
 struct call_node : public node
@@ -123,8 +115,7 @@ struct call_node : public node
     {
     }
 
-    virtual ustring
-    to_string() override;
+    IMPLEMENT_GENERATOR_ACCESS;
 };
 
 struct condition_node : public node
@@ -137,8 +128,7 @@ struct condition_node : public node
     {
     }
 
-    virtual ustring
-    to_string() override;
+    IMPLEMENT_GENERATOR_ACCESS;
 };
 
 struct declaration_node : public node
@@ -149,8 +139,7 @@ struct declaration_node : public node
     {
     }
 
-    virtual ustring
-    to_string() override;
+    IMPLEMENT_GENERATOR_ACCESS;
 };
 
 struct end_node : public node
@@ -163,8 +152,7 @@ struct end_node : public node
     {
     }
 
-    virtual ustring
-    to_string() override;
+    IMPLEMENT_GENERATOR_ACCESS;
 };
 
 struct jump_node : public node
@@ -175,8 +163,7 @@ struct jump_node : public node
     {
     }
 
-    virtual ustring
-    to_string() override;
+    IMPLEMENT_GENERATOR_ACCESS;
 };
 
 struct label_node : public node
@@ -187,8 +174,7 @@ struct label_node : public node
     {
     }
 
-    virtual ustring
-    to_string() override;
+    IMPLEMENT_GENERATOR_ACCESS;
 };
 
 struct number_node : public node
@@ -199,8 +185,7 @@ struct number_node : public node
     {
     }
 
-    virtual ustring
-    to_string() override;
+    IMPLEMENT_GENERATOR_ACCESS;
 };
 
 struct object_node : public node
@@ -213,8 +198,7 @@ struct object_node : public node
     {
     }
 
-    virtual ustring
-    to_string() override;
+    IMPLEMENT_GENERATOR_ACCESS;
 };
 
 struct operation_node : public node
@@ -228,8 +212,7 @@ struct operation_node : public node
     {
     }
 
-    virtual ustring
-    to_string() override;
+    IMPLEMENT_GENERATOR_ACCESS;
 };
 
 struct procedure_node : public node
@@ -242,8 +225,7 @@ struct procedure_node : public node
     {
     }
 
-    virtual ustring
-    to_string() override;
+    IMPLEMENT_GENERATOR_ACCESS;
 };
 
 struct register_node : public node
@@ -254,8 +236,7 @@ struct register_node : public node
     {
     }
 
-    virtual ustring
-    to_string() override;
+    IMPLEMENT_GENERATOR_ACCESS;
 };
 
 struct string_node : public node
@@ -266,9 +247,10 @@ struct string_node : public node
     {
     }
 
-    virtual ustring
-    to_string() override;
+    IMPLEMENT_GENERATOR_ACCESS;
 };
+
+#undef IMPLEMENT_GENERATOR_ACCESS
 
 } // namespace par
 
