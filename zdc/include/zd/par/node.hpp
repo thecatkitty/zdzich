@@ -15,10 +15,18 @@ struct node;
 using unique_node = std::unique_ptr<node>;
 using node_list = std::list<unique_node>;
 
+struct assignment_node;
 struct call_node;
+struct condition_node;
 struct declaration_node;
 struct end_node;
+struct jump_node;
+struct label_node;
+struct number_node;
 struct object_node;
+struct operation_node;
+struct procedure_node;
+struct register_node;
 struct string_node;
 
 enum class object_type
@@ -91,14 +99,13 @@ struct node
     }
 };
 
-class assignment_node : public node
+struct assignment_node : public node
 {
-    unique_node _target;
-    unique_node _source;
+    const unique_node target;
+    const unique_node source;
 
-  public:
-    assignment_node(unique_node target, unique_node source)
-        : _target{std::move(target)}, _source{std::move(source)}
+    assignment_node(unique_node target_, unique_node source_)
+        : target{std::move(target_)}, source{std::move(source_)}
     {
     }
 
@@ -106,14 +113,13 @@ class assignment_node : public node
     to_string() override;
 };
 
-class call_node : public node
+struct call_node : public node
 {
-    ustring   _callee;
-    node_list _arguments;
+    const ustring   callee;
+    const node_list arguments;
 
-  public:
-    call_node(const ustring &callee, node_list arguments)
-        : _callee{callee}, _arguments{std::move(arguments)}
+    call_node(const ustring &callee_, node_list arguments_)
+        : callee{callee_}, arguments{std::move(arguments_)}
     {
     }
 
@@ -121,14 +127,13 @@ class call_node : public node
     to_string() override;
 };
 
-class condition_node : public node
+struct condition_node : public node
 {
-    condition   _condition;
-    unique_node _action;
+    const condition   cond;
+    const unique_node action;
 
-  public:
-    condition_node(condition cond, unique_node action)
-        : _condition{cond}, _action{std::move(action)}
+    condition_node(condition cond_, unique_node action_)
+        : cond{cond_}, action{std::move(action_)}
     {
     }
 
@@ -136,12 +141,11 @@ class condition_node : public node
     to_string() override;
 };
 
-class declaration_node : public node
+struct declaration_node : public node
 {
-    unique_node _target;
+    const unique_node target;
 
-  public:
-    declaration_node(unique_node target) : _target{std::move(target)}
+    declaration_node(unique_node target_) : target{std::move(target_)}
     {
     }
 
@@ -149,33 +153,13 @@ class declaration_node : public node
     to_string() override;
 };
 
-class end_node : public node
+struct end_node : public node
 {
-    ustring _name;
+    const ustring name;
 
-  public:
     end_node() = default;
 
-    end_node(const ustring &name) : _name{name}
-    {
-    }
-
-    virtual ustring
-    to_string() override;
-
-    const ustring &
-    get_name() const
-    {
-        return _name;
-    }
-};
-
-class jump_node : public node
-{
-    unique_node _target;
-
-  public:
-    jump_node(unique_node target) : _target{std::move(target)}
+    end_node(const ustring &name_) : name{name_}
     {
     }
 
@@ -183,12 +167,11 @@ class jump_node : public node
     to_string() override;
 };
 
-class label_node : public node
+struct jump_node : public node
 {
-    ustring _name;
+    const unique_node target;
 
-  public:
-    label_node(const ustring &name) : _name{name}
+    jump_node(unique_node target_) : target{std::move(target_)}
     {
     }
 
@@ -196,12 +179,11 @@ class label_node : public node
     to_string() override;
 };
 
-class number_node : public node
+struct label_node : public node
 {
-    int _value;
+    const ustring name;
 
-  public:
-    number_node(int value) : _value{value}
+    label_node(const ustring &name_) : name{name_}
     {
     }
 
@@ -209,14 +191,11 @@ class number_node : public node
     to_string() override;
 };
 
-class object_node : public node
+struct number_node : public node
 {
-    ustring     _name;
-    object_type _type;
+    const int value;
 
-  public:
-    object_node(const ustring &name, object_type type)
-        : _name{name}, _type{type}
+    number_node(int value_) : value{value_}
     {
     }
 
@@ -224,15 +203,13 @@ class object_node : public node
     to_string() override;
 };
 
-class operation_node : public node
+struct object_node : public node
 {
-    operation   _op;
-    unique_node _left;
-    unique_node _right;
+    const ustring     name;
+    const object_type type;
 
-  public:
-    operation_node(operation op, unique_node left, unique_node right)
-        : _op{op}, _left{std::move(left)}, _right{std::move(right)}
+    object_node(const ustring &name_, object_type type_)
+        : name{name_}, type{type_}
     {
     }
 
@@ -240,14 +217,14 @@ class operation_node : public node
     to_string() override;
 };
 
-class procedure_node : public node
+struct operation_node : public node
 {
-    ustring   _name;
-    node_list _body;
+    const operation   op;
+    const unique_node left;
+    const unique_node right;
 
-  public:
-    procedure_node(const ustring &name, node_list body)
-        : _name{name}, _body{std::move(body)}
+    operation_node(operation op_, unique_node left_, unique_node right_)
+        : op{op_}, left{std::move(left_)}, right{std::move(right_)}
     {
     }
 
@@ -255,12 +232,13 @@ class procedure_node : public node
     to_string() override;
 };
 
-class register_node : public node
+struct procedure_node : public node
 {
-    cpu_register _reg;
+    const ustring   name;
+    const node_list body;
 
-  public:
-    register_node(cpu_register reg) : _reg{reg}
+    procedure_node(const ustring &name_, node_list body_)
+        : name{name_}, body{std::move(body_)}
     {
     }
 
@@ -268,12 +246,23 @@ class register_node : public node
     to_string() override;
 };
 
-class string_node : public node
+struct register_node : public node
 {
-    ustring _value;
+    const cpu_register reg;
 
-  public:
-    string_node(const ustring &value) : _value{value}
+    register_node(cpu_register reg_) : reg{reg_}
+    {
+    }
+
+    virtual ustring
+    to_string() override;
+};
+
+struct string_node : public node
+{
+    const ustring value;
+
+    string_node(const ustring &value_) : value{value_}
     {
     }
 

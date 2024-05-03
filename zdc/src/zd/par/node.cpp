@@ -8,9 +8,9 @@ ustring
 par::assignment_node::to_string()
 {
     ustring str{"<assignment "};
-    str.append(_target->to_string());
+    str.append(target->to_string());
     str.append(' ');
-    str.append(_source->to_string());
+    str.append(source->to_string());
     str.append('>');
     return str;
 }
@@ -19,9 +19,9 @@ ustring
 par::call_node::to_string()
 {
     ustring str{"<call "};
-    str.append(_callee);
+    str.append(callee);
 
-    for (auto &argument : _arguments)
+    for (auto &argument : arguments)
     {
         str.append(' ');
         str.append(argument->to_string());
@@ -35,7 +35,7 @@ ustring
 par::operation_node::to_string()
 {
     ustring str{"<operation "};
-    switch (_op)
+    switch (op)
     {
     case operation::add:
         str.append("add");
@@ -51,9 +51,9 @@ par::operation_node::to_string()
     }
 
     str.append(' ');
-    str.append(_left->to_string());
+    str.append(left->to_string());
     str.append(' ');
-    str.append(_right->to_string());
+    str.append(right->to_string());
     str.append('>');
     return str;
 }
@@ -62,7 +62,7 @@ ustring
 par::condition_node::to_string()
 {
     ustring str{"<condition "};
-    switch (_condition)
+    switch (cond)
     {
     case condition::equal:
         str.append("eq");
@@ -90,7 +90,7 @@ par::condition_node::to_string()
     }
 
     str.append(' ');
-    str.append(_action->to_string());
+    str.append(action->to_string());
 
     str.append('>');
     return str;
@@ -100,7 +100,7 @@ ustring
 par::declaration_node::to_string()
 {
     ustring str{"<declaration "};
-    str.append(_target->to_string());
+    str.append(target->to_string());
     str.append('>');
     return str;
 }
@@ -108,13 +108,13 @@ par::declaration_node::to_string()
 ustring
 par::end_node::to_string()
 {
-    if (_name.empty())
+    if (name.empty())
     {
         return "<end>";
     }
 
     ustring str{"<end "};
-    str.append(_name);
+    str.append(name);
     str.append('>');
     return str;
 }
@@ -123,7 +123,7 @@ ustring
 par::jump_node::to_string()
 {
     ustring str{"<jump "};
-    str.append(_target->to_string());
+    str.append(target->to_string());
     str.append('>');
     return str;
 }
@@ -132,7 +132,7 @@ ustring
 par::label_node::to_string()
 {
     ustring str{"<label "};
-    str.append(_name);
+    str.append(name);
     str.append('>');
     return str;
 }
@@ -141,7 +141,7 @@ ustring
 par::number_node::to_string()
 {
     char buff[32];
-    std::snprintf(buff, 32, "<number %d>", _value);
+    std::snprintf(buff, 32, "<number %d>", value);
     return buff;
 }
 
@@ -149,10 +149,10 @@ ustring
 par::object_node::to_string()
 {
     ustring str{"<variable "};
-    str.append(_name);
+    str.append(name);
 
     str.append(':');
-    switch (_type)
+    switch (type)
     {
     case object_type::text:
         str.append("text");
@@ -171,9 +171,9 @@ ustring
 par::procedure_node::to_string()
 {
     ustring str{"<procedure "};
-    str.append(_name);
+    str.append(name);
 
-    for (auto &item : _body)
+    for (auto &item : body)
     {
         str.append(' ');
         str.append(item->to_string());
@@ -188,8 +188,8 @@ par::register_node::to_string()
 {
     ustring str{"<register "};
 
-    str.append("ABCDSD"[static_cast<uint16_t>(_reg) & 0xFF]);
-    switch (static_cast<uint16_t>(_reg) & 0xFF00)
+    str.append("ABCDSD"[static_cast<uint16_t>(reg) & 0xFF]);
+    switch (static_cast<uint16_t>(reg) & 0xFF00)
     {
     case cpu_register_lbyte:
         str.append('L');
@@ -200,7 +200,7 @@ par::register_node::to_string()
         break;
 
     case cpu_register_word:
-        str.append(((cpu_register::si == _reg) || (cpu_register::di == _reg))
+        str.append(((cpu_register::si == reg) || (cpu_register::di == reg))
                        ? 'I'
                        : 'X');
         break;
@@ -214,7 +214,7 @@ ustring
 par::string_node::to_string()
 {
     ustring str{"<string "};
-    str.append(_value);
+    str.append(value);
     str.append('>');
     return str;
 }
