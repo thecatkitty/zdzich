@@ -256,6 +256,17 @@ struct string_node : public node
     IMPLEMENT_GENERATOR_ACCESS;
 };
 
+struct subscript_node : public node
+{
+    const unique_node value;
+
+    subscript_node(unique_node value_) : value{std::move(value_)}
+    {
+    }
+
+    IMPLEMENT_GENERATOR_ACCESS;
+};
+
 #undef IMPLEMENT_GENERATOR_ACCESS
 
 } // namespace par

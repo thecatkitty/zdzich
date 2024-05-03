@@ -57,6 +57,9 @@ class text_generator : public generator
 
     bool
     process(const par::string_node &node) override;
+
+    bool
+    process(const par::subscript_node &node) override;
 };
 
 } // namespace gen

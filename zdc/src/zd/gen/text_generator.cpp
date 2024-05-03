@@ -214,3 +214,12 @@ text_generator::process(const string_node &node)
     std::fprintf(_out, "<string %s>", node.value.data());
     return true;
 }
+
+bool
+text_generator::process(const subscript_node &node)
+{
+    std::fputs("<subscript ", _out);
+    node.value->generate(this);
+    std::fputc('>', _out);
+    return true;
+}

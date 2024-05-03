@@ -23,7 +23,7 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | LEKCJA05 | ✅ | ✅ |
 | LEKCJA06 | ✅ | ✅ |
 | LEKCJA07 | ✅ | ✅ |
-| LEKCJA08 | ✅ |
+| LEKCJA08 | ✅ | ✅ |
 | LEKCJA09 | ✅ |
 | LEKCJA10 | ✅ |
 | LEKCJA11 | ✅ |
