@@ -134,8 +134,10 @@ struct condition_node : public node
 struct declaration_node : public node
 {
     const unique_node target;
+    const bool        is_const;
 
-    declaration_node(unique_node target_) : target{std::move(target_)}
+    declaration_node(unique_node target_, bool is_const_)
+        : target{std::move(target_)}, is_const{is_const_}
     {
     }
 
