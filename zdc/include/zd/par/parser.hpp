@@ -39,7 +39,7 @@ class parser
     handle_condition(lex::token_type ttype);
 
     result<unique_node>
-    handle_declaration();
+    handle_declaration(bool is_const);
 
     result<unique_node>
     handle_end();

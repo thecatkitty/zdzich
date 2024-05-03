@@ -55,8 +55,10 @@ par::parser::handle()
         case lex::token_type::procedure:
             return handle_procedure();
 
+        case lex::token_type::constant:
         case lex::token_type::variable:
-            return handle_declaration();
+            return handle_declaration(lex::token_type::constant ==
+                                      token.get_type());
 
         default:
             return make_error(error_code::unexpected_token, token.get_type());
@@ -202,14 +204,23 @@ par::parser::handle_condition(lex::token_type ttype)
 }
 
 result<par::unique_node>
-par::parser::handle_declaration()
+par::parser::handle_declaration(bool is_const)
 {
     lex::token token{};
     RETURN_IF_ERROR(token, _lexer.get_token());
 
     unique_node object{};
-    RETURN_IF_ERROR(object, handle_object(token.get_type()));
-    return std::make_unique<declaration_node>(std::move(object));
+
+    if (is_const)
+    {
+        RETURN_IF_ERROR(object, handle_assignment(token.get_type()));
+    }
+    else
+    {
+        RETURN_IF_ERROR(object, handle_object(token.get_type()));
+    }
+
+    return std::make_unique<declaration_node>(std::move(object), is_const);
 }
 
 result<par::unique_node>
