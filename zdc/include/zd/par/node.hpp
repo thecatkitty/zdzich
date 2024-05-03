@@ -181,6 +181,10 @@ struct number_node : public node
 {
     const int value;
 
+    number_node() : value{0}
+    {
+    }
+
     number_node(int value_) : value{value_}
     {
     }
