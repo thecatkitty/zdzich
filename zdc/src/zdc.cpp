@@ -33,7 +33,7 @@ main(int argc, char *argv[])
 
         if (('e' == arg[1]) && (':' == arg[2]))
         {
-            opt_enc = arg + 2;
+            opt_enc = arg + 3;
             continue;
         }
 
