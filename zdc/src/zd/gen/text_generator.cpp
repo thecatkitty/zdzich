@@ -168,6 +168,10 @@ text_generator::process(const object_node &node)
         std::fputs("text", _out);
         break;
 
+    case object_type::byte:
+        std::fputs("byte", _out);
+        break;
+
     case object_type::word:
         std::fputs("word", _out);
         break;

@@ -447,6 +447,10 @@ par::parser::handle_object(lex::token_type ttype)
     object_type type{};
     switch (ttype)
     {
+    case lex::token_type::ampersand:
+        type = object_type::byte;
+        break;
+
     case lex::token_type::byref:
         type = object_type::text;
         break;

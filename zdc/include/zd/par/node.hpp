@@ -20,6 +20,7 @@ using node_list = std::list<unique_node>;
 enum class object_type
 {
     text,
+    byte,
     word,
 };
 
