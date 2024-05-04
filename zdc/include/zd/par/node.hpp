@@ -2,6 +2,7 @@
 
 #include <list>
 #include <memory>
+#include <vector>
 
 #include <zd/gen/generator.hpp>
 #include <zd/ustring.hpp>
@@ -139,6 +140,17 @@ struct declaration_node : public node
 
     declaration_node(unique_node target_, bool is_const_)
         : target{std::move(target_)}, is_const{is_const_}
+    {
+    }
+
+    IMPLEMENT_GENERATOR_ACCESS;
+};
+
+struct emit_node : public node
+{
+    const std::vector<uint8_t> bytes;
+
+    emit_node(std::vector<uint8_t> bytes_) : bytes{std::move(bytes_)}
     {
     }
 

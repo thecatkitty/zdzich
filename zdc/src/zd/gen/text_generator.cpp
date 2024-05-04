@@ -107,6 +107,19 @@ text_generator::process(const declaration_node &node)
     std::fputc('>', _out);
     return true;
 }
+bool
+text_generator::process(const emit_node &node)
+{
+    std::fputs("<emit", _out);
+
+    for (auto byte : node.bytes)
+    {
+        std::fprintf(_out, " %02X", (unsigned)byte);
+    }
+
+    std::fputc('>', _out);
+    return true;
+}
 
 bool
 text_generator::process(const end_node &node)

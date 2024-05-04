@@ -49,6 +49,10 @@ const struct _msg
      "unexpected token '%s'"},
     {make_id(error_origin::parser, par::parser::error_code::unexpected_eof),
      "unexpected end of file while processing '%s'"},
+    {make_id(error_origin::parser, par::parser::error_code::unknown_directive),
+     "unknown directive"},
+    {make_id(error_origin::parser, par::parser::error_code::out_of_range),
+     "number %d is out of range"},
 };
 
 static const char *

@@ -35,6 +35,9 @@ class text_generator : public generator
     process(const par::end_node &node) override;
 
     bool
+    process(const par::emit_node &node) override;
+
+    bool
     process(const par::jump_node &node) override;
 
     bool
