@@ -30,7 +30,8 @@ class parser
 
   private:
     result<unique_node>
-    handle_assignment(lex::token_type ttype);
+    handle_assignment(lex::token_type ttype,
+                      cpu_register    reg = cpu_register::invalid);
 
     result<unique_node>
     handle_call(const ustring &callee);
@@ -63,7 +64,7 @@ class parser
     handle_procedure();
 
     result<unique_node>
-    handle_register(const ustring &name);
+    handle_register(cpu_register reg);
 
     result<unique_node>
     handle_string(const ustring &str);

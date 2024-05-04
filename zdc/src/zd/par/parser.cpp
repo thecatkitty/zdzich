@@ -6,6 +6,82 @@
 
 using namespace zd;
 
+static par::cpu_register
+_to_cpu_register(const ustring &str)
+{
+    par::cpu_register reg{};
+
+    auto it = str.begin();
+    switch (std::toupper(*it++))
+    {
+    case 'A':
+        reg = par::cpu_register::a;
+        break;
+
+    case 'B':
+        reg = par::cpu_register::b;
+        break;
+
+    case 'C':
+        reg = par::cpu_register::c;
+        break;
+
+    case 'D':
+        reg = ('I' == std::toupper(*it)) ? par::cpu_register::dst
+                                         : par::cpu_register::d;
+        break;
+
+    case 'S':
+        reg = par::cpu_register::src;
+        break;
+    }
+
+    uint16_t size{};
+    switch (std::toupper(*it))
+    {
+    case 'L':
+        size = par::cpu_register_lbyte;
+        break;
+
+    case 'H':
+        size = par::cpu_register_hbyte;
+        break;
+
+    case 'X':
+        size = par::cpu_register_word;
+        if (par::cpu_register::src == reg)
+        {
+            return par::cpu_register::invalid;
+        }
+        break;
+
+    case 'I':
+        size = par::cpu_register_word;
+        if ((par::cpu_register::src != reg) && (par::cpu_register::dst != reg))
+        {
+            return par::cpu_register::invalid;
+        }
+        break;
+
+    default:
+        return par::cpu_register::invalid;
+    }
+
+    it++;
+    if (str.end() != it)
+    {
+        return par::cpu_register::invalid;
+    }
+
+    if ((par::cpu_register_word != size) &&
+        ((par::cpu_register::src == reg) || (par::cpu_register::dst == reg)))
+    {
+        return par::cpu_register::invalid;
+    }
+
+    return static_cast<par::cpu_register>(static_cast<uint16_t>(reg) | size);
+}
+
 result<par::unique_node>
 par::parser::handle()
 {
@@ -49,8 +125,12 @@ par::parser::handle()
         case lex::token_type::jump:
             return handle_jump();
 
-        case lex::token_type::name:
-            return handle_call(token.get_text());
+        case lex::token_type::name: {
+            auto reg = _to_cpu_register(token.get_text());
+            return (cpu_register::invalid == reg)
+                       ? handle_call(token.get_text())
+                       : handle_assignment(lex::token_type::name, reg);
+        }
 
         case lex::token_type::procedure:
             return handle_procedure();
@@ -67,10 +147,17 @@ par::parser::handle()
 }
 
 result<par::unique_node>
-par::parser::handle_assignment(lex::token_type ttype)
+par::parser::handle_assignment(lex::token_type ttype, cpu_register reg)
 {
     unique_node target{};
-    RETURN_IF_ERROR(target, handle_object(ttype));
+    if (cpu_register::invalid == reg)
+    {
+        RETURN_IF_ERROR(target, handle_object(ttype));
+    }
+    else
+    {
+        RETURN_IF_ERROR(target, handle_register(reg));
+    }
 
     lex::token token{};
 
@@ -423,72 +510,9 @@ par::parser::handle_procedure()
 }
 
 result<par::unique_node>
-par::parser::handle_register(const ustring &name)
+par::parser::handle_register(cpu_register reg)
 {
-    cpu_register reg{};
-
-    auto it = name.begin();
-    switch (std::toupper(*it++))
-    {
-    case 'A':
-        reg = cpu_register::a;
-        break;
-
-    case 'B':
-        reg = cpu_register::b;
-        break;
-
-    case 'C':
-        reg = cpu_register::c;
-        break;
-
-    case 'D':
-        reg = ('I' == std::toupper(*it)) ? cpu_register::dst : cpu_register::d;
-        break;
-
-    case 'S':
-        reg = cpu_register::src;
-        break;
-    }
-
-    uint16_t size{};
-    switch (std::toupper(*it))
-    {
-    case 'L':
-        size = cpu_register_lbyte;
-        break;
-
-    case 'H':
-        size = cpu_register_hbyte;
-        break;
-
-    case 'X':
-        size = cpu_register_word;
-        if (cpu_register::src == reg)
-        {
-            return make_error(error_code::unexpected_token,
-                              lex::token_type::name);
-        }
-        break;
-
-    case 'I':
-        size = cpu_register_word;
-        if ((cpu_register::src != reg) && (cpu_register::dst != reg))
-        {
-            return make_error(error_code::unexpected_token,
-                              lex::token_type::name);
-        }
-        break;
-    }
-
-    if ((cpu_register_word != size) &&
-        ((cpu_register::src == reg) || (cpu_register::dst == reg)))
-    {
-        return make_error(error_code::unexpected_token, lex::token_type::name);
-    }
-
-    return std::make_unique<register_node>(
-        static_cast<cpu_register>(static_cast<uint16_t>(reg) | size));
+    return std::make_unique<register_node>(reg);
 }
 
 result<par::unique_node>
@@ -515,7 +539,14 @@ par::parser::handle_value()
     switch (token.get_type())
     {
     case lex::token_type::name: {
-        RETURN_IF_ERROR(value, handle_register(token.get_text()));
+        auto reg = _to_cpu_register(token.get_text());
+        if (cpu_register::invalid == reg)
+        {
+            return make_error(error_code::unexpected_token,
+                              lex::token_type::name);
+        }
+
+        RETURN_IF_ERROR(value, handle_register(reg));
         break;
     }
 

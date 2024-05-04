@@ -45,6 +45,7 @@ static const uint16_t cpu_register_word = 0x0200;
 
 enum class cpu_register : uint16_t
 {
+    invalid = 0,
     a,
     b,
     c,
