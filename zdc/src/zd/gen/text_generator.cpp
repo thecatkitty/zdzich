@@ -184,7 +184,7 @@ text_generator::process(const register_node &node)
 {
     std::fputs("<register ", _out);
 
-    std::fputc("ABCDSD"[static_cast<uint16_t>(node.reg) & 0xFF], _out);
+    std::fputc("ABCDSD"[(static_cast<uint16_t>(node.reg) & 0xFF) - 1], _out);
     switch (static_cast<uint16_t>(node.reg) & 0xFF00)
     {
     case cpu_register_lbyte:
