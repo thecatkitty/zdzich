@@ -19,7 +19,7 @@ class parser
     }
 
     result<unique_node>
-    handle();
+    handle(const lex::token &head = lex::token{});
 
     enum class error_code : uint8_t
     {
@@ -33,13 +33,15 @@ class parser
   private:
     result<unique_node>
     handle_assignment(lex::token_type ttype,
-                      cpu_register    reg = cpu_register::invalid);
+                      cpu_register    reg = cpu_register::invalid,
+                      ustring         name = ustring{});
 
     result<unique_node>
     handle_call(const ustring &callee);
 
     result<unique_node>
-    handle_condition(lex::token_type ttype);
+    handle_condition(lex::token_type   ttype,
+                     const lex::token &head = lex::token{});
 
     result<unique_node>
     handle_declaration(bool is_const);
@@ -60,7 +62,7 @@ class parser
     handle_number(int number);
 
     result<unique_node>
-    handle_object(lex::token_type ttype);
+    handle_object(lex::token_type ttype, ustring name = ustring{});
 
     result<unique_node>
     handle_operation(lex::token_type ttype);
