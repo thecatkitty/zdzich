@@ -527,16 +527,26 @@ par::parser::handle_operation(lex::token_type ttype)
 
     lex::token token{};
     RETURN_IF_ERROR(token, _lexer.get_token());
-    if (lex::token_type::comma != token.get_type())
+    switch (token.get_type())
     {
-        return make_error(error_code::unexpected_token, token.get_type());
+    case lex::token_type::comma: {
+        unique_node right{};
+        RETURN_IF_ERROR(right, handle_value());
+        return std::make_unique<operation_node>(op, std::move(left),
+                                                std::move(right));
     }
 
-    unique_node right{};
-    RETURN_IF_ERROR(right, handle_value());
-
-    return std::make_unique<operation_node>(op, std::move(left),
-                                            std::move(right));
+    case lex::token_type::eof:
+    case lex::token_type::line_break:
+        if ((operation::subtract == op) || (operation::add == op))
+        {
+            return std::make_unique<operation_node>(
+                op, std::move(left), std::make_unique<number_node>(1));
+        }
+        // Pass through
+    default:
+        return make_error(error_code::unexpected_token, token.get_type());
+    }
 }
 
 result<par::unique_node>
@@ -647,6 +657,7 @@ par::parser::handle_value()
         break;
     }
 
+    case lex::token_type::ampersand:
     case lex::token_type::byref:
     case lex::token_type::byval: {
         RETURN_IF_ERROR(value, handle_object(token.get_type()));

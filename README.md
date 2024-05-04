@@ -25,9 +25,9 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | LEKCJA07 | ✅ | ✅ |
 | LEKCJA08 | ✅ | ✅ |
 | LEKCJA09 | ✅ | ✅ |
-| LEKCJA10 | ✅ |
-| LEKCJA11 | ✅ |
-| ZADANIA | ✅ |
+| LEKCJA10 | ✅ | ✅ |
+| LEKCJA11 | ✅ | ✅ |
+| ZADANIA | ✅ | ✅ |
 | **INC** | - | - |
 | DOGIER | ✅ |
 | DZWIEK | ✅ |
