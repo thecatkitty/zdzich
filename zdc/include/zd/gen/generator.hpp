@@ -11,6 +11,7 @@ struct call_node;
 struct condition_node;
 struct declaration_node;
 struct end_node;
+struct emit_node;
 struct jump_node;
 struct label_node;
 struct number_node;
@@ -43,6 +44,9 @@ struct generator
 
     virtual bool
     process(const par::end_node &node) = 0;
+
+    virtual bool
+    process(const par::emit_node &node) = 0;
 
     virtual bool
     process(const par::jump_node &node) = 0;

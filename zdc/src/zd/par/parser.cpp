@@ -2,6 +2,7 @@
 #include <cstdio>
 
 #include <zd/par/parser.hpp>
+#include <zd/text/characters.hpp>
 #include <zd/text/pl_string.hpp>
 
 using namespace zd;
@@ -110,6 +111,9 @@ par::parser::handle()
         case lex::token_type::byref:
         case lex::token_type::byval:
             return handle_assignment(token.get_type());
+
+        case lex::token_type::directive:
+            return handle_directive(token.get_text());
 
         case lex::token_type::end:
             return handle_end();
@@ -308,6 +312,49 @@ par::parser::handle_declaration(bool is_const)
     }
 
     return std::make_unique<declaration_node>(std::move(object), is_const);
+}
+
+result<par::unique_node>
+par::parser::handle_directive(const ustring &directive)
+{
+    auto it = directive.begin();
+    if (',' != *it)
+    {
+        return make_error(error_code::unknown_directive);
+    }
+
+    it++;
+
+    std::vector<uint8_t> bytes{};
+    int                  number{};
+    while (directive.end() != it)
+    {
+        if (text::isdigit(*it))
+        {
+            number *= 10;
+            number += *it - '0';
+        }
+        else if (',' == *it)
+        {
+            if (255 < number)
+            {
+                return make_error(error_code::out_of_range, number);
+            }
+
+            bytes.push_back(static_cast<uint8_t>(number));
+            number = 0;
+        }
+        else
+        {
+            return make_error(error_code::unexpected_token,
+                              lex::token_type::unknown);
+        }
+
+        it++;
+    }
+    bytes.push_back(static_cast<uint8_t>(number));
+
+    return std::make_unique<emit_node>(std::move(bytes));
 }
 
 result<par::unique_node>

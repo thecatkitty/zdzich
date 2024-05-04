@@ -26,6 +26,8 @@ class parser
         eof = 0,
         unexpected_token = 1,
         unexpected_eof = 2,
+        unknown_directive = 3,
+        out_of_range = 4,
     };
 
   private:
@@ -41,6 +43,9 @@ class parser
 
     result<unique_node>
     handle_declaration(bool is_const);
+
+    result<unique_node>
+    handle_directive(const ustring &directive);
 
     result<unique_node>
     handle_end();
@@ -89,6 +94,14 @@ class parser
         return tl::make_unexpected(
             error{static_cast<uint8_t>(error_origin::parser),
                   static_cast<uint8_t>(code), to_cstr(ttype)});
+    }
+
+    static tl::unexpected<error>
+    make_error(error_code code, int number)
+    {
+        return tl::make_unexpected(
+            error{static_cast<uint8_t>(error_origin::parser),
+                  static_cast<uint8_t>(code), number});
     }
 };
 
