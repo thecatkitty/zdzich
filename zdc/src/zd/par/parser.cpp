@@ -97,12 +97,23 @@ _to_cpu_register(const ustring &str)
 }
 
 result<par::unique_node>
-par::parser::handle()
+par::parser::handle(const lex::token &head)
 {
+    bool first{true};
     while (true)
     {
         lex::token token{};
-        RETURN_IF_ERROR(token, _lexer.get_token());
+
+        if (first && (lex::token_type::unknown != head.get_type()))
+        {
+            token = head;
+        }
+        else
+        {
+            RETURN_IF_ERROR(token, _lexer.get_token());
+        }
+
+        first = false;
 
         switch (token.get_type())
         {
@@ -113,7 +124,18 @@ par::parser::handle()
         case lex::token_type::eof:
             return make_error(error_code::eof);
 
-        case lex::token_type::ampersand:
+        case lex::token_type::ampersand: {
+            RETURN_IF_ERROR(token, _lexer.get_token());
+            if (lex::token_type::name == token.get_type())
+            {
+                return handle_assignment(lex::token_type::ampersand,
+                                         cpu_register::invalid,
+                                         std::move(token.get_text()));
+            }
+
+            return handle_condition(lex::token_type::ampersand, token);
+        }
+
         case lex::token_type::cpref_lt:
         case lex::token_type::cpref_gt:
         case lex::token_type::cpref_ne:
@@ -164,12 +186,14 @@ par::parser::handle()
 }
 
 result<par::unique_node>
-par::parser::handle_assignment(lex::token_type ttype, cpu_register reg)
+par::parser::handle_assignment(lex::token_type ttype,
+                               cpu_register    reg,
+                               ustring         name)
 {
     unique_node target{};
     if (cpu_register::invalid == reg)
     {
-        RETURN_IF_ERROR(target, handle_object(ttype));
+        RETURN_IF_ERROR(target, handle_object(ttype, name));
     }
     else
     {
@@ -272,7 +296,7 @@ par::parser::handle_call(const ustring &callee)
 }
 
 result<par::unique_node>
-par::parser::handle_condition(lex::token_type ttype)
+par::parser::handle_condition(lex::token_type ttype, const lex::token &head)
 {
     condition cond{};
     switch (ttype)
@@ -303,7 +327,7 @@ par::parser::handle_condition(lex::token_type ttype)
     }
 
     unique_node action{};
-    RETURN_IF_ERROR(action, handle());
+    RETURN_IF_ERROR(action, handle(head));
     return std::make_unique<condition_node>(cond, std::move(action));
 }
 
@@ -442,7 +466,7 @@ par::parser::handle_number(int number)
 }
 
 result<par::unique_node>
-par::parser::handle_object(lex::token_type ttype)
+par::parser::handle_object(lex::token_type ttype, ustring name)
 {
     object_type type{};
     switch (ttype)
@@ -461,6 +485,11 @@ par::parser::handle_object(lex::token_type ttype)
 
     default:
         return make_error(error_code::unexpected_token, ttype);
+    }
+
+    if (!name.empty())
+    {
+        return std::make_unique<object_node>(std::move(name), type);
     }
 
     lex::token token{};
