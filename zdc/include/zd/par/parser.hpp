@@ -74,7 +74,7 @@ class parser
     handle_register(cpu_register reg);
 
     result<unique_node>
-    handle_string(const ustring &str);
+    handle_string(const ustring &str, int spaces = 0);
 
     result<unique_node>
     handle_subscript();

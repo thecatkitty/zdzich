@@ -613,9 +613,20 @@ par::parser::handle_register(cpu_register reg)
 }
 
 result<par::unique_node>
-par::parser::handle_string(const ustring &str)
+par::parser::handle_string(const ustring &str, int spaces)
 {
-    return std::make_unique<string_node>(str);
+    if (!spaces)
+    {
+        return std::make_unique<string_node>(str);
+    }
+
+    ustring padded_str{};
+    for (int i = 0; i < spaces; i++)
+    {
+        padded_str.append(' ');
+    }
+    padded_str.append(str);
+    return std::make_unique<string_node>(padded_str);
 }
 
 result<par::unique_node>
@@ -653,7 +664,9 @@ par::parser::handle_value()
     }
 
     case lex::token_type::literal_str: {
-        RETURN_IF_ERROR(value, handle_string(token.get_text()));
+        auto spaces = _lexer.get_spaces();
+        RETURN_IF_ERROR(value, handle_string(token.get_text(),
+                                             (spaces < 1) ? 0 : (spaces - 1)));
         break;
     }
 
