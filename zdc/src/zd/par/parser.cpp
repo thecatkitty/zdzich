@@ -7,6 +7,19 @@
 
 using namespace zd;
 
+static bool
+_can_be_name(const lex::token &token)
+{
+    switch (token.get_type())
+    {
+    case lex::token_type::end:
+    case lex::token_type::name:
+        return true;
+    }
+
+    return false;
+}
+
 static par::cpu_register
 _to_cpu_register(const ustring &str)
 {
@@ -414,7 +427,7 @@ par::parser::handle_label()
     lex::token token{};
     RETURN_IF_ERROR(token, _lexer.get_token());
 
-    if (lex::token_type::name != token.get_type())
+    if (!_can_be_name(token))
     {
         return make_error(error_code::unexpected_token, token.get_type());
     }
@@ -447,20 +460,14 @@ par::parser::handle_object(lex::token_type ttype)
     }
 
     lex::token token{};
-
-    ustring name{};
     RETURN_IF_ERROR(token, _lexer.get_token());
-    switch (token.get_type())
-    {
-    case lex::token_type::name:
-        name = std::move(token.get_text());
-        break;
 
-    default:
+    if (!_can_be_name(token))
+    {
         return make_error(error_code::unexpected_token, token.get_type());
     }
 
-    return std::make_unique<object_node>(name, type);
+    return std::make_unique<object_node>(std::move(token.get_text()), type);
 }
 
 result<par::unique_node>
@@ -503,14 +510,14 @@ result<par::unique_node>
 par::parser::handle_procedure()
 {
     lex::token token{};
-
-    ustring name{};
     RETURN_IF_ERROR(token, _lexer.get_token());
-    if (lex::token_type::name != token.get_type())
+
+    if (!_can_be_name(token))
     {
         return make_error(error_code::unexpected_token, token.get_type());
     }
-    name = token.get_text();
+
+    ustring name = std::move(token.get_text());
 
     RETURN_IF_ERROR(token, _lexer.get_token());
     if (lex::token_type::lbracket != token.get_type())
