@@ -178,13 +178,16 @@ lex::lexer::get_token()
     }
 
     // Conditional prefixes
-    RETURN_IF_CHTOKEN('>', {_last_type = token_type::cpref_gt});
-
-    if ('<' == _ch)
+    if (token_type::line_break == _last_type)
     {
-        RETURN_IF_ERROR(_ch, _stream.read());
-        RETURN_IF_CHTOKEN('>', {_last_type = token_type::cpref_ne});
-        return {_last_type = token_type::cpref_lt};
+        RETURN_IF_CHTOKEN('>', {_last_type = token_type::cpref_gt});
+
+        if ('<' == _ch)
+        {
+            RETURN_IF_ERROR(_ch, _stream.read());
+            RETURN_IF_CHTOKEN('>', {_last_type = token_type::cpref_ne});
+            return {_last_type = token_type::cpref_lt};
+        }
     }
 
     if ('&' == _ch)
