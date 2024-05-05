@@ -121,6 +121,11 @@ ustring::append(int codepoint)
 bool
 ustring::append(const ustring &tail)
 {
+    if (!tail._size)
+    {
+        return true;
+    }
+
     if (!reserve(_size + tail._size))
     {
         return false;
