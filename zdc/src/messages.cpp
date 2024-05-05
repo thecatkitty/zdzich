@@ -55,6 +55,8 @@ const struct _msg
      "number %d is out of range"},
     {make_id(error_origin::parser, par::parser::error_code::name_expected),
      "name expected after '%s', got '%s'"},
+    {make_id(error_origin::parser, par::parser::error_code::include_expected),
+     "include path expected"},
 };
 
 static const char *

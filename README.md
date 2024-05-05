@@ -41,18 +41,18 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | KWADRAT | ✅ | ✅ |
 | LINIA | ✅ | ✅ |
 | PETLE | ✅ | ✅ |
-| ZC | ✅ |
-| !TLO | ✅ |
-| ALARM | ✅ |
-| ASCII | ✅ |
-| COOL-GR1 | ✅ |
-| DEMO | ✅ |
-| DZWIEK | ✅ |
-| EFEKT | ✅ |
-| LOSOWE | ✅ |
-| MYSZ | ✅ |
-| MYSZKA | ✅ |
-| MYSZRYS | ✅ |
+| ZC | ✅ | ✅ |
+| !TLO | ✅ | ✅ |
+| ALARM | ✅ | ✅ |
+| ASCII | ✅ | ✅ |
+| COOL-GR1 | ✅ | ✅ |
+| DEMO | ✅ | ✅ |
+| DZWIEK | ✅ | ✅ |
+| EFEKT | ✅ | ✅ |
+| LOSOWE | ✅ | ✅ |
+| MYSZ | ✅ | ✅ |
+| MYSZKA | ✅ | ✅ |
+| MYSZRYS | ✅ | ✅ |
 | PARAMETR | ✅ |
 | PLIKI1 | ✅ |
 | PLIKI2 | ✅ |

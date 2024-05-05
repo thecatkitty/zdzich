@@ -140,6 +140,19 @@ text_generator::process(const end_node &node)
 }
 
 bool
+text_generator::process(const include_node &node)
+{
+    if (node.is_binary)
+    {
+        std::fprintf(_out, "<include binary %s>", node.name.data());
+        return true;
+    }
+
+    std::fprintf(_out, "<include %s>", node.name.data());
+    return true;
+}
+
+bool
 text_generator::process(const jump_node &node)
 {
     std::fputs("<jump ", _out);

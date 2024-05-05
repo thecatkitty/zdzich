@@ -29,6 +29,7 @@ class parser
         unknown_directive = 3,
         out_of_range = 4,
         name_expected = 5,
+        include_expected = 6,
     };
 
   private:

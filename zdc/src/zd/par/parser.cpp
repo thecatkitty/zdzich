@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cctype>
 #include <cstdio>
 
@@ -423,6 +424,43 @@ par::parser::handle_declaration(bool is_const)
 result<par::unique_node>
 par::parser::handle_directive(const ustring &directive)
 {
+    auto name_end =
+        std::find_if(directive.begin(), directive.end(), text::isspace);
+    if (directive.end() != name_end)
+    {
+        ustring name{};
+        std::for_each(directive.begin(), name_end, [&name](int ch) {
+            name.append(ch);
+        });
+
+        if (text::pl_streqi("Wstaw", name))
+        {
+            // #Wstaw
+            auto path_begin =
+                std::find_if_not(name_end, directive.end(), text::isspace);
+            if (directive.end() == path_begin)
+            {
+                return make_error(error_code::include_expected);
+            }
+
+            return std::make_unique<include_node>(path_begin.get());
+        }
+
+        if (text::pl_streqi("WstawBin", name))
+        {
+            // #WstawBin
+            auto path_begin =
+                std::find_if_not(name_end, directive.end(), text::isspace);
+            if (directive.end() == path_begin)
+            {
+                return make_error(error_code::include_expected);
+            }
+
+            return std::make_unique<include_node>(path_begin.get(), true);
+        }
+    }
+
+    // #,
     auto it = directive.begin();
     if (',' != *it)
     {
