@@ -172,6 +172,19 @@ struct end_node : public node
     IMPLEMENT_GENERATOR_ACCESS;
 };
 
+struct include_node : public node
+{
+    const ustring name;
+    const bool    is_binary;
+
+    include_node(const ustring &name_, bool is_binary_ = false)
+        : name{name_}, is_binary{is_binary_}
+    {
+    }
+
+    IMPLEMENT_GENERATOR_ACCESS;
+};
+
 struct jump_node : public node
 {
     const unique_node target;

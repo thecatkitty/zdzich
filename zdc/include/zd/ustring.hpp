@@ -37,6 +37,12 @@ class ustring
             return old;
         }
 
+        const pointer
+        get() const
+        {
+            return _ptr;
+        }
+
         friend bool
         operator==(const iterator &left, const iterator &right)
         {
