@@ -37,7 +37,7 @@ class parser
                       ustring         name = ustring{});
 
     result<unique_node>
-    handle_call(const ustring &callee);
+    handle_call(const ustring &callee, bool enclosed = false);
 
     result<unique_node>
     handle_condition(lex::token_type   ttype,

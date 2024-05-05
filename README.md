@@ -34,7 +34,7 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | DZWIEK2 | ✅ | ✅ |
 | KLAWIAT | ✅ | ✅ |
 | MYSZ | ✅ | ✅ |
-| SAVER | ✅ |
+| SAVER | ✅ | ✅ |
 | **PRZYKLAD** | - | - |
 | DOWCIPY | ✅ |
 | GRA | ✅ |
