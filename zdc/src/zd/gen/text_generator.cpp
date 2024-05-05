@@ -108,6 +108,12 @@ bool
 text_generator::process(const declaration_node &node)
 {
     std::fputs("<declaration ", _out);
+
+    if (node.is_const)
+    {
+        std::fputs("const ", _out);
+    }
+
     node.target->generate(this);
     std::fputc('>', _out);
     return true;
@@ -178,7 +184,7 @@ text_generator::process(const number_node &node)
 bool
 text_generator::process(const object_node &node)
 {
-    std::fprintf(_out, "<variable %s:", node.name.data());
+    std::fprintf(_out, "<object %s:", node.name.data());
 
     switch (node.type)
     {
