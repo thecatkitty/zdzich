@@ -225,8 +225,18 @@ text_generator::process(const register_node &node)
 {
     std::fputs("<register ", _out);
 
-    std::fputc("ABCDSD"[(static_cast<uint16_t>(node.reg) & 0xFF) - 1], _out);
-    switch (static_cast<uint16_t>(node.reg) & 0xFF00)
+    auto size = static_cast<uint16_t>(node.reg) & 0xFF00;
+    if (size == cpu_register_flag)
+    {
+        std::fputc("CDI"[(static_cast<uint16_t>(node.reg) & 0xFF)], _out);
+    }
+    else
+    {
+        std::fputc("ABCDSD"[(static_cast<uint16_t>(node.reg) & 0xFF) - 1],
+                   _out);
+    }
+
+    switch (size)
     {
     case cpu_register_lbyte:
         std::fputc('L', _out);
@@ -242,6 +252,10 @@ text_generator::process(const register_node &node)
                 ? 'I'
                 : 'X',
             _out);
+        break;
+
+    case cpu_register_flag:
+        std::fputs("FLAG", _out);
         break;
     }
 
