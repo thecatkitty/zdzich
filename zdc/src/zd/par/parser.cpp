@@ -27,6 +27,26 @@ _to_cpu_register(const ustring &str)
     par::cpu_register reg{};
 
     auto it = str.begin();
+
+    if (1 == str.size())
+    {
+        // Flags
+        switch (std::toupper(*it))
+        {
+        case 'C':
+            return par::cpu_register::flag_c;
+
+        case 'D':
+            return par::cpu_register::flag_d;
+
+        case 'I':
+            return par::cpu_register::flag_i;
+        }
+
+        return par::cpu_register::invalid;
+    }
+
+    // General purpose register
     switch (std::toupper(*it++))
     {
     case 'A':
@@ -204,8 +224,23 @@ par::parser::handle_assignment(lex::token_type ttype,
     lex::token token{};
 
     RETURN_IF_ERROR(token, _lexer.get_token());
-    if (lex::token_type::assign != token.get_type())
+    switch (token.get_type())
     {
+    case lex::token_type::minus:
+        // Boolean disable
+        return std::make_unique<assignment_node>(
+            std::move(target), std::make_unique<number_node>(0));
+
+    case lex::token_type::plus:
+        // Boolean enable
+        return std::make_unique<assignment_node>(
+            std::move(target), std::make_unique<number_node>(1));
+
+    case lex::token_type::assign:
+        // A regular assignment
+        break;
+
+    default:
         return make_error(error_code::unexpected_token, token.get_type());
     }
 

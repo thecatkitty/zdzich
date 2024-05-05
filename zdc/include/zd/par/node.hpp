@@ -44,6 +44,7 @@ enum class operation
 static const uint16_t cpu_register_lbyte = 0x0000;
 static const uint16_t cpu_register_hbyte = 0x0100;
 static const uint16_t cpu_register_word = 0x0200;
+static const uint16_t cpu_register_flag = 0xFF00;
 
 enum class cpu_register : uint16_t
 {
@@ -54,6 +55,9 @@ enum class cpu_register : uint16_t
     d,
     src,
     dst,
+    flag_c = cpu_register_flag,
+    flag_d,
+    flag_i,
     al = a | cpu_register_lbyte,
     bl = b | cpu_register_lbyte,
     cl = c | cpu_register_lbyte,
