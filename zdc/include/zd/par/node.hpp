@@ -263,6 +263,8 @@ struct string_node : public node
 {
     const ustring value;
 
+    string_node() = default;
+
     string_node(const ustring &value_) : value{value_}
     {
     }

@@ -268,8 +268,30 @@ par::parser::handle_call(const ustring &callee)
             arguments.push_back(std::move(arg));
             continue;
 
+        case lex::token_type::rbracket:
+            if (enclosed)
+            {
+                enclosed = false;
+
+                if (arg->is<string_node>())
+                {
+                    // Irregular string literal reconstruction
+                    // DOGIER.INC:14 - PiszL (N)owa gra czy (k)oniec?
+                    auto arg_str = reinterpret_cast<string_node *>(arg.get());
+                    ustring str{"("};
+                    str.append(arg_str->value);
+                    str.append(')');
+
+                    arguments.push_back(std::make_unique<string_node>(str));
+                    continue;
+                }
+            }
+
+            return make_error(error_code::unexpected_token, token.get_type());
+
         case lex::token_type::literal_str:
-            // Irregular string literal reconstruction
+            // Irregular string literal reconstruction:
+            // LEK05-03.ZDI:6 - Pisz 1. Kurczak
             if (arg->is<number_node>())
             {
                 auto arg_num = reinterpret_cast<number_node *>(arg.get());
@@ -648,25 +670,22 @@ par::parser::handle_value()
     {
     case lex::token_type::name: {
         auto reg = _to_cpu_register(token.get_text());
-        if (cpu_register::invalid == reg)
+        if (cpu_register::invalid != reg)
         {
-            return make_error(error_code::unexpected_token,
-                              lex::token_type::name);
+            RETURN_IF_ERROR(value, handle_register(reg));
+            break;
         }
-
-        RETURN_IF_ERROR(value, handle_register(reg));
+        // Pass through
+    }
+    case lex::token_type::literal_str: {
+        auto spaces = _lexer.get_spaces();
+        RETURN_IF_ERROR(value, handle_string(token.get_text(),
+                                             (spaces < 1) ? 0 : (spaces - 1)));
         break;
     }
 
     case lex::token_type::literal_int: {
         RETURN_IF_ERROR(value, handle_number(token.get_number()));
-        break;
-    }
-
-    case lex::token_type::literal_str: {
-        auto spaces = _lexer.get_spaces();
-        RETURN_IF_ERROR(value, handle_string(token.get_text(),
-                                             (spaces < 1) ? 0 : (spaces - 1)));
         break;
     }
 
