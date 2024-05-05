@@ -248,6 +248,27 @@ par::parser::handle_call(const ustring &callee, bool enclosed)
                 }
             }
 
+            if (err.is(error_origin::parser, error_code::name_expected))
+            {
+                auto tts = reinterpret_cast<const char *>(err[1]);
+                if ((to_cstr(lex::token_type::eof) == tts) ||
+                    (to_cstr(lex::token_type::line_break) == tts))
+                {
+                    // Irregular string literal reconstruction
+                    // CZASN.INC:410 - Pisz %
+                    auto tcs = reinterpret_cast<const char *>(err[0]);
+                    char character =
+                        (to_cstr(lex::token_type::ampersand) == tcs) ? '&'
+                        : (to_cstr(lex::token_type::byval) == tcs)   ? '%'
+                                                                     : '$';
+
+                    ustring str{};
+                    str.append(character);
+                    arguments.push_back(std::make_unique<string_node>(str));
+                    break;
+                }
+            }
+
             return tl::make_unexpected(std::move(err));
         }
 
@@ -258,7 +279,6 @@ par::parser::handle_call(const ustring &callee, bool enclosed)
             break;
         }
 
-        bare = false;
         RETURN_IF_ERROR(token, _lexer.get_token());
         switch (token.get_type())
         {
@@ -314,6 +334,11 @@ par::parser::handle_call(const ustring &callee, bool enclosed)
             return make_error(error_code::unexpected_token, token.get_type());
         }
         }
+    }
+
+    if (!arguments.empty())
+    {
+        bare = false;
     }
 
     return std::make_unique<call_node>(callee, std::move(arguments), bare);
@@ -530,7 +555,30 @@ par::parser::handle_object(lex::token_type ttype, ustring name)
 
     if (!_can_be_name(token))
     {
-        return make_error(error_code::unexpected_token, token.get_type());
+        int prefix = (lex::token_type::ampersand == ttype) ? '&'
+                     : (lex::token_type::byval == ttype)   ? '%'
+                                                           : '$';
+        if (lex::token_type::literal_str == token.get_type())
+        {
+            // Irregular string literal reconstruction
+            // CZASN.INC:397 - Pisz %<SP>
+            ustring str{};
+            str.append(prefix);
+
+            if (lex::token_type::literal_str == token.get_type())
+            {
+                auto spaces = _lexer.get_spaces();
+                for (int i = 0; i < spaces; i++)
+                {
+                    str.append(' ');
+                }
+
+                str.append(token.get_text());
+            }
+            return std::make_unique<string_node>(std::move(str));
+        }
+
+        return make_error(error_code::name_expected, ttype, token.get_type());
     }
 
     return std::make_unique<object_node>(std::move(token.get_text()), type);

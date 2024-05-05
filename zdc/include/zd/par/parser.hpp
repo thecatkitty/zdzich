@@ -28,6 +28,7 @@ class parser
         unexpected_eof = 2,
         unknown_directive = 3,
         out_of_range = 4,
+        name_expected = 5,
     };
 
   private:
@@ -96,6 +97,14 @@ class parser
         return tl::make_unexpected(
             error{static_cast<uint8_t>(error_origin::parser),
                   static_cast<uint8_t>(code), to_cstr(ttype)});
+    }
+
+    static tl::unexpected<error>
+    make_error(error_code code, lex::token_type context, lex::token_type ttype)
+    {
+        return tl::make_unexpected(error{
+            static_cast<uint8_t>(error_origin::parser),
+            static_cast<uint8_t>(code), to_cstr(context), to_cstr(ttype)});
     }
 
     static tl::unexpected<error>

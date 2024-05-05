@@ -53,6 +53,8 @@ const struct _msg
      "unknown directive"},
     {make_id(error_origin::parser, par::parser::error_code::out_of_range),
      "number %d is out of range"},
+    {make_id(error_origin::parser, par::parser::error_code::name_expected),
+     "name expected after '%s', got '%s'"},
 };
 
 static const char *
