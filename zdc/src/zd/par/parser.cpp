@@ -291,24 +291,44 @@ par::parser::handle_call(const ustring &callee, bool enclosed)
             continue;
 
         case lex::token_type::rbracket:
-            if (enclosed)
+            if (arg->is<string_node>())
             {
-                enclosed = false;
+                // Irregular string literal reconstruction
+                // DOGIER.INC:14 - PiszL (N)owa gra czy (k)oniec?
+                auto arg_str = reinterpret_cast<string_node *>(arg.get());
 
-                if (arg->is<string_node>())
+                ustring str{};
+                if (enclosed)
                 {
-                    // Irregular string literal reconstruction
-                    // DOGIER.INC:14 - PiszL (N)owa gra czy (k)oniec?
-                    auto arg_str = reinterpret_cast<string_node *>(arg.get());
-                    ustring str{"("};
-                    str.append(arg_str->value);
-                    str.append(')');
-
-                    arguments.push_back(std::make_unique<string_node>(str));
-                    continue;
+                    str.append('(');
                 }
+                str.append(arg_str->value);
+                str.append(')');
+
+                enclosed = false;
+                arguments.push_back(std::make_unique<string_node>(str));
+                continue;
             }
 
+            if (arg->is<number_node>())
+            {
+                // Irregular string literal reconstruction
+                // ZDC-DLL.INC:108 - piszl   1)   Zmien nazwe pliku
+                auto arg_num = reinterpret_cast<number_node *>(arg.get());
+
+                char buff[20]{};
+                std::snprintf(buff, sizeof(buff), "%s%d) ", enclosed ? "(" : "",
+                              arg_num->value);
+
+                ustring str{buff};
+                str.append(token.get_text());
+
+                enclosed = false;
+                arguments.push_back(std::make_unique<string_node>(str));
+                continue;
+            }
+
+            enclosed = false;
             return make_error(error_code::unexpected_token, token.get_type());
 
         case lex::token_type::literal_str:
