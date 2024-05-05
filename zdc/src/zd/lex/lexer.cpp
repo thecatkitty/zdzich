@@ -144,7 +144,7 @@ lex::lexer::get_token()
         return {_last_type = token_type::line_break};
     }
 
-    while (_stream && isspace(_ch))
+    while (_stream && text::isspace(_ch))
     {
         _spaces++;
         RETURN_IF_ERROR(_ch, _stream.read());
@@ -218,7 +218,7 @@ lex::lexer::get_token()
         // Not sure yet, pass through
     }
 
-    auto isbdigit = (16 == base) ? isxdigit : isdigit;
+    auto isbdigit = (16 == base) ? text::isxdigit : text::isdigit;
     if (isbdigit(_ch))
     {
         // Integer literal
