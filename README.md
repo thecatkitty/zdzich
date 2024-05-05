@@ -29,11 +29,11 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | LEKCJA11 | ✅ | ✅ |
 | ZADANIA | ✅ | ✅ |
 | **INC** | - | - |
-| DOGIER | ✅ |
-| DZWIEK | ✅ |
-| DZWIEK2 | ✅ |
-| KLAWIAT | ✅ |
-| MYSZ | ✅ |
+| DOGIER | ✅ | ✅ |
+| DZWIEK | ✅ | ✅ |
+| DZWIEK2 | ✅ | ✅ |
+| KLAWIAT | ✅ | ✅ |
+| MYSZ | ✅ | ✅ |
 | SAVER | ✅ |
 | **PRZYKLAD** | - | - |
 | DOWCIPY | ✅ |
