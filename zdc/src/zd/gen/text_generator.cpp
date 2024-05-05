@@ -24,6 +24,11 @@ text_generator::process(const call_node &node)
     std::fputs("<call ", _out);
     std::fputs(node.callee.data(), _out);
 
+    if (node.is_bare)
+    {
+        std::fputs(" bare", _out);
+    }
+
     for (auto &argument : node.arguments)
     {
         std::fputc(' ', _out);

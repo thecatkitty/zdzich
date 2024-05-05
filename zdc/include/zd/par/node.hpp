@@ -112,9 +112,10 @@ struct call_node : public node
 {
     const ustring   callee;
     const node_list arguments;
+    const bool      is_bare;
 
-    call_node(const ustring &callee_, node_list arguments_)
-        : callee{callee_}, arguments{std::move(arguments_)}
+    call_node(const ustring &callee_, node_list arguments_, bool is_bare_)
+        : callee{callee_}, arguments{std::move(arguments_)}, is_bare{is_bare_}
     {
     }
 

@@ -219,6 +219,7 @@ result<par::unique_node>
 par::parser::handle_call(const ustring &callee)
 {
     node_list  arguments{};
+    bool       bare{true};
     bool       enclosed{false};
     bool       more{true};
     lex::token token{};
@@ -235,6 +236,7 @@ par::parser::handle_call(const ustring &callee)
                 if (!enclosed && to_cstr(lex::token_type::lbracket) == tts)
                 {
                     // Opening bracket
+                    bare = false;
                     enclosed = true;
                     continue;
                 }
@@ -257,6 +259,7 @@ par::parser::handle_call(const ustring &callee)
             break;
         }
 
+        bare = false;
         RETURN_IF_ERROR(token, _lexer.get_token());
         switch (token.get_type())
         {
@@ -314,7 +317,7 @@ par::parser::handle_call(const ustring &callee)
         }
     }
 
-    return std::make_unique<call_node>(callee, std::move(arguments));
+    return std::make_unique<call_node>(callee, std::move(arguments), bare);
 }
 
 result<par::unique_node>
