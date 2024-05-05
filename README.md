@@ -37,10 +37,10 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | SAVER | ✅ | ✅ |
 | **PRZYKLAD** | - | - |
 | DOWCIPY | ✅ | ✅ |
-| GRA | ✅ |
-| KWADRAT | ✅ |
-| LINIA | ✅ |
-| PETLE | ✅ |
+| GRA | ✅ | ✅ |
+| KWADRAT | ✅ | ✅ |
+| LINIA | ✅ | ✅ |
+| PETLE | ✅ | ✅ |
 | ZC | ✅ |
 | !TLO | ✅ |
 | ALARM | ✅ |
