@@ -216,11 +216,10 @@ par::parser::handle_assignment(lex::token_type ttype,
 }
 
 result<par::unique_node>
-par::parser::handle_call(const ustring &callee)
+par::parser::handle_call(const ustring &callee, bool enclosed)
 {
     node_list  arguments{};
     bool       bare{true};
-    bool       enclosed{false};
     bool       more{true};
     lex::token token{};
 
@@ -431,6 +430,15 @@ par::parser::handle_end()
     case lex::token_type::name:
         name = token.get_text();
         break;
+
+    // SAVER.INC:51 - Koniec KONIEC()
+    case lex::token_type::end:
+        name = "Koniec";
+        break;
+
+    // SAVER.INC:45 - KONIEC()
+    case lex::token_type::lbracket:
+        return handle_call("Koniec", true);
 
     case lex::token_type::eof:
     case lex::token_type::line_break:
