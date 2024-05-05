@@ -158,7 +158,7 @@ lex::lexer::get_token()
     RETURN_IF_CHTOKEN('%', {_last_type = token_type::byval});
     RETURN_IF_CHTOKEN('=', {_last_type = token_type::assign});
 
-    if (('+' == _ch) || ('-' == _ch))
+    if ((token_type::name == _last_type) && (('+' == _ch) || ('-' == _ch)))
     {
         // Plus sign, minus sign, or a string literal made of them
         _head.append(_ch);
