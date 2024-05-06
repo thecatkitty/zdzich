@@ -265,7 +265,7 @@ par::parser::handle_call(const ustring &callee, bool enclosed)
         if (!result)
         {
             auto err = std::move(result.error());
-            if (err.is(error_origin::parser, error_code::unexpected_token))
+            if (err.is<parser>(error_code::unexpected_token))
             {
                 auto tts = reinterpret_cast<const char *>(err[0]);
                 if (!enclosed && to_cstr(lex::token_type::lbracket) == tts)
@@ -284,7 +284,7 @@ par::parser::handle_call(const ustring &callee, bool enclosed)
                 }
             }
 
-            if (err.is(error_origin::parser, error_code::name_expected))
+            if (err.is<parser>(error_code::name_expected))
             {
                 auto tts = reinterpret_cast<const char *>(err[1]);
                 if ((to_cstr(lex::token_type::eof) == tts) ||
@@ -754,7 +754,7 @@ par::parser::handle_procedure()
         auto result = handle();
         if (!result)
         {
-            if (result.error().is(error_origin::parser, error_code::eof))
+            if (result.error().is<parser>(error_code::eof))
             {
                 return make_error(error_code::unexpected_eof,
                                   lex::token_type::procedure);
