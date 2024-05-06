@@ -22,6 +22,23 @@ get_index(const Container &container, const T &value)
            std::begin(container);
 }
 
+template <typename InputIt, typename UnaryPred>
+inline InputIt
+find_last_if(InputIt first, InputIt last, UnaryPred p)
+{
+    auto ret = last;
+
+    for (auto it = first; it != last; it++)
+    {
+        if (p(*it))
+        {
+            ret = it;
+        }
+    }
+
+    return ret;
+}
+
 template <typename T> class range
 {
     const T     *_items;

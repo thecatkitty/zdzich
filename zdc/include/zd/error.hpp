@@ -168,7 +168,7 @@ class error
 
     template <typename Torigin, typename Traits = error_origin_traits<Torigin>>
     inline bool
-    is(typename Traits::ordinal_type ord)
+    is(typename Traits::ordinal_type ord) const
     {
         return (static_cast<uint8_t>(Traits::origin_tag) == origin()) &&
                (static_cast<uint8_t>(ord) == ordinal());
