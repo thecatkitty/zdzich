@@ -181,6 +181,10 @@ struct include_node : public node
     const ustring name;
     const bool    is_binary;
 
+    include_node() : name{}, is_binary{false}
+    {
+    }
+
     include_node(const ustring &name_, bool is_binary_ = false)
         : name{name_}, is_binary{is_binary_}
     {

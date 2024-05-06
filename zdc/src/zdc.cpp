@@ -15,6 +15,9 @@ action_lexer(zd::lex::lexer &lexer);
 static int
 action_parser(zd::lex::lexer &lexer);
 
+static bool
+is_path_separator(int ch);
+
 int
 main(int argc, char *argv[])
 {
@@ -133,7 +136,48 @@ action_parser(zd::lex::lexer &lexer)
         }
 
         auto &node = *result;
+        if (node->is<zd::par::include_node>())
+        {
+            auto inc_node = static_cast<zd::par::include_node *>(node.get());
+            if (!inc_node->is_binary)
+            {
+                // Inclusion directive - #Wstaw
+
+                // Get parent path
+                auto &self = lexer.get_path();
+                auto  dir_end = ++zd::find_last_if(self.begin(), self.end(),
+                                                   is_path_separator);
+
+                // Create included file path
+                zd::ustring inc_path{};
+                std::for_each(self.begin(), dir_end, [&inc_path](int ch) {
+                    inc_path.append(ch);
+                });
+                inc_path.append(inc_node->name);
+
+                // Process the included file
+                zd::lex::pl_istream inc_stream{
+                    inc_path, lexer.get_stream().get_encoding()};
+                zd::lex::lexer inc_lexer{inc_stream};
+                action_parser(inc_lexer);
+                continue;
+            }
+        }
+
         node->generate(&generator);
         std::puts("");
     }
+}
+
+bool
+is_path_separator(int ch)
+{
+#if defined(_WIN32) || defined(__ia16__)
+    if ('\\' == ch)
+    {
+        return true;
+    }
+#endif
+
+    return '/' == ch;
 }

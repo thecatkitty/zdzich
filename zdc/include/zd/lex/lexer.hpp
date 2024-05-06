@@ -26,6 +26,12 @@ class lexer
     {
     }
 
+    const pl_istream &
+    get_stream() const
+    {
+        return _stream;
+    }
+
     const ustring &
     get_path() const
     {
