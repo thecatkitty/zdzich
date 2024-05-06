@@ -42,6 +42,12 @@ class pl_istream
         return _encoding;
     }
 
+    const ustring &
+    get_path() const
+    {
+        return _stream.get_path();
+    }
+
     enum class error_code : uint8_t
     {
         unexpected_byte = 0,

@@ -14,24 +14,27 @@ namespace io
 class min_istream
 {
     std::FILE *_file;
+    ustring    _path;
 
   public:
-    min_istream() noexcept : _file{nullptr}
+    min_istream() noexcept : _file{nullptr}, _path{}
     {
     }
 
-    min_istream(std::FILE *file) noexcept : _file{file}
+    min_istream(std::FILE *file) noexcept : _file{file}, _path{}
     {
     }
 
-    min_istream(const ustring &name) noexcept : _file{fopen(name.data(), "rb")}
+    min_istream(const ustring &name) noexcept
+        : _file{fopen(name.data(), "rb")}, _path{name}
     {
     }
 
     min_istream(const min_istream &) = delete;
 
     min_istream(min_istream &&that) noexcept
-        : _file{std::exchange(that._file, nullptr)}
+        : _file{std::exchange(that._file, nullptr)},
+          _path{std::move(that._path)}
     {
     }
 
@@ -47,6 +50,7 @@ class min_istream
         }
 
         _file = std::exchange(that._file, nullptr);
+        _path = std::move(that._path);
         return *this;
     }
 
@@ -63,6 +67,12 @@ class min_istream
     get() const noexcept
     {
         return _file;
+    }
+
+    const ustring &
+    get_path() const
+    {
+        return _path;
     }
 
     operator bool() const noexcept

@@ -25,6 +25,12 @@ class lexer
     {
     }
 
+    const ustring &
+    get_path() const
+    {
+        return _stream.get_path();
+    }
+
     result<token>
     get_token();
 
