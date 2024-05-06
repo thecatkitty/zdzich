@@ -84,36 +84,37 @@ class parser
     result<unique_node>
     handle_value();
 
-    static tl::unexpected<error>
+    tl::unexpected<error>
     make_error(error_code code)
     {
         return tl::make_unexpected(
             error{static_cast<uint8_t>(error_origin::parser),
-                  static_cast<uint8_t>(code)});
+                  static_cast<uint8_t>(code), _lexer.get_path()});
     }
 
-    static tl::unexpected<error>
+    tl::unexpected<error>
     make_error(error_code code, lex::token_type ttype)
-    {
-        return tl::make_unexpected(
-            error{static_cast<uint8_t>(error_origin::parser),
-                  static_cast<uint8_t>(code), to_cstr(ttype)});
-    }
-
-    static tl::unexpected<error>
-    make_error(error_code code, lex::token_type context, lex::token_type ttype)
     {
         return tl::make_unexpected(error{
             static_cast<uint8_t>(error_origin::parser),
-            static_cast<uint8_t>(code), to_cstr(context), to_cstr(ttype)});
+            static_cast<uint8_t>(code), _lexer.get_path(), to_cstr(ttype)});
     }
 
-    static tl::unexpected<error>
+    tl::unexpected<error>
+    make_error(error_code code, lex::token_type context, lex::token_type ttype)
+    {
+        return tl::make_unexpected(
+            error{static_cast<uint8_t>(error_origin::parser),
+                  static_cast<uint8_t>(code), _lexer.get_path(),
+                  to_cstr(context), to_cstr(ttype)});
+    }
+
+    tl::unexpected<error>
     make_error(error_code code, int number)
     {
         return tl::make_unexpected(
             error{static_cast<uint8_t>(error_origin::parser),
-                  static_cast<uint8_t>(code), number});
+                  static_cast<uint8_t>(code), _lexer.get_path(), number});
     }
 };
 

@@ -56,20 +56,20 @@ class pl_istream
     };
 
   private:
-    static tl::unexpected<error>
+    tl::unexpected<error>
     make_error(error_code code)
     {
         return tl::make_unexpected(
             error{static_cast<uint8_t>(error_origin::stream),
-                  static_cast<uint8_t>(code)});
+                  static_cast<uint8_t>(code), get_path()});
     }
 
-    static tl::unexpected<error>
+    tl::unexpected<error>
     make_error(error_code code, char byte, const char *encoding)
     {
         return tl::make_unexpected(
             error{static_cast<uint8_t>(error_origin::stream),
-                  static_cast<uint8_t>(code), byte, encoding});
+                  static_cast<uint8_t>(code), get_path(), byte, encoding});
     }
 };
 

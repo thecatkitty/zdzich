@@ -83,6 +83,9 @@ retrieve_fmt(uint8_t origin, uint8_t ordinal)
 void
 print_error(const error &err)
 {
+    auto path = err.file().empty() ? "input" : err.file().data();
+    std::fprintf(stderr, "%s: error: ", path);
+
     if (auto fmt = retrieve_fmt(err.origin(), err.ordinal()))
     {
         switch (err.size())
