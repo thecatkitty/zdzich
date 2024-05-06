@@ -13,6 +13,7 @@ namespace lex
 class lexer
 {
     pl_istream &_stream;
+    unsigned    _column;
     token_type  _last_type;
     int         _ch;
     unsigned    _spaces;
@@ -20,8 +21,8 @@ class lexer
 
   public:
     lexer(pl_istream &stream)
-        : _stream{stream}, _last_type{token_type::line_break}, _ch{}, _spaces{},
-          _head{}
+        : _stream{stream}, _last_type{token_type::line_break}, _column{0},
+          _ch{}, _spaces{}, _head{}
     {
     }
 
@@ -40,7 +41,7 @@ class lexer
     unsigned
     get_column() const
     {
-        return _stream.get_column();
+        return _column;
     }
 
     result<token>
@@ -59,6 +60,9 @@ class lexer
     };
 
   private:
+    result<void>
+    read();
+
     result<void>
     scan_while(ustring &out, bool (*predicate)(int));
 
