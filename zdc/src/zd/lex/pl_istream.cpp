@@ -131,6 +131,15 @@ lex::pl_istream::read() noexcept
                               _encoding->get_name());
         }
 
+        if ('\n' == codepoint)
+        {
+            _line++;
+            _column = 1;
+        }
+        else
+        {
+            _column++;
+        }
         return codepoint;
     }
 
@@ -153,5 +162,14 @@ lex::pl_istream::read() noexcept
         return make_error(error_code::invalid_sequence);
     }
 
+    if ('\n' == codepoint)
+    {
+        _line++;
+        _column = 1;
+    }
+    else
+    {
+        _column++;
+    }
     return codepoint;
 }
