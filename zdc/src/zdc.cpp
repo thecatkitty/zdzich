@@ -122,8 +122,7 @@ action_parser(zd::lex::lexer &lexer)
         if (!result)
         {
             zd::error err = std::move(result.error());
-            if (err.is(zd::error_origin::parser,
-                       zd::par::parser::error_code::eof))
+            if (err.is<zd::par::parser>(zd::par::parser::error_code::eof))
             {
                 // End of file
                 return 0;

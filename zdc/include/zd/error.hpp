@@ -166,11 +166,11 @@ class error
         return _argv + _argc;
     }
 
-    template <typename Torig, typename Tord>
+    template <typename Torigin, typename Traits = error_origin_traits<Torigin>>
     inline bool
-    is(Torig orig, Tord ord)
+    is(typename Traits::ordinal_type ord)
     {
-        return (static_cast<uint8_t>(orig) == origin()) &&
+        return (static_cast<uint8_t>(Traits::origin_tag) == origin()) &&
                (static_cast<uint8_t>(ord) == ordinal());
     }
 };
