@@ -31,6 +31,18 @@ class lexer
         return _stream.get_path();
     }
 
+    unsigned
+    get_line() const
+    {
+        return _stream.get_line();
+    }
+
+    unsigned
+    get_column() const
+    {
+        return _stream.get_column();
+    }
+
     result<token>
     get_token();
 
@@ -56,17 +68,18 @@ class lexer
     tl::unexpected<error>
     make_error(error_code code)
     {
-        return tl::make_unexpected(
-            error{static_cast<uint8_t>(error_origin::lexer),
-                  static_cast<uint8_t>(code), get_path()});
+        return tl::make_unexpected(error{
+            static_cast<uint8_t>(error_origin::lexer),
+            static_cast<uint8_t>(code), get_path(), get_line(), get_column()});
     }
 
     tl::unexpected<error>
     make_error(error_code code, int character, token_type ttype)
     {
-        return tl::make_unexpected(error{
-            static_cast<uint8_t>(error_origin::lexer),
-            static_cast<uint8_t>(code), get_path(), character, to_cstr(ttype)});
+        return tl::make_unexpected(
+            error{static_cast<uint8_t>(error_origin::lexer),
+                  static_cast<uint8_t>(code), get_path(), get_line(),
+                  get_column(), character, to_cstr(ttype)});
     }
 };
 

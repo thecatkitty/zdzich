@@ -84,7 +84,7 @@ void
 print_error(const error &err)
 {
     auto path = err.file().empty() ? "input" : err.file().data();
-    std::fprintf(stderr, "%s: error: ", path);
+    std::fprintf(stderr, "%s:%u:%u: error: ", path, err.line(), err.column());
 
     if (auto fmt = retrieve_fmt(err.origin(), err.ordinal()))
     {

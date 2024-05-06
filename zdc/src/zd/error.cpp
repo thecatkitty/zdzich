@@ -22,6 +22,8 @@ error::operator=(error &&that) noexcept
     _origin = that._origin;
     _ordinal = that._ordinal;
     _file = std::move(that._file);
+    _line = that._line;
+    _column = that._column;
     _argc = std::exchange(that._argc, 0);
     _argv = std::exchange(that._argv, nullptr);
     return *this;

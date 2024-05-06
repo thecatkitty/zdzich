@@ -18,6 +18,8 @@ class error
     uint8_t    _origin;
     uint8_t    _ordinal;
     ustring    _file;
+    unsigned   _line;
+    unsigned   _column;
     size_t     _argc;
     uintptr_t *_argv;
 
@@ -50,9 +52,13 @@ class error
     }
 
   public:
-    error(uint8_t origin, uint8_t ordinal, ustring file)
-        : _origin{origin}, _ordinal{ordinal}, _file{std::move(file)}, _argc{0},
-          _argv{nullptr}
+    error(uint8_t  origin,
+          uint8_t  ordinal,
+          ustring  file,
+          unsigned line,
+          unsigned column)
+        : _origin{origin}, _ordinal{ordinal}, _file{std::move(file)},
+          _line{line}, _column{column}, _argc{0}, _argv{nullptr}
     {
     }
 
@@ -60,7 +66,8 @@ class error
 
     error(error &&that) noexcept
         : _origin{that._origin}, _ordinal{that._ordinal},
-          _file{std::move(that._file)}, _argc{std::exchange(that._argc, 0)},
+          _file{std::move(that._file)}, _line{that._line},
+          _column{that._column}, _argc{std::exchange(that._argc, 0)},
           _argv{std::exchange(that._argv, nullptr)}
     {
     }
@@ -88,6 +95,18 @@ class error
         return _file;
     }
 
+    unsigned
+    line() const
+    {
+        return _line;
+    }
+
+    unsigned
+    column() const
+    {
+        return _column;
+    }
+
     size_t
     size() const
     {
@@ -110,9 +129,14 @@ class error
     }
 
     template <typename... Args>
-    error(uint8_t origin, uint8_t ordinal, ustring file, Args... args)
+    error(uint8_t  origin,
+          uint8_t  ordinal,
+          ustring  file,
+          unsigned line,
+          unsigned column,
+          Args... args)
         : _origin{origin}, _ordinal{ordinal}, _file{std::move(file)},
-          _argc{sizeof...(args)},
+          _line{line}, _column{column}, _argc{sizeof...(args)},
           _argv{new(std::nothrow) uintptr_t[sizeof...(args)]}
     {
         to_argv(_argv, args...);
