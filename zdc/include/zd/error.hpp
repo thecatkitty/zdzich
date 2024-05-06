@@ -13,6 +13,31 @@
 namespace zd
 {
 
+template <typename T> struct error_origin_traits
+{
+    static const auto origin_tag = T::error_origin_tag;
+
+    using ordinal_type = typename T::error_code;
+
+    static const ustring &
+    path(const T &obj)
+    {
+        return obj.get_path();
+    }
+
+    static unsigned
+    line(const T &obj)
+    {
+        return obj.get_line();
+    }
+
+    static unsigned
+    column(const T &obj)
+    {
+        return obj.get_column();
+    }
+};
+
 class error
 {
     uint8_t    _origin;
@@ -52,14 +77,27 @@ class error
     }
 
   public:
-    error(uint8_t  origin,
-          uint8_t  ordinal,
-          ustring  file,
-          unsigned line,
-          unsigned column)
-        : _origin{origin}, _ordinal{ordinal}, _file{std::move(file)},
-          _line{line}, _column{column}, _argc{0}, _argv{nullptr}
+    template <typename Torigin, typename Traits = error_origin_traits<Torigin>>
+    error(const Torigin &origin, typename Traits::ordinal_type code)
+        : _origin{static_cast<uint8_t>(Traits::origin_tag)},
+          _ordinal{static_cast<uint8_t>(code)}, _file{Traits::path(origin)},
+          _line{Traits::line(origin)}, _column{Traits::column(origin)},
+          _argc{0}, _argv{nullptr}
     {
+    }
+
+    template <typename Torigin,
+              typename Traits = error_origin_traits<Torigin>,
+              typename... Args>
+    error(const Torigin                &origin,
+          typename Traits::ordinal_type code,
+          Args... args)
+        : error{origin, code}
+    {
+        _argc = sizeof...(args);
+        _argv = new (std::nothrow) uintptr_t[sizeof...(args)];
+
+        to_argv(_argv, args...);
     }
 
     error(const error &) = delete;
@@ -126,20 +164,6 @@ class error
     end() const
     {
         return _argv + _argc;
-    }
-
-    template <typename... Args>
-    error(uint8_t  origin,
-          uint8_t  ordinal,
-          ustring  file,
-          unsigned line,
-          unsigned column,
-          Args... args)
-        : _origin{origin}, _ordinal{ordinal}, _file{std::move(file)},
-          _line{line}, _column{column}, _argc{sizeof...(args)},
-          _argv{new(std::nothrow) uintptr_t[sizeof...(args)]}
-    {
-        to_argv(_argv, args...);
     }
 
     template <typename Torig, typename Tord>

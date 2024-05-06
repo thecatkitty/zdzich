@@ -18,8 +18,28 @@ class parser
     {
     }
 
+    const ustring &
+    get_path() const
+    {
+        return _lexer.get_path();
+    }
+
+    unsigned
+    get_line() const
+    {
+        return _lexer.get_line();
+    }
+
+    unsigned
+    get_column() const
+    {
+        return _lexer.get_column();
+    }
+
     result<unique_node>
     handle(const lex::token &head = lex::token{});
+
+    static const auto error_origin_tag = error_origin::parser;
 
     enum class error_code : uint8_t
     {
@@ -87,37 +107,26 @@ class parser
     tl::unexpected<error>
     make_error(error_code code)
     {
-        return tl::make_unexpected(
-            error{static_cast<uint8_t>(error_origin::parser),
-                  static_cast<uint8_t>(code), _lexer.get_path(),
-                  _lexer.get_line(), _lexer.get_column()});
+        return tl::make_unexpected(error{*this, code});
     }
 
     tl::unexpected<error>
     make_error(error_code code, lex::token_type ttype)
     {
-        return tl::make_unexpected(
-            error{static_cast<uint8_t>(error_origin::parser),
-                  static_cast<uint8_t>(code), _lexer.get_path(),
-                  _lexer.get_line(), _lexer.get_column(), to_cstr(ttype)});
+        return tl::make_unexpected(error{*this, code, to_cstr(ttype)});
     }
 
     tl::unexpected<error>
     make_error(error_code code, lex::token_type context, lex::token_type ttype)
     {
-        return tl::make_unexpected(error{
-            static_cast<uint8_t>(error_origin::parser),
-            static_cast<uint8_t>(code), _lexer.get_path(), _lexer.get_line(),
-            _lexer.get_column(), to_cstr(context), to_cstr(ttype)});
+        return tl::make_unexpected(
+            error{*this, code, to_cstr(context), to_cstr(ttype)});
     }
 
     tl::unexpected<error>
     make_error(error_code code, int number)
     {
-        return tl::make_unexpected(
-            error{static_cast<uint8_t>(error_origin::parser),
-                  static_cast<uint8_t>(code), _lexer.get_path(),
-                  _lexer.get_line(), _lexer.get_column(), number});
+        return tl::make_unexpected(error{*this, code, number});
     }
 };
 
