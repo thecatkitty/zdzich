@@ -125,7 +125,7 @@ lex::lexer::get_token()
 
     if (!_ch)
     {
-        RETURN_IF_ERROR(_ch, _stream.read());
+        RETURN_IF_ERROR_VOID(read());
     }
 
     if (!_stream || (EOF == _ch))
@@ -147,7 +147,7 @@ lex::lexer::get_token()
     while (_stream && text::isspace(_ch))
     {
         _spaces++;
-        RETURN_IF_ERROR(_ch, _stream.read());
+        RETURN_IF_ERROR_VOID(read());
     }
 
     // Single-character tokens
@@ -162,7 +162,7 @@ lex::lexer::get_token()
     {
         // Plus sign, minus sign, or a string literal made of them
         _head.append(_ch);
-        RETURN_IF_ERROR(_ch, _stream.read());
+        RETURN_IF_ERROR_VOID(read());
 
         if (('+' == _ch) || ('-' == _ch))
         {
@@ -184,7 +184,7 @@ lex::lexer::get_token()
 
         if ('<' == _ch)
         {
-            RETURN_IF_ERROR(_ch, _stream.read());
+            RETURN_IF_ERROR_VOID(read());
             RETURN_IF_CHTOKEN('>', {_last_type = token_type::cpref_ne});
             return {_last_type = token_type::cpref_lt};
         }
@@ -192,7 +192,7 @@ lex::lexer::get_token()
 
     if ('&' == _ch)
     {
-        RETURN_IF_ERROR(_ch, _stream.read());
+        RETURN_IF_ERROR_VOID(read());
         RETURN_IF_CHTOKEN('<', {_last_type = token_type::cpref_le});
         RETURN_IF_CHTOKEN('>', {_last_type = token_type::cpref_ge});
         return {_last_type = token_type::ampersand};
@@ -210,7 +210,7 @@ lex::lexer::get_token()
     if ('$' == _ch)
     {
         // Either reference access or a hexadecimal literal
-        RETURN_IF_ERROR(_ch, _stream.read());
+        RETURN_IF_ERROR_VOID(read());
         if (!isxdigit(_ch))
         {
             // Reference access
@@ -232,7 +232,7 @@ lex::lexer::get_token()
             number *= base;
             number += _chtou(_ch);
             _head.append(_ch); // In case it's not a literal.
-            RETURN_IF_ERROR(_ch, _stream.read());
+            RETURN_IF_ERROR_VOID(read());
         }
 
         if (text::is_name_continuation(_ch))
@@ -261,6 +261,14 @@ lex::lexer::get_token()
     return std::move(process_string());
 }
 
+result<void>
+lex::lexer::read()
+{
+    RETURN_IF_ERROR(_ch, _stream.read());
+    _column = _isnotcrlf(_ch) ? (_column + 1) : 0;
+    return {};
+}
+
 result<lex::token>
 lex::lexer::process_string()
 {
@@ -274,7 +282,7 @@ lex::lexer::process_string()
     if ('#' == _ch)
     {
         // Directive or subscript
-        RETURN_IF_ERROR(_ch, _stream.read());
+        RETURN_IF_ERROR_VOID(read());
         if (!text::isalpha(_ch) && (',' != _ch))
         {
             // Subscript
@@ -313,7 +321,7 @@ lex::lexer::process_string()
 
         string.append(_ch);
 
-        RETURN_IF_ERROR(_ch, _stream.read());
+        RETURN_IF_ERROR_VOID(read());
     }
 
     if (_is_register(string))
@@ -333,7 +341,7 @@ lex::lexer::scan_while(ustring &out, bool (*predicate)(int))
     {
         out.append(_ch);
 
-        RETURN_IF_ERROR(_ch, _stream.read());
+        RETURN_IF_ERROR_VOID(read());
     }
 
     return {};
