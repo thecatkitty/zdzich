@@ -53,6 +53,8 @@ class lexer
         return _spaces;
     }
 
+    static const auto error_origin_tag = error_origin::lexer;
+
     enum class error_code : uint8_t
     {
         invalid_newline = 0,
@@ -72,18 +74,14 @@ class lexer
     tl::unexpected<error>
     make_error(error_code code)
     {
-        return tl::make_unexpected(error{
-            static_cast<uint8_t>(error_origin::lexer),
-            static_cast<uint8_t>(code), get_path(), get_line(), get_column()});
+        return tl::make_unexpected(error{*this, code});
     }
 
     tl::unexpected<error>
     make_error(error_code code, int character, token_type ttype)
     {
         return tl::make_unexpected(
-            error{static_cast<uint8_t>(error_origin::lexer),
-                  static_cast<uint8_t>(code), get_path(), get_line(),
-                  get_column(), character, to_cstr(ttype)});
+            error{*this, code, character, to_cstr(ttype)});
     }
 };
 

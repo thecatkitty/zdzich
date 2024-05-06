@@ -62,6 +62,8 @@ class pl_istream
         return _column;
     }
 
+    static const auto error_origin_tag = error_origin::stream;
+
     enum class error_code : uint8_t
     {
         unexpected_byte = 0,
@@ -73,18 +75,13 @@ class pl_istream
     tl::unexpected<error>
     make_error(error_code code)
     {
-        return tl::make_unexpected(error{
-            static_cast<uint8_t>(error_origin::stream),
-            static_cast<uint8_t>(code), get_path(), get_line(), get_column()});
+        return tl::make_unexpected(error{*this, code});
     }
 
     tl::unexpected<error>
     make_error(error_code code, char byte, const char *encoding)
     {
-        return tl::make_unexpected(
-            error{static_cast<uint8_t>(error_origin::stream),
-                  static_cast<uint8_t>(code), get_path(), get_line(),
-                  get_column(), byte, encoding});
+        return tl::make_unexpected(error{*this, code, byte, encoding});
     }
 };
 
