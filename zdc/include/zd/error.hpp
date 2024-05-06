@@ -8,6 +8,8 @@
 #include <new>
 #include <utility>
 
+#include <zd/ustring.hpp>
+
 namespace zd
 {
 
@@ -15,6 +17,7 @@ class error
 {
     uint8_t    _origin;
     uint8_t    _ordinal;
+    ustring    _file;
     size_t     _argc;
     uintptr_t *_argv;
 
@@ -47,8 +50,9 @@ class error
     }
 
   public:
-    error(uint8_t origin, uint8_t ordinal)
-        : _origin{origin}, _ordinal{ordinal}, _argc{0}, _argv{nullptr}
+    error(uint8_t origin, uint8_t ordinal, ustring file)
+        : _origin{origin}, _ordinal{ordinal}, _file{std::move(file)}, _argc{0},
+          _argv{nullptr}
     {
     }
 
@@ -56,7 +60,7 @@ class error
 
     error(error &&that) noexcept
         : _origin{that._origin}, _ordinal{that._ordinal},
-          _argc{std::exchange(that._argc, 0)},
+          _file{std::move(that._file)}, _argc{std::exchange(that._argc, 0)},
           _argv{std::exchange(that._argv, nullptr)}
     {
     }
@@ -76,6 +80,12 @@ class error
     ordinal() const
     {
         return _ordinal;
+    }
+
+    const ustring &
+    file() const
+    {
+        return _file;
     }
 
     size_t
@@ -100,8 +110,9 @@ class error
     }
 
     template <typename... Args>
-    error(uint8_t origin, uint8_t ordinal, Args... args)
-        : _origin{origin}, _ordinal{ordinal}, _argc{sizeof...(args)},
+    error(uint8_t origin, uint8_t ordinal, ustring file, Args... args)
+        : _origin{origin}, _ordinal{ordinal}, _file{std::move(file)},
+          _argc{sizeof...(args)},
           _argv{new(std::nothrow) uintptr_t[sizeof...(args)]}
     {
         to_argv(_argv, args...);

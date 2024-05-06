@@ -53,20 +53,20 @@ class lexer
     result<token>
     process_string();
 
-    static tl::unexpected<error>
+    tl::unexpected<error>
     make_error(error_code code)
     {
         return tl::make_unexpected(
             error{static_cast<uint8_t>(error_origin::lexer),
-                  static_cast<uint8_t>(code)});
+                  static_cast<uint8_t>(code), get_path()});
     }
 
-    static tl::unexpected<error>
+    tl::unexpected<error>
     make_error(error_code code, int character, token_type ttype)
     {
-        return tl::make_unexpected(
-            error{static_cast<uint8_t>(error_origin::lexer),
-                  static_cast<uint8_t>(code), character, to_cstr(ttype)});
+        return tl::make_unexpected(error{
+            static_cast<uint8_t>(error_origin::lexer),
+            static_cast<uint8_t>(code), get_path(), character, to_cstr(ttype)});
     }
 };
 
