@@ -163,7 +163,13 @@ action_parser(zd::lex::lexer &lexer)
                 zd::lex::pl_istream inc_stream{
                     inc_path, lexer.get_stream().get_encoding()};
                 zd::lex::lexer inc_lexer{inc_stream};
-                action_parser(inc_lexer);
+
+                int status = action_parser(inc_lexer);
+                if (0 != status)
+                {
+                    return status;
+                }
+
                 continue;
             }
         }
