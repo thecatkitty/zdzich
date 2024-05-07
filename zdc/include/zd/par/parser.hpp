@@ -49,7 +49,9 @@ class parser
         unknown_directive = 3,
         out_of_range = 4,
         name_expected = 5,
-        include_expected = 6,
+        path_expected = 6,
+        not_a_command = 7,
+        cannot_emit = 8,
     };
 
   private:
@@ -114,6 +116,12 @@ class parser
     make_error(error_code code, lex::token_type ttype)
     {
         return tl::make_unexpected(error{*this, code, to_cstr(ttype)});
+    }
+
+    tl::unexpected<error>
+    make_error(error_code code, lex::token_type ttype, const char *str)
+    {
+        return tl::make_unexpected(error{*this, code, to_cstr(ttype), str});
     }
 
     tl::unexpected<error>

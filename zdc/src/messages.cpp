@@ -40,13 +40,13 @@ const struct _msg
     {make_id(error_origin::lexer, lex::lexer::error_code::invalid_newline),
      "invalid line break"},
     {make_id(error_origin::lexer, lex::lexer::error_code::unexpected_character),
-     "unexpected character %d in a token '%s'"},
+     "unexpected character %d in '%s'"},
 
     // Parser
     {make_id(error_origin::parser, par::parser::error_code::eof),
      "end of file"},
     {make_id(error_origin::parser, par::parser::error_code::unexpected_token),
-     "unexpected token '%s'"},
+     "unexpected '%s' in '%s'"},
     {make_id(error_origin::parser, par::parser::error_code::unexpected_eof),
      "unexpected end of file while processing '%s'"},
     {make_id(error_origin::parser, par::parser::error_code::unknown_directive),
@@ -55,8 +55,12 @@ const struct _msg
      "number %d is out of range"},
     {make_id(error_origin::parser, par::parser::error_code::name_expected),
      "name expected after '%s', got '%s'"},
-    {make_id(error_origin::parser, par::parser::error_code::include_expected),
+    {make_id(error_origin::parser, par::parser::error_code::path_expected),
      "include path expected"},
+    {make_id(error_origin::parser, par::parser::error_code::not_a_command),
+     "unexpected '%s' at the beginning of a command"},
+    {make_id(error_origin::parser, par::parser::error_code::cannot_emit),
+     "unexpected character %u in the emit directive"},
 };
 
 static const char *
