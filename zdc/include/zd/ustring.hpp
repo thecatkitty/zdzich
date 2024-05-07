@@ -125,6 +125,14 @@ class ustring
         return _data;
     }
 
+    char *
+    extract()
+    {
+        _size = 0;
+        _capacity = 0;
+        return std::exchange(_data, nullptr);
+    }
+
     bool
     reserve(size_t new_cap);
 
