@@ -4,10 +4,24 @@ using namespace zd;
 
 error::~error()
 {
-    if (_argv)
+    if (!_argv)
     {
-        delete[] _argv;
+        return;
     }
+
+    // Call all argument finalizers
+    for (auto it = _argv; it < _argv + _argc; it++)
+    {
+        auto finalizer = reinterpret_cast<void (*)(uintptr_t)>(it[_argc]);
+        if (finalizer)
+        {
+            finalizer(*it);
+        }
+    }
+
+    // Destroy the buffer
+    delete[] _argv;
+    _argv = nullptr;
 }
 
 error &
