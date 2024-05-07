@@ -201,7 +201,7 @@ par::parser::handle(const lex::token &head)
                                       token.get_type());
 
         default:
-            return make_error(error_code::unexpected_token, token.get_type());
+            return make_error(error_code::not_a_command, token.get_type());
         }
     }
 }
@@ -241,7 +241,8 @@ par::parser::handle_assignment(lex::token_type ttype,
         break;
 
     default:
-        return make_error(error_code::unexpected_token, token.get_type());
+        return make_error(error_code::unexpected_token, token.get_type(),
+                          "assignment");
     }
 
     unique_node source{};
@@ -365,7 +366,8 @@ par::parser::handle_call(const ustring &callee, bool enclosed)
             }
 
             enclosed = false;
-            return make_error(error_code::unexpected_token, token.get_type());
+            return make_error(error_code::unexpected_token, token.get_type(),
+                              "call");
 
         case lex::token_type::literal_str:
             // Irregular string literal reconstruction:
@@ -387,7 +389,8 @@ par::parser::handle_call(const ustring &callee, bool enclosed)
 
             // Pass through
         default: {
-            return make_error(error_code::unexpected_token, token.get_type());
+            return make_error(error_code::unexpected_token, token.get_type(),
+                              "call");
         }
         }
     }
@@ -475,7 +478,7 @@ par::parser::handle_directive(const ustring &directive)
                 std::find_if_not(name_end, directive.end(), text::isspace);
             if (directive.end() == path_begin)
             {
-                return make_error(error_code::include_expected);
+                return make_error(error_code::path_expected);
             }
 
             return std::make_unique<include_node>(path_begin.get());
@@ -488,7 +491,7 @@ par::parser::handle_directive(const ustring &directive)
                 std::find_if_not(name_end, directive.end(), text::isspace);
             if (directive.end() == path_begin)
             {
-                return make_error(error_code::include_expected);
+                return make_error(error_code::path_expected);
             }
 
             return std::make_unique<include_node>(path_begin.get(), true);
@@ -525,8 +528,7 @@ par::parser::handle_directive(const ustring &directive)
         }
         else
         {
-            return make_error(error_code::unexpected_token,
-                              lex::token_type::unknown);
+            return make_error(error_code::cannot_emit, *it);
         }
 
         it++;
@@ -563,19 +565,22 @@ par::parser::handle_end()
         return std::make_unique<end_node>();
 
     default:
-        return make_error(error_code::unexpected_token, token.get_type());
+        return make_error(error_code::unexpected_token, token.get_type(),
+                          "end");
     }
 
     RETURN_IF_ERROR(token, _lexer.get_token());
     if (lex::token_type::lbracket != token.get_type())
     {
-        return make_error(error_code::unexpected_token, token.get_type());
+        return make_error(error_code::unexpected_token, token.get_type(),
+                          "end");
     }
 
     RETURN_IF_ERROR(token, _lexer.get_token());
     if (lex::token_type::rbracket != token.get_type())
     {
-        return make_error(error_code::unexpected_token, token.get_type());
+        return make_error(error_code::unexpected_token, token.get_type(),
+                          "end");
     }
 
     return std::make_unique<end_node>(std::move(name));
@@ -588,7 +593,8 @@ par::parser::handle_jump()
     RETURN_IF_ERROR(token, _lexer.get_token());
     if (lex::token_type::colon != token.get_type())
     {
-        return make_error(error_code::unexpected_token, token.get_type());
+        return make_error(error_code::unexpected_token, token.get_type(),
+                          "jump");
     }
 
     unique_node target{};
@@ -604,7 +610,8 @@ par::parser::handle_label()
 
     if (!_can_be_name(token))
     {
-        return make_error(error_code::unexpected_token, token.get_type());
+        return make_error(error_code::unexpected_token, token.get_type(),
+                          "label");
     }
 
     return std::make_unique<label_node>(std::move(token.get_text()));
@@ -635,7 +642,7 @@ par::parser::handle_object(lex::token_type ttype, ustring name)
         break;
 
     default:
-        return make_error(error_code::unexpected_token, ttype);
+        return make_error(error_code::unexpected_token, ttype, "object");
     }
 
     if (!name.empty())
@@ -719,7 +726,8 @@ par::parser::handle_operation(lex::token_type ttype)
         }
         // Pass through
     default:
-        return make_error(error_code::unexpected_token, token.get_type());
+        return make_error(error_code::unexpected_token, token.get_type(),
+                          "operation");
     }
 }
 
@@ -731,7 +739,8 @@ par::parser::handle_procedure()
 
     if (!_can_be_name(token))
     {
-        return make_error(error_code::unexpected_token, token.get_type());
+        return make_error(error_code::unexpected_token, token.get_type(),
+                          "procedure");
     }
 
     ustring name = std::move(token.get_text());
@@ -739,13 +748,15 @@ par::parser::handle_procedure()
     RETURN_IF_ERROR(token, _lexer.get_token());
     if (lex::token_type::lbracket != token.get_type())
     {
-        return make_error(error_code::unexpected_token, token.get_type());
+        return make_error(error_code::unexpected_token, token.get_type(),
+                          "procedure");
     }
 
     RETURN_IF_ERROR(token, _lexer.get_token());
     if (lex::token_type::rbracket != token.get_type())
     {
-        return make_error(error_code::unexpected_token, token.get_type());
+        return make_error(error_code::unexpected_token, token.get_type(),
+                          "procedure");
     }
 
     node_list body{};
@@ -858,7 +869,8 @@ par::parser::handle_value()
     }
 
     default: {
-        return make_error(error_code::unexpected_token, token.get_type());
+        return make_error(error_code::unexpected_token, token.get_type(),
+                          "value");
     }
     }
 
