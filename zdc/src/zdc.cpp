@@ -142,17 +142,21 @@ action_parser(zd::lex::lexer &lexer)
             if (!inc_node->is_binary)
             {
                 // Inclusion directive - #Wstaw
-
-                // Get parent path
-                auto &self = lexer.get_path();
-                auto  dir_end = ++zd::find_last_if(self.begin(), self.end(),
-                                                   is_path_separator);
-
-                // Create included file path
                 zd::ustring inc_path{};
-                std::for_each(self.begin(), dir_end, [&inc_path](int ch) {
-                    inc_path.append(ch);
-                });
+
+                auto &self = lexer.get_path();
+                if (!self.empty())
+                {
+                    // Get parent path
+                    auto dir_end = ++zd::find_last_if(self.begin(), self.end(),
+                                                      is_path_separator);
+
+                    // Create included file path
+                    std::for_each(self.begin(), dir_end, [&inc_path](int ch) {
+                        inc_path.append(ch);
+                    });
+                }
+
                 inc_path.append(inc_node->name);
 
                 // Process the included file
