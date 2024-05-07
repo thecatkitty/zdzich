@@ -76,6 +76,21 @@ class error
         to_argv(argv + 1, tail...);
     }
 
+    template <typename Head>
+    inline static void
+    to_argvfp(uintptr_t *argvfp, Head head)
+    {
+        *argvfp = 0;
+    }
+
+    template <typename Head, typename... Tail>
+    inline static void
+    to_argvfp(uintptr_t *argvfp, Head head, Tail... tail)
+    {
+        to_argvfp(argvfp, head);
+        to_argvfp(argvfp + 1, tail...);
+    }
+
   public:
     template <typename Torigin, typename Traits = error_origin_traits<Torigin>>
     error(const Torigin &origin, typename Traits::ordinal_type code)
@@ -95,9 +110,10 @@ class error
         : error{origin, code}
     {
         _argc = sizeof...(args);
-        _argv = new (std::nothrow) uintptr_t[sizeof...(args)];
+        _argv = new (std::nothrow) uintptr_t[sizeof...(args) * 2];
 
         to_argv(_argv, args...);
+        to_argvfp(_argv + sizeof...(args), args...);
     }
 
     error(const error &) = delete;
