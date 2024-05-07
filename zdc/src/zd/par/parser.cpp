@@ -515,14 +515,14 @@ par::parser::handle_directive(const ustring &directive)
         {
             number *= 10;
             number += *it - '0';
-        }
-        else if (',' == *it)
-        {
+
             if (255 < number)
             {
                 return make_error(error_code::out_of_range, number);
             }
-
+        }
+        else if (',' == *it)
+        {
             bytes.push_back(static_cast<uint8_t>(number));
             number = 0;
         }
