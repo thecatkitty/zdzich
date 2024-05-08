@@ -17,68 +17,32 @@
 
 using namespace zd;
 
-template <typename Torig, typename Tord>
 static constexpr uint16_t
-make_id(Torig origin, Tord ordinal)
+make_id(uint8_t origin, uint8_t ordinal)
 {
     return (static_cast<uint16_t>(origin) << 8) |
            static_cast<uint16_t>(ordinal);
 }
 
 #ifndef _WIN32
-const struct _msg
+extern "C" const struct
 {
-    uint16_t    id;
-    const char *fmt;
-} MESSAGES[]{
-    // Stream
-    {make_id(error_origin::stream,
-             lex::pl_istream::error_code::unexpected_byte),
-     "unexpected byte %u in the encoding '%s'"},
-    {make_id(error_origin::stream,
-             lex::pl_istream::error_code::invalid_sequence),
-     "invalid multi-byte sequence"},
-    {make_id(error_origin::stream, lex::pl_istream::error_code::read_error),
-     "read error in a multi-byte sequence"},
-
-    // Lexer
-    {make_id(error_origin::lexer, lex::lexer::error_code::invalid_newline),
-     "invalid line break"},
-    {make_id(error_origin::lexer, lex::lexer::error_code::unexpected_character),
-     "unexpected character %d in '%s'"},
-
-    // Parser
-    {make_id(error_origin::parser, par::parser::error_code::eof),
-     "end of file"},
-    {make_id(error_origin::parser, par::parser::error_code::unexpected_token),
-     "unexpected '%s' in '%s'"},
-    {make_id(error_origin::parser, par::parser::error_code::unexpected_eof),
-     "unexpected end of file while processing '%s'"},
-    {make_id(error_origin::parser, par::parser::error_code::unknown_directive),
-     "unknown directive"},
-    {make_id(error_origin::parser, par::parser::error_code::out_of_range),
-     "number %d is out of range"},
-    {make_id(error_origin::parser, par::parser::error_code::name_expected),
-     "name expected after '%s', got '%s'"},
-    {make_id(error_origin::parser, par::parser::error_code::path_expected),
-     "include path expected"},
-    {make_id(error_origin::parser, par::parser::error_code::not_a_command),
-     "unexpected '%s' at the beginning of a command"},
-    {make_id(error_origin::parser, par::parser::error_code::cannot_emit),
-     "unexpected character %u in the emit directive"},
-};
+    unsigned    id;
+    const char *msg;
+} MESSAGES_0409[];
 
 static const char *
-retrieve_fmt(uint8_t origin, uint8_t ordinal)
+retrieve_fmt(uint16_t id)
 {
-    auto id = make_id(origin, ordinal);
-    auto it = std::lower_bound(std::begin(MESSAGES), std::end(MESSAGES), id,
-                               [](const _msg &msg, uint16_t i) {
-                                   return msg.id < i;
-                               });
-    return it == std::end(MESSAGES) ? nullptr
-           : it->id != id           ? nullptr
-                                    : it->fmt;
+    for (auto it = MESSAGES_0409; it->id; it++)
+    {
+        if (it->id == id)
+        {
+            return it->msg;
+        }
+    }
+
+    return nullptr;
 }
 
 #define ARGV1(argv) (argv)[0]
@@ -112,7 +76,7 @@ print_error(const error &err)
     ::LocalFree(buffer);
 
 #else
-    if (auto fmt = retrieve_fmt(err.origin(), err.ordinal()))
+    if (auto fmt = retrieve_fmt(make_id(err.origin(), err.ordinal())))
     {
         switch (err.size())
         {

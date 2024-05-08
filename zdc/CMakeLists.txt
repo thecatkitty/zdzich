@@ -23,6 +23,20 @@ if(WIN32)
 
 	set_source_files_properties(zdc.rc PROPERTIES GENERATED TRUE)
 	target_sources(zdc PRIVATE zdc.rc)
+else()
+	add_custom_command(
+		OUTPUT zdc_en_US.c
+		COMMAND python3
+		ARGS
+			${CMAKE_CURRENT_SOURCE_DIR}/../tools/mconv.py
+			-o ${CMAKE_CURRENT_BINARY_DIR}/zdc_en_US.c
+			${CMAKE_CURRENT_SOURCE_DIR}/src/zdc.mc
+			1033
+		MAIN_DEPENDENCY
+			${CMAKE_CURRENT_SOURCE_DIR}/src/zdc.mc)
+
+	set_source_files_properties(zdc_en_US.c PROPERTIES GENERATED TRUE)
+	target_sources(zdc PRIVATE zdc_en_US.c)
 endif()
 
 install(TARGETS zdc DESTINATION .)
