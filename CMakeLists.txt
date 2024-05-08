@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(Zdzich CXX)
+project(Zdzich CXX C)
 
 # Compiler dependent tweaks
 if(MSVC)
@@ -12,8 +12,8 @@ if(DOS)
     add_compile_options(-mcmodel=small)
     add_compile_options(-mnewlib-nano-stdio)
     add_compile_options(-Os)
-    add_compile_options(-fno-exceptions)
-    add_compile_options(-fno-rtti)
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions>)
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>)
 
     add_link_options(-mcmodel=small)
     add_link_options(-mnewlib-nano-stdio)
