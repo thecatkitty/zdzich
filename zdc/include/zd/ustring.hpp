@@ -43,16 +43,16 @@ class ustring
             return _ptr;
         }
 
-        friend bool
-        operator==(const iterator &left, const iterator &right)
+        bool
+        operator==(const iterator &that)
         {
-            return left._ptr == right._ptr;
+            return _ptr == that._ptr;
         };
 
-        friend bool
-        operator!=(const iterator &left, const iterator &right)
+        bool
+        operator!=(const iterator &that)
         {
-            return left._ptr != right._ptr;
+            return _ptr != that._ptr;
         };
 
       private:
@@ -145,13 +145,13 @@ class ustring
     void
     clear();
 
-    friend bool
-    operator==(const ustring &left, const ustring &right);
+    bool
+    operator==(const ustring &that);
 
-    friend bool
-    operator!=(const ustring &left, const ustring &right)
+    bool
+    operator!=(const ustring &that)
     {
-        return !(left == right);
+        return !(*this == that);
     }
 };
 

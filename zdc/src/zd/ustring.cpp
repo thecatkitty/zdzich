@@ -147,10 +147,10 @@ ustring::clear()
 }
 
 bool
-zd::operator==(const ustring &left, const ustring &right)
+zd::ustring::operator==(const ustring &that)
 {
-    return (left._size == right._size) &&
-           std::equal(left._data, left._data + left._size, right._data);
+    return (_size == that._size) &&
+           std::equal(_data, _data + _size, that._data);
 }
 
 // zd::ustring::iterator class
