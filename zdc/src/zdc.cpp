@@ -4,10 +4,8 @@
 #include <zd/containers.hpp>
 #include <zd/gen/text_generator.hpp>
 #include <zd/lex/lexer.hpp>
+#include <zd/message.hpp>
 #include <zd/par/parser.hpp>
-
-extern void
-print_error(const zd::error &err);
 
 static int
 action_lexer(zd::lex::lexer &lexer);
@@ -17,6 +15,9 @@ action_parser(zd::lex::lexer &lexer);
 
 static bool
 is_path_separator(int ch);
+
+static void
+print_error(const zd::error &err);
 
 int
 main(int argc, char *argv[])
@@ -190,4 +191,17 @@ is_path_separator(int ch)
 #endif
 
     return '/' == ch;
+}
+
+void
+print_error(const zd::error &err)
+{
+    auto path = err.file().empty() ? "input" : err.file().data();
+    std::fprintf(stderr, "%s:%u:%u: error: ", path, err.line(), err.column());
+
+    zd::message::retrieve((err.origin() << 8) | err.ordinal(), err.size(),
+                          err.begin())
+        .print(stderr);
+
+    std::fputs("\n", stderr);
 }
