@@ -40,10 +40,7 @@ class zd4_generator : public generator
     }
 
     bool
-    process(const par::end_node &node) override
-    {
-        return false;
-    }
+    process(const par::end_node &node) override;
 
     bool
     process(const par::emit_node &node) override
