@@ -53,6 +53,8 @@ enum class cpu_register : uint16_t
     b,
     c,
     d,
+    stack,
+    base,
     src,
     dst,
     flag_c = cpu_register_flag,
@@ -70,6 +72,8 @@ enum class cpu_register : uint16_t
     bx = b | cpu_register_word,
     cx = c | cpu_register_word,
     dx = d | cpu_register_word,
+    sp = stack | cpu_register_word,
+    bp = base | cpu_register_word,
     si = src | cpu_register_word,
     di = dst | cpu_register_word,
 };
