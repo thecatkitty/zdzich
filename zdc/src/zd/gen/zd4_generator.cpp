@@ -37,6 +37,19 @@ zd4_generator::process(const par::call_node &node)
     return false;
 }
 
+bool
+zd4_generator::process(const par::end_node &node)
+{
+    if (node.name.empty())
+    {
+        asm_mov(cpu_register::ah, 0x4C);
+        asm_int(0x21);
+        return true;
+    }
+
+    return false;
+}
+
 void
 zd4_generator::list_relocations() const
 {
