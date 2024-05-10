@@ -3,6 +3,7 @@
 
 #include <zd/containers.hpp>
 #include <zd/gen/text_generator.hpp>
+#include <zd/gen/zd4_generator.hpp>
 #include <zd/lex/lexer.hpp>
 #include <zd/message.hpp>
 #include <zd/par/parser.hpp>
@@ -117,7 +118,8 @@ int
 action_parser(zd::lex::lexer &lexer)
 {
     zd::par::parser         parser{lexer};
-    zd::gen::text_generator generator{stdout};
+    zd::gen::text_generator text_generator{stdout};
+    zd::gen::zd4_generator  code_generator{};
 
     zd::result<zd::par::unique_node> result{};
     while (true)
@@ -175,7 +177,9 @@ action_parser(zd::lex::lexer &lexer)
             }
         }
 
-        node->generate(&generator);
+        node->generate(&text_generator);
+        std::puts("");
+        node->generate(&code_generator);
         std::puts("");
     }
 }
