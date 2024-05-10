@@ -131,6 +131,8 @@ action_parser(zd::lex::lexer &lexer)
             if (err.is<zd::par::parser>(zd::par::parser::error_code::eof))
             {
                 // End of file
+
+                code_generator.list_relocations();
                 return 0;
             }
 
