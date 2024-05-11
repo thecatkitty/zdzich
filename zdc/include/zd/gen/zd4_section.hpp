@@ -1,6 +1,9 @@
 #include <cstdint>
 #include <cstdio>
 #include <list>
+#include <utility>
+
+#include <zd/ustring.hpp>
 
 namespace zd
 {
@@ -26,11 +29,14 @@ class zd4_section
     unsigned                  _offset;
     std::list<zd4_relocation> _relocs;
 
+#ifdef __ia16__
+    ustring _fname{};
+#endif
+
   public:
-    zd4_section(bool load = true)
-        : _pf{load ? std::tmpfile() : nullptr}, _offset{0}, _relocs{}
-    {
-    }
+    zd4_section(bool load = true);
+
+    ~zd4_section();
 
     uint16_t
     size() const
@@ -58,10 +64,7 @@ class zd4_section
     reserve(unsigned size);
 
     bool
-    relocate(const uint16_t *bases);
-
-    void
-    list_relocations() const;
+    relocate(std::FILE *output, const uint16_t *bases);
 };
 
 } // namespace gen

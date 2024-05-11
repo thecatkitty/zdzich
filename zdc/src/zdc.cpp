@@ -8,11 +8,18 @@
 #include <zd/message.hpp>
 #include <zd/par/parser.hpp>
 
+typedef bool (*node_callback)(zd::par::node *, void *);
+
+static int
+action_compiler(zd::lex::lexer &lexer, std::FILE *output);
+
 static int
 action_lexer(zd::lex::lexer &lexer);
 
 static int
-action_parser(zd::lex::lexer &lexer);
+action_parser(zd::lex::lexer &lexer,
+              node_callback   callback = nullptr,
+              void           *context = nullptr);
 
 static bool
 is_path_separator(int ch);
@@ -24,15 +31,16 @@ int
 main(int argc, char *argv[])
 {
     // Process command line arguments
-    const char *opt_action{"P"};
+    const char *opt_action{"C"};
     const char *opt_enc{""};
-    const char *opt_path{""};
+    const char *opt_input{""};
+    const char *opt_output{""};
 
     for (auto arg : zd::range<char *>(argv + 1, argc - 1))
     {
         if ('-' != arg[0])
         {
-            opt_path = arg;
+            opt_input = arg;
             continue;
         }
 
@@ -42,7 +50,13 @@ main(int argc, char *argv[])
             continue;
         }
 
-        if (zd::contains("LP", arg[1]))
+        if (('o' == arg[1]) && (':' == arg[2]))
+        {
+            opt_output = arg + 3;
+            continue;
+        }
+
+        if (zd::contains("CLP", arg[1]))
         {
             opt_action = arg + 1;
             continue;
@@ -58,14 +72,33 @@ main(int argc, char *argv[])
         : (0 == std::strcmp(opt_enc, "win")) ? zd::text::encoding::windows_1250
                                              : zd::text::encoding::unknown;
 
-    zd::lex::pl_istream stream{(opt_path[0] && std::strcmp("--", opt_path))
-                                   ? zd::io::min_istream{opt_path}
+    zd::lex::pl_istream stream{(opt_input[0] && std::strcmp("--", opt_input))
+                                   ? zd::io::min_istream{opt_input}
                                    : stdin,
                                encoding};
 
     zd::lex::lexer lexer{stream};
 
     // Execute the actual action
+    if ('C' == *opt_action)
+    {
+        if (!*opt_output)
+        {
+            std::fputs("error: no output file name provided (argument -o)\n",
+                       stderr);
+            return 1;
+        }
+
+        auto output = std::fopen(opt_output, "wb");
+        if (!output)
+        {
+            std::perror(opt_output);
+            return 1;
+        }
+
+        return action_compiler(lexer, output);
+    }
+
     if ('L' == *opt_action)
     {
         return action_lexer(lexer);
@@ -78,6 +111,33 @@ main(int argc, char *argv[])
 
     std::fprintf(stderr, "unknown action %c\n", *opt_action);
     return 1;
+}
+
+int
+action_compiler(zd::lex::lexer &lexer, std::FILE *output)
+{
+    zd::gen::zd4_generator generator{};
+
+    auto status = action_parser(
+        lexer,
+        [](zd::par::node *node, void *context) -> bool {
+            if (!node->generate(
+                    reinterpret_cast<zd::gen::generator *>(context)))
+            {
+                std::fputs("compilation error!\n", stderr);
+                return false;
+            }
+
+            return true;
+        },
+        &generator);
+    if (0 != status)
+    {
+        return status;
+    }
+
+    generator.link(output);
+    return 0;
 }
 
 int
@@ -115,11 +175,10 @@ action_lexer(zd::lex::lexer &lexer)
 }
 
 int
-action_parser(zd::lex::lexer &lexer)
+action_parser(zd::lex::lexer &lexer, node_callback callback, void *context)
 {
     zd::par::parser         parser{lexer};
     zd::gen::text_generator text_generator{stdout};
-    zd::gen::zd4_generator  code_generator{};
 
     zd::result<zd::par::unique_node> result{};
     while (true)
@@ -131,7 +190,6 @@ action_parser(zd::lex::lexer &lexer)
             if (err.is<zd::par::parser>(zd::par::parser::error_code::eof))
             {
                 // End of file
-                code_generator.link();
                 return 0;
             }
 
@@ -168,7 +226,7 @@ action_parser(zd::lex::lexer &lexer)
                     inc_path, lexer.get_stream().get_encoding()};
                 zd::lex::lexer inc_lexer{inc_stream};
 
-                int status = action_parser(inc_lexer);
+                int status = action_parser(inc_lexer, callback, context);
                 if (0 != status)
                 {
                     return status;
@@ -179,7 +237,14 @@ action_parser(zd::lex::lexer &lexer)
         }
 
         node->generate(&text_generator);
-        node->generate(&code_generator);
+
+        if (callback)
+        {
+            if (!callback(node.get(), context))
+            {
+                return 1;
+            }
+        }
         std::puts("");
     }
 }

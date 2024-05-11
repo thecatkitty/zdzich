@@ -8,10 +8,10 @@ Projekt ten w używalnej formie został zaprezentowany na festiwalu naukowym „
 Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności zaimplementowanie kompilatora zgodnego ze ZDZICH4 dla systemu DOS, Windows i Linux, jak również dalszy rozwój języka Zdzich.
 
 ## Zgodność z korpusem
-| Przykład | Lekser | Parser |
-| -------- | ------ | ------ |
-| **KURS** | - | - |
-| KURS01 | ✅ | ✅ |
+| Przykład | Lekser | Parser | ZD4 |
+| -------- | ------ | ------ | --- |
+| **KURS** | - | - | - |
+| KURS01 | ✅ | ✅ | ✅ |
 | KURS02 | ✅ | ✅ |
 | KURS03 | ✅ | ✅ |
 | KURS04 | ✅ | ✅ |
@@ -28,14 +28,14 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | LEKCJA10 | ✅ | ✅ |
 | LEKCJA11 | ✅ | ✅ |
 | ZADANIA | ✅ | ✅ |
-| **INC** | - | - |
+| **INC** | - | - | - |
 | DOGIER | ✅ | ✅ |
 | DZWIEK | ✅ | ✅ |
 | DZWIEK2 | ✅ | ✅ |
 | KLAWIAT | ✅ | ✅ |
 | MYSZ | ✅ | ✅ |
 | SAVER | ✅ | ✅ |
-| **PRZYKLAD** | - | - |
+| **PRZYKLAD** | - | - | - |
 | DOWCIPY | ✅ | ✅ |
 | GRA | ✅ | ✅ |
 | KWADRAT | ✅ | ✅ |

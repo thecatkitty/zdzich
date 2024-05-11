@@ -3,8 +3,49 @@
 #include <zd/containers.hpp>
 #include <zd/gen/zd4_section.hpp>
 
+#ifdef __ia16__
+#include <libi86/stdlib.h>
+
+static uint8_t _tmpfile_num{0};
+#endif
+
 using namespace zd;
 using namespace zd::gen;
+
+zd4_section::zd4_section(bool load) : _pf{nullptr}, _offset{0}, _relocs{}
+{
+    if (load)
+    {
+#ifdef __ia16__
+        // newlib-ia16 seems to have some misbehaving tmpfile implementation
+        auto tmp_dir = std::getenv("TMP");
+        tmp_dir = tmp_dir ? tmp_dir : std::getenv("TEMP");
+        if (tmp_dir)
+        {
+            _fname.append(tmp_dir);
+            _fname.append("\\");
+        }
+
+        char name[13];
+        std::sprintf(name, "~ZDSEC%02X.TMP", _tmpfile_num++);
+        _fname.append(name);
+        _pf = std::fopen(_fname.data(), "wb+");
+#else
+        _pf = std::tmpfile();
+#endif
+    }
+}
+
+zd4_section::~zd4_section()
+{
+    if (_pf)
+    {
+        std::fclose(std::exchange(_pf, nullptr));
+#ifdef __ia16__
+        std::remove(_fname.data());
+#endif
+    }
+}
 
 unsigned
 zd4_section::emit(const uint8_t        *payload,
@@ -45,7 +86,7 @@ zd4_section::reserve(unsigned size)
 }
 
 bool
-zd4_section::relocate(const uint16_t *bases)
+zd4_section::relocate(std::FILE *output, const uint16_t *bases)
 {
     int pos{0};
     std::rewind(_pf);
@@ -61,7 +102,7 @@ zd4_section::relocate(const uint16_t *bases)
             std::fread(&offset, sizeof(offset), 1, _pf);
 
             uint16_t address = bases[reloc->section] + offset;
-            std::printf("%02X %02X ", address & 0xFF, (address >> 8) & 0xFF);
+            std::fwrite(&address, sizeof(address), 1, output);
 
             pos += sizeof(offset);
             reloc++;
@@ -73,18 +114,9 @@ zd4_section::relocate(const uint16_t *bases)
             break;
         }
 
-        std::printf("%02X ", byte);
+        std::fwrite(&byte, sizeof(uint8_t), 1, output);
         pos++;
     }
 
     return true;
-}
-
-void
-zd4_section::list_relocations() const
-{
-    for (auto &reloc : _relocs)
-    {
-        std::printf("\t%1X:%04X\n", reloc.section, reloc.offset);
-    }
 }

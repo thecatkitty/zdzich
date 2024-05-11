@@ -53,15 +53,15 @@ zd4_generator::process(const par::end_node &node)
 }
 
 void
-zd4_generator::link()
+zd4_generator::link(std::FILE *output)
 {
     uint16_t bases[]{
         COM_BASE,                          // CODE
         uint16_t(COM_BASE + _code.size()), // DATA
     };
 
-    _code.relocate(bases);
-    _data.relocate(bases);
+    _code.relocate(output, bases);
+    _data.relocate(output, bases);
 }
 
 #define ASM_REQUIRE(expr)                                                      \
