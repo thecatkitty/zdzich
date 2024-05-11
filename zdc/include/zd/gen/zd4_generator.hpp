@@ -109,7 +109,7 @@ class zd4_generator : public generator
     }
 
     void
-    link();
+    link(std::FILE *output);
 
   private:
     bool
