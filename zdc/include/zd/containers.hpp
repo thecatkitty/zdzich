@@ -45,7 +45,7 @@ template <typename T> class range
     const size_t _size;
 
   public:
-    range(T *const items, size_t size) : _items{items}, _size{size}
+    range(const T *items, size_t size) : _items{items}, _size{size}
     {
     }
 

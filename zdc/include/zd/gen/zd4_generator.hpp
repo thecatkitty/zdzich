@@ -3,6 +3,7 @@
 #include <list>
 
 #include <zd/gen/generator.hpp>
+#include <zd/gen/zd4_section.hpp>
 #include <zd/par/node.hpp>
 
 namespace zd
@@ -13,9 +14,8 @@ namespace gen
 
 class zd4_generator : public generator
 {
-    size_t            _code_offset{};
-    size_t            _data_offset{};
-    std::list<size_t> _data_relocs{};
+    zd4_section _code;
+    zd4_section _data;
 
   public:
     bool
@@ -109,24 +109,9 @@ class zd4_generator : public generator
     }
 
     void
-    list_relocations() const;
+    link();
 
   private:
-    bool
-    emit_code(const uint8_t  *code,
-              size_t          size,
-              const uint16_t *refs = nullptr,
-              size_t          ref_count = 0);
-
-    uint16_t
-    emit_data(const uint8_t *data, size_t size);
-
-    inline uint16_t
-    emit_data(const char *data, size_t size)
-    {
-        return emit_data(reinterpret_cast<const uint8_t *>(data), size);
-    }
-
     bool
     asm_mov(par::cpu_register dst, const ustring &src);
 

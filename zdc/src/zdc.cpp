@@ -131,8 +131,7 @@ action_parser(zd::lex::lexer &lexer)
             if (err.is<zd::par::parser>(zd::par::parser::error_code::eof))
             {
                 // End of file
-
-                code_generator.list_relocations();
+                code_generator.link();
                 return 0;
             }
 
@@ -180,7 +179,6 @@ action_parser(zd::lex::lexer &lexer)
         }
 
         node->generate(&text_generator);
-        std::puts("");
         node->generate(&code_generator);
         std::puts("");
     }

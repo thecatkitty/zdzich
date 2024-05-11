@@ -10,6 +10,8 @@ using namespace zd;
 using namespace zd::gen;
 using namespace zd::par;
 
+#define COM_BASE ((uint16_t)0x100)
+
 bool
 zd4_generator::process(const par::call_node &node)
 {
@@ -51,52 +53,15 @@ zd4_generator::process(const par::end_node &node)
 }
 
 void
-zd4_generator::list_relocations() const
+zd4_generator::link()
 {
-    std::puts("Relocations:");
-    for (auto &reloc : _data_relocs)
-    {
-        std::printf("\t%04zX\n", reloc);
-    }
-}
+    uint16_t bases[]{
+        COM_BASE,                          // CODE
+        uint16_t(COM_BASE + _code.size()), // DATA
+    };
 
-bool
-zd4_generator::emit_code(const uint8_t  *code,
-                         size_t          size,
-                         const uint16_t *refs,
-                         size_t          ref_count)
-{
-    std::printf("C: ");
-    for (size_t i = 0; i < size; i++)
-    {
-        std::printf("%02X ", code[i]);
-    }
-
-    for (size_t i = 0; i < ref_count; i++)
-    {
-        _data_relocs.push_back(_code_offset + refs[i]);
-    }
-
-    _code_offset += size;
-
-    std::puts("");
-    return true;
-}
-
-uint16_t
-zd4_generator::emit_data(const uint8_t *data, size_t size)
-{
-    std::printf("D: ");
-    for (size_t i = 0; i < size; i++)
-    {
-        std::printf("%02X ", data[i]);
-    }
-
-    auto offset = _data_offset;
-    _data_offset += size;
-
-    std::puts("");
-    return offset;
+    _code.relocate(bases);
+    _data.relocate(bases);
 }
 
 #define ASM_REQUIRE(expr)                                                      \
@@ -175,11 +140,12 @@ zd4_generator::asm_mov(par::cpu_register dst, const ustring &src)
 {
     ASM_REQUIRE(sizeof(uint16_t) == _reg_size(dst));
 
-    auto     data_offset = emit_data(src.data(), src.size());
-    uint8_t  code[]{ASM_BYTE(MOV_reg16_imm16 | _reg_encode(dst)),
-                    ASM_WORD(data_offset)};
-    uint16_t relocs[]{1};
-    emit_code(code, sizeof(code), relocs, 1);
+    auto    data_offset = _data.emit(src.data(), src.size());
+    uint8_t code[]{ASM_BYTE(MOV_reg16_imm16 | _reg_encode(dst)),
+                   ASM_WORD(data_offset)};
+
+    zd4_relocation ref{+1, zd4_section_data};
+    _code.emit(code, sizeof(code), &ref, 1);
 
     return true;
 }
@@ -193,7 +159,7 @@ zd4_generator::asm_mov(par::cpu_register dst, unsigned src)
 
         uint8_t code[]{ASM_BYTE(MOV_reg8_imm8 | _reg_encode(dst)),
                        ASM_BYTE(src)};
-        emit_code(code, sizeof(code));
+        _code.emit(code, sizeof(code));
 
         return true;
     }
@@ -204,7 +170,7 @@ zd4_generator::asm_mov(par::cpu_register dst, unsigned src)
 
         uint8_t code[]{ASM_BYTE(MOV_reg16_imm16 | _reg_encode(dst)),
                        ASM_WORD(src)};
-        emit_code(code, sizeof(code));
+        _code.emit(code, sizeof(code));
 
         return true;
     }
@@ -218,7 +184,7 @@ zd4_generator::asm_int(unsigned num)
     ASM_REQUIRE(UINT8_MAX >= num);
 
     uint8_t code[]{ASM_BYTE(0xCD), ASM_BYTE(num)};
-    emit_code(code, sizeof(code));
+    _code.emit(code, sizeof(code));
 
     return true;
 }
