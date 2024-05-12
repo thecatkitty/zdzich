@@ -12,11 +12,11 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | -------- | ------ | ------ | --- |
 | **KURS** | - | - | - |
 | KURS01 | ✅ | ✅ | ✅ |
-| KURS02 | ✅ | ✅ |
+| KURS02 | ✅ | ✅ | ✅ |
 | KURS03 | ✅ | ✅ |
 | KURS04 | ✅ | ✅ |
 | EFEKT | ✅ | ✅ |
-| LEKCJA01 | ✅ | ✅ |
+| LEKCJA01 | ✅ | ✅ | ✅ |
 | LEKCJA02 | ✅ | ✅ |
 | LEKCJA03 | ✅ | ✅ |
 | LEKCJA04 | ✅ | ✅ |

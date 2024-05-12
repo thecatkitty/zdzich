@@ -4,6 +4,12 @@ using namespace zd;
 using namespace zd::gen;
 using namespace zd::par;
 
+#define REQUIRE(expr)                                                          \
+    if (!(expr))                                                               \
+    {                                                                          \
+        return false;                                                          \
+    }
+
 bool
 zd4_builtins::Czysc(zd4_generator *generator, const par::call_node &node)
 {
@@ -82,4 +88,26 @@ zd4_builtins::PiszL(zd4_generator *generator, const call_node &node)
     }
 
     return false;
+}
+
+bool
+zd4_builtins::Pozycja(zd4_generator *generator, const par::call_node &node)
+{
+    REQUIRE(2 == node.arguments.size());
+
+    auto it = node.arguments.begin();
+    REQUIRE((*it)->is<number_node>());
+    uint8_t column = reinterpret_cast<number_node *>(it->get())->value;
+
+    it++;
+    REQUIRE((*it)->is<number_node>());
+    uint8_t row = reinterpret_cast<number_node *>(it->get())->value;
+
+    // INT 10,2 - Set Cursor Position
+    generator->asm_mov(cpu_register::ah, 2);
+    generator->asm_mov(cpu_register::bh, 0);
+    generator->asm_mov(cpu_register::dx, (row << 8) | column);
+    generator->asm_int(0x10);
+
+    return true;
 }

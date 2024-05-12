@@ -35,6 +35,11 @@ zd4_generator::process(const par::call_node &node)
         return zd4_builtins::PiszL(this, node);
     }
 
+    if (text::pl_streqi("Pozycja", node.callee))
+    {
+        return zd4_builtins::Pozycja(this, node);
+    }
+
     return false;
 }
 
