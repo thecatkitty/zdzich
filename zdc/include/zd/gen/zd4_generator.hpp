@@ -3,6 +3,7 @@
 #include <list>
 
 #include <zd/gen/generator.hpp>
+#include <zd/gen/zd4_builtins.hpp>
 #include <zd/gen/zd4_section.hpp>
 #include <zd/par/node.hpp>
 
@@ -120,6 +121,8 @@ class zd4_generator : public generator
 
     bool
     asm_int(unsigned num);
+
+    friend class zd4_builtins;
 };
 
 } // namespace gen

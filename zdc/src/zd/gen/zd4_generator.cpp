@@ -17,23 +17,7 @@ zd4_generator::process(const par::call_node &node)
 {
     if (text::pl_streqi("PiszL", node.callee))
     {
-        if (node.arguments.size() && node.arguments.front()->is<string_node>())
-        {
-            auto arg_string =
-                reinterpret_cast<string_node *>(node.arguments.front().get());
-
-            ustring value{arg_string->value};
-            value.append('\r');
-            value.append('\n');
-            value.append('$');
-
-            asm_mov(cpu_register::dx, value);
-            asm_mov(cpu_register::ah, 9);
-            asm_int(0x21);
-            return true;
-        }
-
-        return false;
+        return zd4_builtins::PiszL(this, node);
     }
 
     return false;
