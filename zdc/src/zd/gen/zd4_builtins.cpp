@@ -32,6 +32,15 @@ zd4_builtins::Czysc(zd4_generator *generator, const par::call_node &node)
 }
 
 bool
+zd4_builtins::Klawisz(zd4_generator *generator, const par::call_node &node)
+{
+    // INT 21,7 - Direct Console Input Without Echo
+    generator->asm_mov(cpu_register::ah, 7);
+    generator->asm_int(0x21);
+    return true;
+}
+
+bool
 zd4_builtins::Pisz(zd4_generator *generator, const ustring &str)
 {
     ustring data{str};
