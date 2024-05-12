@@ -332,7 +332,7 @@ par::parser::handle_call(const ustring &callee, bool enclosed)
             {
                 // Irregular string literal reconstruction
                 // DOGIER.INC:14 - PiszL (N)owa gra czy (k)oniec?
-                auto arg_str = reinterpret_cast<string_node *>(arg.get());
+                auto arg_str = arg->as<string_node>();
 
                 ustring str{};
                 if (enclosed)
@@ -351,7 +351,7 @@ par::parser::handle_call(const ustring &callee, bool enclosed)
             {
                 // Irregular string literal reconstruction
                 // ZDC-DLL.INC:108 - piszl   1)   Zmien nazwe pliku
-                auto arg_num = reinterpret_cast<number_node *>(arg.get());
+                auto arg_num = arg->as<number_node>();
 
                 char buff[20]{};
                 std::snprintf(buff, sizeof(buff), "%s%d) ", enclosed ? "(" : "",
@@ -374,7 +374,7 @@ par::parser::handle_call(const ustring &callee, bool enclosed)
             // LEK05-03.ZDI:6 - Pisz 1. Kurczak
             if (arg->is<number_node>())
             {
-                auto arg_num = reinterpret_cast<number_node *>(arg.get());
+                auto arg_num = arg->as<number_node>();
 
                 char buff[20]{};
                 std::snprintf(buff, sizeof(buff), "%d%*s", arg_num->value,
@@ -778,7 +778,7 @@ par::parser::handle_procedure()
         // Check for the end of procedure
         if (node->is<end_node>())
         {
-            auto end = reinterpret_cast<end_node *>(node.get());
+            auto end = node->as<end_node>();
             if (!end->name.empty() && text::pl_streqai(name, end->name))
             {
                 break;
