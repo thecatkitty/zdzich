@@ -15,6 +15,11 @@ using namespace zd::par;
 bool
 zd4_generator::process(const par::call_node &node)
 {
+    if (text::pl_streqi("Pisz", node.callee))
+    {
+        return zd4_builtins::Pisz(this, node);
+    }
+
     if (text::pl_streqi("PiszL", node.callee))
     {
         return zd4_builtins::PiszL(this, node);
