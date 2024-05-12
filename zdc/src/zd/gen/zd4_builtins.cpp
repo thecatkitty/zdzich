@@ -16,9 +16,7 @@ zd4_builtins::Czysc(zd4_generator *generator, const par::call_node &node)
     uint8_t attribute{0x07};
     if (!node.arguments.empty() && node.arguments.front()->is<number_node>())
     {
-        auto arg_integer =
-            reinterpret_cast<number_node *>(node.arguments.front().get());
-        attribute = arg_integer->value;
+        attribute = node.arguments.front()->as<number_node>()->value;
     }
 
     // INT 10,6 - Scroll Window Up
@@ -65,9 +63,8 @@ zd4_builtins::Pisz(zd4_generator *generator, const call_node &node)
 {
     if (node.arguments.size() && node.arguments.front()->is<string_node>())
     {
-        auto arg_string =
-            reinterpret_cast<string_node *>(node.arguments.front().get());
-        return Pisz(generator, arg_string->value);
+        return Pisz(generator,
+                    node.arguments.front()->as<string_node>()->value);
     }
 
     return false;
@@ -78,10 +75,7 @@ zd4_builtins::PiszL(zd4_generator *generator, const call_node &node)
 {
     if (node.arguments.size() && node.arguments.front()->is<string_node>())
     {
-        auto arg_string =
-            reinterpret_cast<string_node *>(node.arguments.front().get());
-
-        ustring value{arg_string->value};
+        ustring value{node.arguments.front()->as<string_node>()->value};
         value.append('\r');
         value.append('\n');
         return Pisz(generator, value);
@@ -97,11 +91,11 @@ zd4_builtins::Pozycja(zd4_generator *generator, const par::call_node &node)
 
     auto it = node.arguments.begin();
     REQUIRE((*it)->is<number_node>());
-    uint8_t column = reinterpret_cast<number_node *>(it->get())->value;
+    uint8_t column = it->get()->as<number_node>()->value;
 
     it++;
     REQUIRE((*it)->is<number_node>());
-    uint8_t row = reinterpret_cast<number_node *>(it->get())->value;
+    uint8_t row = it->get()->as<number_node>()->value;
 
     // INT 10,2 - Set Cursor Position
     generator->asm_mov(cpu_register::ah, 2);

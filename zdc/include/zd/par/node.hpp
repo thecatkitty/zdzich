@@ -90,6 +90,17 @@ struct node
     generate(gen::generator *generator) = 0;
 
     template <typename T>
+    inline T *
+    as()
+    {
+#ifdef __ia16__
+        return reinterpret_cast<T *>(this);
+#else
+        return dynamic_cast<T *>(this);
+#endif
+    }
+
+    template <typename T>
     inline bool
     is()
     {
