@@ -14,6 +14,9 @@ class zd4_generator;
 struct zd4_builtins
 {
     static bool
+    Czysc(zd4_generator *generator, const par::call_node &node);
+
+    static bool
     Pisz(zd4_generator *generator, const par::call_node &node);
 
     static bool
