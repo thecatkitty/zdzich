@@ -1,5 +1,5 @@
-#include <zd/gen/zd4_generator.hpp>
 #include <zd/gen/zd4_builtins.hpp>
+#include <zd/gen/zd4_generator.hpp>
 
 using namespace zd;
 using namespace zd::gen;
@@ -74,6 +74,18 @@ zd4_builtins::Klawisz(zd4_generator *generator, const par::call_node &node)
 }
 
 bool
+zd4_builtins::Pisz(zd4_generator *generator)
+{
+    ustring data{"\r\n$"};
+
+    // INT 21,9 - Print String
+    generator->asm_mov(cpu_register::dx, data);
+    generator->asm_mov(cpu_register::ah, 9);
+    generator->asm_int(0x21);
+    return true;
+}
+
+bool
 zd4_builtins::Pisz(zd4_generator *generator, const ustring &str)
 {
     ustring data{str};
@@ -90,6 +102,11 @@ zd4_builtins::Pisz(zd4_generator *generator, const ustring &str)
 bool
 zd4_builtins::Pisz(zd4_generator *generator, const call_node &node)
 {
+    if (node.is_bare)
+    {
+        return Pisz(generator);
+    }
+
     if (node.arguments.size() && node.arguments.front()->is<string_node>())
     {
         return Pisz(generator,
