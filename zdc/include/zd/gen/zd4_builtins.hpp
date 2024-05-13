@@ -33,6 +33,9 @@ struct zd4_builtins
 
 private:
     static bool
+    Pisz(zd4_generator *generator);
+
+    static bool
     Pisz(zd4_generator *generator, const ustring &str);
 };
 
