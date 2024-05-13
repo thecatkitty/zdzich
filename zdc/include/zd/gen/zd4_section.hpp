@@ -21,6 +21,8 @@ enum zd4_known_section
 {
     zd4_section_code = 0,
     zd4_section_data = 1,
+    zd4_section_udat = 2,
+    zd4_section_unkn = 15
 };
 
 class zd4_section
