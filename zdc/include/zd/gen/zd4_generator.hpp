@@ -35,6 +35,24 @@ struct symbol
     }
 };
 
+struct symbol_ref
+{
+    const symbol &sym;
+    unsigned      off;
+
+    symbol_ref(const symbol &sym_, unsigned off_ = 0) : sym{sym_}, off{off_}
+    {
+    }
+};
+
+struct mreg
+{
+    par::cpu_register reg;
+
+    uint8_t
+    encode() const;
+};
+
 class zd4_generator : public generator
 {
     zd4_section _code;
@@ -156,7 +174,25 @@ class zd4_generator : public generator
     asm_mov(par::cpu_register dst, const ustring &src);
 
     bool
+    asm_mov(par::cpu_register dst, const symbol_ref &src);
+
+    bool
+    asm_mov(mreg dst, uint16_t src);
+
+    bool
+    asm_mov(par::cpu_register dst, mreg src);
+
+    bool
+    asm_mov(mreg dst, par::cpu_register src);
+
+    bool
     asm_mov(par::cpu_register dst, unsigned src);
+
+    bool
+    asm_add(par::cpu_register dst, par::cpu_register src);
+
+    bool
+    asm_inc(par::cpu_register reg);
 
     bool
     asm_int(unsigned num);

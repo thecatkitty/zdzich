@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cctype>
 #include <cstdio>
 #include <cstring>
 
@@ -14,12 +15,34 @@ using namespace zd::par;
 
 #define COM_BASE ((uint16_t)0x100)
 
+uint8_t
+mreg::encode() const
+{
+    switch (reg)
+    {
+    case cpu_register::si:
+        return ModRM_SI;
+
+    case cpu_register::di:
+        return ModRM_DI;
+
+    case cpu_register::bx:
+        return ModRM_BX;
+    }
+    return 0xFF;
+}
+
 bool
 zd4_generator::process(const par::call_node &node)
 {
     if (text::pl_streqai("Czyść", node.callee))
     {
         return zd4_builtins::Czysc(this, node);
+    }
+
+    if (text::pl_streqi("Czytaj", node.callee))
+    {
+        return zd4_builtins::Czytaj(this, node);
     }
 
     if (text::pl_streqi("Klawisz", node.callee))
@@ -57,9 +80,17 @@ zd4_generator::process(const par::declaration_node &node)
     switch (target->type)
     {
     case object_type::text: {
-        return set_symbol(target->name, symbol_type::var_text,
-                          zd4_known_section::zd4_section_udat,
-                          _udat.reserve(UINT8_MAX));
+        if (!set_symbol(target->name, symbol_type::var_text,
+                        zd4_known_section::zd4_section_udat,
+                        _udat.reserve(UINT8_MAX)))
+        {
+            return false;
+        }
+
+        auto &symbol = get_symbol(target->name);
+        asm_mov(cpu_register::di, symbol);
+        asm_mov(mreg{cpu_register::di}, 0x00FD);
+        return true;
     }
 
     default:
@@ -85,10 +116,10 @@ zd4_generator::process(const par::end_node &node)
 void
 zd4_generator::link(std::FILE *output)
 {
-    uint16_t bases[]{
-        COM_BASE,                          // CODE
-        uint16_t(COM_BASE + _code.size()), // DATA
-    };
+    uint16_t bases[3];
+    bases[0] = COM_BASE;                // CODE
+    bases[1] = bases[0] + _code.size(); // DATA
+    bases[2] = bases[1] + _data.size(); // UDAT
 
     _code.relocate(output, bases);
     _data.relocate(output, bases);
@@ -101,13 +132,13 @@ zd4_generator::get_cname(const ustring &name)
     std::for_each(name.begin(), name.end(), [&cname](int codepoint) {
         cname.append(std::toupper(text::pl_toascii(codepoint)));
     });
-    return std::move(cname);
+    return cname;
 }
 
 symbol &
 zd4_generator::get_symbol(const ustring &name)
 {
-    auto cname = std::move(get_cname(name));
+    auto cname = get_cname(name);
     auto it =
         std::find_if(_symbols.begin(), _symbols.end(), [&cname](symbol &sym) {
             return sym.name == cname;
@@ -231,6 +262,50 @@ zd4_generator::asm_mov(par::cpu_register dst, const ustring &src)
 }
 
 bool
+zd4_generator::asm_mov(par::cpu_register dst, const symbol_ref &src)
+{
+    ASM_REQUIRE(sizeof(uint16_t) == _reg_size(dst));
+
+    uint8_t code[]{ASM_BYTE(MOV_reg16_imm16 | _reg_encode(dst)),
+                   ASM_WORD(src.sym.offset + src.off)};
+
+    zd4_relocation ref{+1, src.sym.section};
+    _code.emit(code, sizeof(code), &ref, 1);
+
+    return true;
+}
+
+bool
+zd4_generator::asm_mov(mreg dst, uint16_t src)
+{
+    uint8_t code[]{ASM_BYTE(MOV_rm16_imm16), ASM_BYTE(dst.encode()),
+                   ASM_WORD(src)};
+    _code.emit(code, sizeof(code));
+
+    return true;
+}
+
+bool
+zd4_generator::asm_mov(par::cpu_register dst, mreg src)
+{
+    uint8_t code[]{ASM_BYTE(MOV_r8_rm8 | _reg_encode(dst)),
+                   ASM_BYTE(src.encode())};
+    _code.emit(code, sizeof(code));
+
+    return true;
+}
+
+bool
+zd4_generator::asm_mov(mreg dst, par::cpu_register src)
+{
+    uint8_t code[]{ASM_BYTE(MOV_rm16_r16),
+                   ModRM(dst.encode(), _reg_encode(src))};
+    _code.emit(code, sizeof(code));
+
+    return true;
+}
+
+bool
 zd4_generator::asm_mov(par::cpu_register dst, unsigned src)
 {
     if (sizeof(uint8_t) == _reg_size(dst))
@@ -256,6 +331,66 @@ zd4_generator::asm_mov(par::cpu_register dst, unsigned src)
     }
 
     return false;
+}
+
+bool
+zd4_generator::asm_add(par::cpu_register dst, par::cpu_register src)
+{
+    ASM_REQUIRE(_reg_size(dst) == _reg_size(src));
+    ASM_REQUIRE(sizeof(uint16_t) == _reg_size(dst));
+
+    uint8_t modrm{0xFF};
+    switch (src)
+    {
+    case cpu_register::ax:
+        modrm = ModRM_A;
+        break;
+
+    case cpu_register::bx:
+        modrm = ModRM_B;
+        break;
+
+    case cpu_register::cx:
+        modrm = ModRM_C;
+        break;
+
+    case cpu_register::dx:
+        modrm = ModRM_D;
+        break;
+
+    case cpu_register::sp:
+        modrm = ModRM_SPAH;
+        break;
+
+    case cpu_register::bp:
+        modrm = ModRM_BPCH;
+        break;
+
+    case cpu_register::si:
+        modrm = ModRM_SIDH;
+        break;
+
+    case cpu_register::di:
+        modrm = ModRM_DIBH;
+        break;
+    }
+
+    uint8_t code[]{ASM_BYTE(ADD_r16_rm16),
+                   ASM_BYTE(ModRM(modrm, _reg_encode(dst)))};
+    _code.emit(code, sizeof(code));
+
+    return true;
+}
+
+bool
+zd4_generator::asm_inc(par::cpu_register reg)
+{
+    ASM_REQUIRE(sizeof(uint16_t) == _reg_size(reg));
+
+    uint8_t code[]{ASM_BYTE(INC_r16 | _reg_encode(reg))};
+    _code.emit(code, sizeof(code));
+
+    return true;
 }
 
 bool

@@ -1,3 +1,4 @@
+#include <zd/gen/zd4_generator.hpp>
 #include <zd/gen/zd4_builtins.hpp>
 
 using namespace zd;
@@ -31,6 +32,34 @@ zd4_builtins::Czysc(zd4_generator *generator, const par::call_node &node)
     generator->asm_mov(cpu_register::bh, 0);
     generator->asm_mov(cpu_register::dx, 0);
     generator->asm_int(0x10);
+
+    return true;
+}
+
+bool
+zd4_builtins::Czytaj(zd4_generator *generator, const par::call_node &node)
+{
+    REQUIRE(1 == node.arguments.size());
+    REQUIRE(node.arguments.front()->is<object_node>());
+
+    auto argument = node.arguments.front()->as<object_node>();
+    REQUIRE(object_type::text == argument->type);
+
+    auto &symbol = generator->get_symbol(argument->name);
+
+    // INT 21,A - Buffered Keyboard Input
+    generator->asm_mov(cpu_register::ah, 0xA);
+    generator->asm_mov(cpu_register::dx, symbol);
+    generator->asm_int(0x21);
+
+    generator->asm_mov(cpu_register::bx, symbol_ref{symbol, +1});
+    generator->asm_mov(cpu_register::al, mreg{cpu_register::bx});
+    generator->asm_mov(cpu_register::ah, 0);
+    generator->asm_inc(cpu_register::bx);
+    generator->asm_add(cpu_register::bx, cpu_register::ax);
+
+    generator->asm_mov(cpu_register::cx, 0x2400); // NUL $
+    generator->asm_mov(mreg{cpu_register::bx}, cpu_register::cx);
 
     return true;
 }
