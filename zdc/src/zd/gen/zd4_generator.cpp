@@ -108,6 +108,13 @@ zd4_generator::process(const par::end_node &node)
     return false;
 }
 
+bool
+zd4_generator::process(const par::label_node &node)
+{
+    return set_symbol(node.name, symbol_type::label, zd4_section_code,
+                      _code.size());
+}
+
 void
 zd4_generator::link(std::FILE *output)
 {

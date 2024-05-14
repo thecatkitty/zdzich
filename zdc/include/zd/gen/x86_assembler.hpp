@@ -12,6 +12,7 @@ namespace gen
 enum class symbol_type
 {
     undefined,
+    label,
     var_text,
 };
 
