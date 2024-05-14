@@ -21,17 +21,17 @@ zd4_builtins::Czysc(zd4_generator *generator, const par::call_node &node)
     }
 
     // INT 10,6 - Scroll Window Up
-    generator->asm_mov(cpu_register::ax, 0x0600);
-    generator->asm_mov(cpu_register::bh, attribute);
-    generator->asm_mov(cpu_register::cx, 0);
-    generator->asm_mov(cpu_register::dx, (24 << 8) | 79);
-    generator->asm_int(0x10);
+    generator->_as.mov(cpu_register::ax, 0x0600);
+    generator->_as.mov(cpu_register::bh, attribute);
+    generator->_as.mov(cpu_register::cx, 0);
+    generator->_as.mov(cpu_register::dx, (24 << 8) | 79);
+    generator->_as.intr(0x10);
 
     // INT 10,2 - Set Cursor Position
-    generator->asm_mov(cpu_register::ah, 2);
-    generator->asm_mov(cpu_register::bh, 0);
-    generator->asm_mov(cpu_register::dx, 0);
-    generator->asm_int(0x10);
+    generator->_as.mov(cpu_register::ah, 2);
+    generator->_as.mov(cpu_register::bh, 0);
+    generator->_as.mov(cpu_register::dx, 0);
+    generator->_as.intr(0x10);
 
     return true;
 }
@@ -48,18 +48,18 @@ zd4_builtins::Czytaj(zd4_generator *generator, const par::call_node &node)
     auto &symbol = generator->get_symbol(argument->name);
 
     // INT 21,A - Buffered Keyboard Input
-    generator->asm_mov(cpu_register::ah, 0xA);
-    generator->asm_mov(cpu_register::dx, symbol);
-    generator->asm_int(0x21);
+    generator->_as.mov(cpu_register::ah, 0xA);
+    generator->_as.mov(cpu_register::dx, symbol);
+    generator->_as.intr(0x21);
 
-    generator->asm_mov(cpu_register::bx, symbol_ref{symbol, +1});
-    generator->asm_mov(cpu_register::al, mreg{cpu_register::bx});
-    generator->asm_mov(cpu_register::ah, 0);
-    generator->asm_inc(cpu_register::bx);
-    generator->asm_add(cpu_register::bx, cpu_register::ax);
+    generator->_as.mov(cpu_register::bx, symbol_ref{symbol, +1});
+    generator->_as.mov(cpu_register::al, mreg{cpu_register::bx});
+    generator->_as.mov(cpu_register::ah, 0);
+    generator->_as.inc(cpu_register::bx);
+    generator->_as.add(cpu_register::bx, cpu_register::ax);
 
-    generator->asm_mov(cpu_register::cx, 0x2400); // NUL $
-    generator->asm_mov(mreg{cpu_register::bx}, cpu_register::cx);
+    generator->_as.mov(cpu_register::cx, 0x2400); // NUL $
+    generator->_as.mov(mreg{cpu_register::bx}, cpu_register::cx);
 
     return true;
 }
@@ -68,8 +68,8 @@ bool
 zd4_builtins::Klawisz(zd4_generator *generator, const par::call_node &node)
 {
     // INT 21,7 - Direct Console Input Without Echo
-    generator->asm_mov(cpu_register::ah, 7);
-    generator->asm_int(0x21);
+    generator->_as.mov(cpu_register::ah, 7);
+    generator->_as.intr(0x21);
     return true;
 }
 
@@ -79,9 +79,9 @@ zd4_builtins::Pisz(zd4_generator *generator)
     ustring data{"\r\n$"};
 
     // INT 21,9 - Print String
-    generator->asm_mov(cpu_register::dx, data);
-    generator->asm_mov(cpu_register::ah, 9);
-    generator->asm_int(0x21);
+    generator->_as.mov(cpu_register::dx, data);
+    generator->_as.mov(cpu_register::ah, 9);
+    generator->_as.intr(0x21);
     return true;
 }
 
@@ -93,9 +93,9 @@ zd4_builtins::Pisz(zd4_generator *generator, const ustring &str)
     // TODO: Convert to CP852
 
     // INT 21,9 - Print String
-    generator->asm_mov(cpu_register::dx, data);
-    generator->asm_mov(cpu_register::ah, 9);
-    generator->asm_int(0x21);
+    generator->_as.mov(cpu_register::dx, data);
+    generator->_as.mov(cpu_register::ah, 9);
+    generator->_as.intr(0x21);
     return true;
 }
 
@@ -107,9 +107,9 @@ zd4_builtins::Pisz(zd4_generator *generator, const par::object_node &obj)
     auto &symbol = generator->get_symbol(obj.name);
 
     // INT 21,9 - Print String
-    generator->asm_mov(cpu_register::dx, symbol_ref{symbol, +2});
-    generator->asm_mov(cpu_register::ah, 9);
-    generator->asm_int(0x21);
+    generator->_as.mov(cpu_register::dx, symbol_ref{symbol, +2});
+    generator->_as.mov(cpu_register::ah, 9);
+    generator->_as.intr(0x21);
 
     return true;
 }
@@ -165,10 +165,10 @@ zd4_builtins::Pozycja(zd4_generator *generator, const par::call_node &node)
     uint8_t row = it->get()->as<number_node>()->value;
 
     // INT 10,2 - Set Cursor Position
-    generator->asm_mov(cpu_register::ah, 2);
-    generator->asm_mov(cpu_register::bh, 0);
-    generator->asm_mov(cpu_register::dx, (row << 8) | column);
-    generator->asm_int(0x10);
+    generator->_as.mov(cpu_register::ah, 2);
+    generator->_as.mov(cpu_register::bh, 0);
+    generator->_as.mov(cpu_register::dx, (row << 8) | column);
+    generator->_as.intr(0x10);
 
     return true;
 }

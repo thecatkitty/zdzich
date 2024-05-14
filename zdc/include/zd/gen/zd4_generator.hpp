@@ -3,6 +3,7 @@
 #include <list>
 
 #include <zd/gen/generator.hpp>
+#include <zd/gen/x86_assembler.hpp>
 #include <zd/gen/zd4_builtins.hpp>
 #include <zd/gen/zd4_section.hpp>
 #include <zd/par/node.hpp>
@@ -13,46 +14,6 @@ namespace zd
 namespace gen
 {
 
-enum class symbol_type
-{
-    undefined,
-    var_text,
-};
-
-struct symbol
-{
-    ustring           name;
-    symbol_type       type;
-    zd4_known_section section;
-    unsigned          offset;
-
-    symbol(ustring          &name_,
-           symbol_type       type_,
-           zd4_known_section section_,
-           unsigned          offset_)
-        : name{name_}, type{type_}, section{section_}, offset{offset_}
-    {
-    }
-};
-
-struct symbol_ref
-{
-    const symbol &sym;
-    unsigned      off;
-
-    symbol_ref(const symbol &sym_, unsigned off_ = 0) : sym{sym_}, off{off_}
-    {
-    }
-};
-
-struct mreg
-{
-    par::cpu_register reg;
-
-    uint8_t
-    encode() const;
-};
-
 class zd4_generator : public generator
 {
     zd4_section _code;
@@ -62,8 +23,12 @@ class zd4_generator : public generator
     std::list<symbol> _symbols;
     unsigned          _symbol_num;
 
+    x86_assembler _as;
+
   public:
-    zd4_generator() : _code{}, _data{}, _udat{false}, _symbols{}, _symbol_num{0}
+    zd4_generator()
+        : _code{}, _data{}, _udat{false}, _symbols{}, _symbol_num{0},
+          _as{_code, _data}
     {
     }
 
@@ -169,33 +134,6 @@ class zd4_generator : public generator
                symbol_type       type,
                zd4_known_section section,
                unsigned          offset);
-
-    bool
-    asm_mov(par::cpu_register dst, const ustring &src);
-
-    bool
-    asm_mov(par::cpu_register dst, const symbol_ref &src);
-
-    bool
-    asm_mov(mreg dst, uint16_t src);
-
-    bool
-    asm_mov(par::cpu_register dst, mreg src);
-
-    bool
-    asm_mov(mreg dst, par::cpu_register src);
-
-    bool
-    asm_mov(par::cpu_register dst, unsigned src);
-
-    bool
-    asm_add(par::cpu_register dst, par::cpu_register src);
-
-    bool
-    asm_inc(par::cpu_register reg);
-
-    bool
-    asm_int(unsigned num);
 
     friend class zd4_builtins;
 };
