@@ -210,6 +210,8 @@ struct jump_node : public node
 {
     const unique_node target;
 
+    jump_node() = default;
+
     jump_node(unique_node target_) : target{std::move(target_)}
     {
     }
@@ -220,6 +222,8 @@ struct jump_node : public node
 struct label_node : public node
 {
     const ustring name;
+
+    label_node() = default;
 
     label_node(const ustring &name_) : name{name_}
     {

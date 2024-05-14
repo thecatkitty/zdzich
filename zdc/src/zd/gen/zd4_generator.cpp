@@ -64,6 +64,34 @@ zd4_generator::process(const par::call_node &node)
 }
 
 bool
+zd4_generator::process(const par::condition_node &node)
+{
+    if (!node.action->is<jump_node>())
+    {
+        return false;
+    }
+
+    auto jump = node.action->as<jump_node>();
+    if (!jump->target->is<label_node>())
+    {
+        return false;
+    }
+
+    auto  label = jump->target->as<label_node>();
+    auto &symbol = get_symbol(label->name);
+    auto  rel = (int)symbol.offset - (int)_code.size();
+
+    switch (node.cond)
+    {
+    case condition::nonequal: {
+        return _as.jne(rel);
+    }
+    }
+
+    return false;
+}
+
+bool
 zd4_generator::process(const par::declaration_node &node)
 {
     if (!node.target->is<object_node>())
