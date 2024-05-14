@@ -1,8 +1,8 @@
 #pragma once
 
 #include <iterator>
-#include <utility>
 
+#include <zd.hpp>
 #include <zd/text/encoding.hpp>
 
 namespace zd

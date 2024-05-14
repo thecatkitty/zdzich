@@ -1,6 +1,6 @@
 #pragma once
 
-#include <zd/ustring.hpp>
+#include <zd.hpp>
 
 namespace zd
 {

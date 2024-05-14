@@ -1,6 +1,5 @@
 #pragma once
 
-#include <zd/error.hpp>
 #include <zd/lex/pl_istream.hpp>
 #include <zd/lex/token.hpp>
 

@@ -1,5 +1,4 @@
 #include <cstdio>
-#include <cstdlib>
 
 #include <zd/message.hpp>
 

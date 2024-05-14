@@ -1,5 +1,4 @@
 #include <cstdio>
-#include <cstring>
 
 #include <zd/containers.hpp>
 #include <zd/gen/text_generator.hpp>

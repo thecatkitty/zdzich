@@ -1,7 +1,3 @@
-#include <algorithm>
-#include <cstring>
-#include <new>
-
 #include <zd/text/encoding.hpp>
 #include <zd/ustring.hpp>
 

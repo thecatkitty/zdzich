@@ -1,6 +1,6 @@
-#include <cstddef>
-#include <cstdint>
-#include <utility>
+#pragma once
+
+#include <zd.hpp>
 
 namespace zd
 {

@@ -1,5 +1,3 @@
-#include <algorithm>
-
 #include <zd/text/characters.hpp>
 #include <zd/text/encoding.hpp>
 #include <zd/text/pl_string.hpp>

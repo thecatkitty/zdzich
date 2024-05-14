@@ -1,8 +1,3 @@
-#include <algorithm>
-#include <cctype>
-#include <cstdio>
-#include <cstring>
-
 #include <zd/gen/zd4_generator.hpp>
 #include <zd/par/node.hpp>
 #include <zd/text/pl_string.hpp>
