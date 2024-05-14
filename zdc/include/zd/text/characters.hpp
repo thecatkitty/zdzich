@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cctype>
+#include <zd.hpp>
 
 #ifdef isascii
 #undef isascii

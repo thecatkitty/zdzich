@@ -1,5 +1,4 @@
 #include <cstdio>
-#include <new>
 
 #include <zd/lex/token.hpp>
 #include <zd/text/encoding.hpp>

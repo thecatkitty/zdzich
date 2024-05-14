@@ -1,4 +1,6 @@
-#include <zd/ustring.hpp>
+#pragma once
+
+#include <zd.hpp>
 
 namespace zd
 {

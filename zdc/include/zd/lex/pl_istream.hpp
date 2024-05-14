@@ -1,6 +1,5 @@
 #pragma once
 
-#include <zd/error.hpp>
 #include <zd/io/min_istream.hpp>
 #include <zd/text/encoding.hpp>
 
