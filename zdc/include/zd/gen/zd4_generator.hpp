@@ -42,10 +42,7 @@ class zd4_generator : public generator
     process(const par::call_node &node) override;
 
     bool
-    process(const par::condition_node &node) override
-    {
-        return false;
-    }
+    process(const par::condition_node &node) override;
 
     bool
     process(const par::declaration_node &node) override;

@@ -112,6 +112,23 @@ x86_assembler::cmp(par::cpu_register left, unsigned right)
 }
 
 bool
+x86_assembler::jne(int rel)
+{
+    rel -= 2;
+    if ((INT8_MAX < rel) || (INT8_MIN > rel))
+    {
+        rel -= 2;
+        uint8_t code[]{ASM_WORD(JNE_rel16), ASM_WORD(rel)};
+        _code.emit(code, sizeof(code));
+        return true;
+    }
+
+    uint8_t code[]{ASM_BYTE(JNE_rel8), ASM_BYTE(rel)};
+    _code.emit(code, sizeof(code));
+    return true;
+}
+
+bool
 x86_assembler::mov(par::cpu_register dst, const ustring &src)
 {
     ASM_REQUIRE(sizeof(uint16_t) == _reg_size(dst));
