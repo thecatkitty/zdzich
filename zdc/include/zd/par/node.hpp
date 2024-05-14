@@ -250,6 +250,10 @@ struct object_node : public node
     const ustring     name;
     const object_type type;
 
+    object_node() : name{}, type{object_type::text}
+    {
+    }
+
     object_node(const ustring &name_, object_type type_)
         : name{name_}, type{type_}
     {

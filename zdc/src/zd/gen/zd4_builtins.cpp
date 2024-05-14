@@ -100,6 +100,21 @@ zd4_builtins::Pisz(zd4_generator *generator, const ustring &str)
 }
 
 bool
+zd4_builtins::Pisz(zd4_generator *generator, const par::object_node &obj)
+{
+    REQUIRE(object_type::text == obj.type);
+
+    auto &symbol = generator->get_symbol(obj.name);
+
+    // INT 21,9 - Print String
+    generator->asm_mov(cpu_register::dx, symbol_ref{symbol, +2});
+    generator->asm_mov(cpu_register::ah, 9);
+    generator->asm_int(0x21);
+
+    return true;
+}
+
+bool
 zd4_builtins::Pisz(zd4_generator *generator, const call_node &node)
 {
     if (node.is_bare)
@@ -107,10 +122,16 @@ zd4_builtins::Pisz(zd4_generator *generator, const call_node &node)
         return Pisz(generator);
     }
 
-    if (node.arguments.size() && node.arguments.front()->is<string_node>())
+    REQUIRE(node.arguments.size());
+    if (node.arguments.front()->is<string_node>())
     {
         return Pisz(generator,
                     node.arguments.front()->as<string_node>()->value);
+    }
+
+    if (node.arguments.front()->is<object_node>())
+    {
+        return Pisz(generator, *node.arguments.front()->as<object_node>());
     }
 
     return false;
