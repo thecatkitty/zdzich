@@ -35,6 +35,9 @@
 
 #define ADD_r16_rm16 0x03
 
+#define CMP_AL_imm8  0x3C
+#define CMP_AX_imm16 0x3D
+
 #define INC_r16 0x40
 
 #define MOV_rm16_r16    0x89

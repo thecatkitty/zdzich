@@ -78,6 +78,40 @@ _reg_size(cpu_register reg)
 }
 
 bool
+x86_assembler::cmp(par::cpu_register left, unsigned right)
+{
+    if (sizeof(uint8_t) == _reg_size(left))
+    {
+        ASM_REQUIRE(UINT8_MAX >= right);
+
+        if (cpu_register::al == left)
+        {
+            uint8_t code[]{ASM_BYTE(CMP_AL_imm8), ASM_BYTE(right)};
+            _code.emit(code, sizeof(code));
+            return true;
+        }
+
+        return false;
+    }
+
+    if (sizeof(uint16_t) == _reg_size(left))
+    {
+        ASM_REQUIRE(UINT16_MAX >= right);
+
+        if (cpu_register::ax == left)
+        {
+            uint8_t code[]{ASM_BYTE(CMP_AX_imm16), ASM_WORD(right)};
+            _code.emit(code, sizeof(code));
+            return true;
+        }
+
+        return false;
+    }
+
+    return false;
+}
+
+bool
 x86_assembler::mov(par::cpu_register dst, const ustring &src)
 {
     ASM_REQUIRE(sizeof(uint16_t) == _reg_size(dst));

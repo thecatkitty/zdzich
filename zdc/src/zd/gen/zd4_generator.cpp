@@ -115,6 +115,25 @@ zd4_generator::process(const par::label_node &node)
                       _code.size());
 }
 
+bool
+zd4_generator::process(const par::operation_node &node)
+{
+    switch (node.op)
+    {
+    case operation::compare: {
+        if (node.left->is<register_node>() && node.right->is<number_node>())
+        {
+            return _as.cmp(node.left->as<register_node>()->reg,
+                           node.right->as<number_node>()->value);
+        }
+
+        return false;
+    }
+    }
+
+    return false;
+}
+
 void
 zd4_generator::link(std::FILE *output)
 {
