@@ -62,6 +62,9 @@ class x86_assembler
     }
 
     bool
+    cmp(par::cpu_register left, unsigned right);
+
+    bool
     mov(par::cpu_register dst, const ustring &src);
 
     bool

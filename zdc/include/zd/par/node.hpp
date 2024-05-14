@@ -291,6 +291,10 @@ struct register_node : public node
 {
     const cpu_register reg;
 
+    register_node() : reg{cpu_register::invalid}
+    {
+    }
+
     register_node(cpu_register reg_) : reg{reg_}
     {
     }
