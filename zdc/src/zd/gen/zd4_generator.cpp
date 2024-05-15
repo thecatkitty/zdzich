@@ -182,6 +182,30 @@ zd4_generator::process(const par::operation_node &node)
 {
     switch (node.op)
     {
+    case operation::add: {
+        if (node.left->is<object_node>() && node.right->is<number_node>())
+        {
+            auto left_obj = node.left->as<object_node>();
+            if (object_type::word != left_obj->type)
+            {
+                return false;
+            }
+
+            auto &left_sym = get_symbol(left_obj->name);
+            auto  right_num = node.right->as<number_node>();
+            if (1 == right_num->value)
+            {
+                _as.mov(cpu_register::di, symbol_ref{left_sym});
+                _as.inc(mreg{cpu_register::di});
+                return true;
+            }
+
+            return false;
+        }
+
+        return false;
+    }
+
     case operation::compare: {
         if (node.left->is<register_node>() && node.right->is<number_node>())
         {

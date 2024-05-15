@@ -290,6 +290,15 @@ x86_assembler::inc(par::cpu_register reg)
 }
 
 bool
+x86_assembler::inc(mreg reg)
+{
+    uint8_t code[]{ASM_BYTE(INC_rm16), ASM_BYTE(ModRM(reg.encode(), 0))};
+    _code.emit(code, sizeof(code));
+
+    return true;
+}
+
+bool
 x86_assembler::intr(unsigned num)
 {
     ASM_REQUIRE(UINT8_MAX >= num);
