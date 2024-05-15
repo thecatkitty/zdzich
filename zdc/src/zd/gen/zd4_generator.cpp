@@ -10,6 +10,15 @@ using namespace zd::par;
 
 #define COM_BASE ((uint16_t)0x100)
 
+#define CAST_NODE_OR_FAIL(out, node_ptr)                                       \
+    {                                                                          \
+        if (!(node_ptr)->is<std::remove_pointer<decltype(out)>::type>())       \
+        {                                                                      \
+            return false;                                                      \
+        };                                                                     \
+        out = (node_ptr)->as<std::remove_pointer<decltype(out)>::type>();      \
+    }
+
 uint8_t
 mreg::encode() const
 {
@@ -66,18 +75,12 @@ zd4_generator::process(const par::call_node &node)
 bool
 zd4_generator::process(const par::condition_node &node)
 {
-    if (!node.action->is<jump_node>())
-    {
-        return false;
-    }
+    jump_node *jump;
+    CAST_NODE_OR_FAIL(jump, node.action);
 
-    auto jump = node.action->as<jump_node>();
-    if (!jump->target->is<label_node>())
-    {
-        return false;
-    }
+    label_node *label;
+    CAST_NODE_OR_FAIL(label, jump->target);
 
-    auto  label = jump->target->as<label_node>();
     auto &symbol = get_symbol(label->name);
     auto  rel = (int)symbol.offset - (int)_code.size();
 
@@ -94,12 +97,9 @@ zd4_generator::process(const par::condition_node &node)
 bool
 zd4_generator::process(const par::declaration_node &node)
 {
-    if (!node.target->is<object_node>())
-    {
-        return false;
-    }
+    object_node *target;
+    CAST_NODE_OR_FAIL(target, node.target);
 
-    auto target = node.target->as<object_node>();
     switch (target->type)
     {
     case object_type::text: {
