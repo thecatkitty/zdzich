@@ -37,6 +37,23 @@ mreg::encode() const
 }
 
 bool
+zd4_generator::process(const par::assignment_node &node)
+{
+    object_node *target;
+    CAST_NODE_OR_FAIL(target, node.target);
+
+    auto &dst = get_symbol(target->name);
+    if (node.source->is<number_node>())
+    {
+        _as.mov(cpu_register::bx, dst);
+        _as.mov(mreg{cpu_register::bx}, node.source->as<number_node>()->value);
+        return true;
+    }
+
+    return false;
+}
+
+bool
 zd4_generator::process(const par::call_node &node)
 {
     if (text::pl_streqai("Czyść", node.callee))
