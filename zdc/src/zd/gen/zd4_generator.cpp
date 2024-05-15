@@ -86,6 +86,11 @@ zd4_generator::process(const par::call_node &node)
         return zd4_builtins::Pozycja(this, node);
     }
 
+    if (text::pl_streqi("Tryb", node.callee))
+    {
+        return zd4_builtins::Tryb(this, node);
+    }
+
     return false;
 }
 

@@ -172,3 +172,19 @@ zd4_builtins::Pozycja(zd4_generator *generator, const par::call_node &node)
 
     return true;
 }
+
+bool
+zd4_builtins::Tryb(zd4_generator *generator, const par::call_node &node)
+{
+    REQUIRE(1 == node.arguments.size());
+    REQUIRE(node.arguments.front()->is<number_node>());
+
+    auto mode = node.arguments.front()->as<number_node>()->value;
+    REQUIRE((0 <= mode) && (UINT8_MAX >= mode));
+
+    // INT 10,0 - Set Video Mode
+    generator->_as.mov(cpu_register::ax, mode);
+    generator->_as.intr(0x10);
+
+    return true;
+}

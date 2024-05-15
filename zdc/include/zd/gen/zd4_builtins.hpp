@@ -31,6 +31,9 @@ struct zd4_builtins
     static bool
     Pozycja(zd4_generator *generator, const par::call_node &node);
 
+    static bool
+    Tryb(zd4_generator *generator, const par::call_node &node);
+
   private:
     static bool
     Pisz(zd4_generator *generator);
