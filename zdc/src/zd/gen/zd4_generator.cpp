@@ -1,3 +1,4 @@
+#include <zd/gen/zd4_builtins.hpp>
 #include <zd/gen/zd4_generator.hpp>
 #include <zd/par/node.hpp>
 #include <zd/text/pl_string.hpp>
@@ -84,6 +85,11 @@ zd4_generator::process(const par::call_node &node)
     if (text::pl_streqi("Pozycja", node.callee))
     {
         return zd4_builtins::Pozycja(this, node);
+    }
+
+    if (text::pl_streqi("Punkt", node.callee))
+    {
+        return zd4_builtins::Punkt(this, node);
     }
 
     if (text::pl_streqi("Tryb", node.callee))

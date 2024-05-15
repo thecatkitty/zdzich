@@ -170,11 +170,25 @@ x86_assembler::mov(mreg dst, uint16_t src)
 bool
 x86_assembler::mov(par::cpu_register dst, mreg src)
 {
-    uint8_t code[]{ASM_BYTE(MOV_r8_rm8 | _reg_encode(dst)),
-                   ASM_BYTE(src.encode())};
-    _code.emit(code, sizeof(code));
+    if (sizeof(uint8_t) == _reg_size(dst))
+    {
+        uint8_t code[]{ASM_BYTE(MOV_r8_rm8),
+                       ASM_BYTE(ModRM(src.encode(), _reg_encode(dst)))};
+        _code.emit(code, sizeof(code));
 
-    return true;
+        return true;
+    }
+
+    if (sizeof(uint16_t) == _reg_size(dst))
+    {
+        uint8_t code[]{ASM_BYTE(MOV_r16_rm16),
+                       ASM_BYTE(ModRM(src.encode(), _reg_encode(dst)))};
+        _code.emit(code, sizeof(code));
+
+        return true;
+    }
+
+    return false;
 }
 
 bool
