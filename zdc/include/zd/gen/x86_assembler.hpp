@@ -93,6 +93,9 @@ class x86_assembler
     inc(par::cpu_register reg);
 
     bool
+    inc(mreg reg);
+
+    bool
     intr(unsigned num);
 };
 

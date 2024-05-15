@@ -38,7 +38,8 @@
 #define CMP_AL_imm8  0x3C
 #define CMP_AX_imm16 0x3D
 
-#define INC_r16 0x40
+#define INC_rm16 0xFF
+#define INC_r16  0x40
 
 #define JNE_rel8  0x75
 #define JNE_rel16 0x850F
