@@ -45,6 +45,7 @@
 
 #define MOV_rm16_r16    0x89
 #define MOV_r8_rm8      0x8A
+#define MOV_r16_rm16    0x8B
 #define MOV_reg8_imm8   0xB0
 #define MOV_reg16_imm16 0xB8
 #define MOV_rm16_imm16  0xC7

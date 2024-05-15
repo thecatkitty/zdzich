@@ -174,6 +174,67 @@ zd4_builtins::Pozycja(zd4_generator *generator, const par::call_node &node)
 }
 
 bool
+zd4_builtins::Punkt(zd4_generator *generator, const par::call_node &node)
+{
+    REQUIRE(3 == node.arguments.size());
+
+    // Column
+    auto it = node.arguments.begin();
+    if ((*it)->is<object_node>())
+    {
+        auto arg_x = (*it)->as<object_node>();
+        REQUIRE(object_type::word == arg_x->type);
+
+        auto &sym_x = generator->get_symbol(arg_x->name);
+        generator->_as.mov(cpu_register::si, symbol_ref{sym_x});
+        generator->_as.mov(cpu_register::cx, mreg{cpu_register::si});
+    }
+    else
+    {
+        return false;
+    }
+
+    // Row
+    it++;
+    if ((*it)->is<object_node>())
+    {
+        auto arg_y = (*it)->as<object_node>();
+        REQUIRE(object_type::word == arg_y->type);
+
+        auto &sym_y = generator->get_symbol(arg_y->name);
+        generator->_as.mov(cpu_register::si, symbol_ref{sym_y});
+        generator->_as.mov(cpu_register::dx, mreg{cpu_register::si});
+    }
+    else
+    {
+        return false;
+    }
+
+    // Color value
+    it++;
+    if ((*it)->is<object_node>())
+    {
+        auto arg_c = (*it)->as<object_node>();
+        REQUIRE(object_type::word == arg_c->type);
+
+        auto &sym_c = generator->get_symbol(arg_c->name);
+        generator->_as.mov(cpu_register::si, symbol_ref{sym_c});
+        generator->_as.mov(cpu_register::al, mreg{cpu_register::si});
+    }
+    else
+    {
+        return false;
+    }
+
+    // INT 10,C - Write Graphics Pixel at Coordinate
+    generator->_as.mov(cpu_register::ah, 0xC);
+    generator->_as.mov(cpu_register::bx, 0);
+    generator->_as.intr(0x10);
+
+    return true;
+}
+
+bool
 zd4_builtins::Tryb(zd4_generator *generator, const par::call_node &node)
 {
     REQUIRE(1 == node.arguments.size());
