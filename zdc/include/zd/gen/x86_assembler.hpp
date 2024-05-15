@@ -14,6 +14,7 @@ enum class symbol_type
     undefined,
     label,
     var_text,
+    var_word,
 };
 
 struct symbol

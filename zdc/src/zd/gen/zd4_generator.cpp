@@ -116,6 +116,12 @@ zd4_generator::process(const par::declaration_node &node)
         return true;
     }
 
+    case object_type::word: {
+        return set_symbol(target->name, symbol_type::var_word,
+                          zd4_known_section::zd4_section_udat,
+                          _udat.reserve(sizeof(uint16_t)));
+    }
+
     default:
         return false;
     }
