@@ -112,19 +112,13 @@ x86_assembler::cmp(par::cpu_register left, unsigned right)
 }
 
 bool
-x86_assembler::jne(int rel)
+x86_assembler::jne(const symbol_ref &target)
 {
-    rel -= 2;
-    if ((INT8_MAX < rel) || (INT8_MIN > rel))
-    {
-        rel -= 2;
-        uint8_t code[]{ASM_WORD(JNE_rel16), ASM_WORD(rel)};
-        _code.emit(code, sizeof(code));
-        return true;
-    }
+    uint8_t code[]{ASM_WORD(JNE_rel16), ASM_WORD(target.sym.address)};
 
-    uint8_t code[]{ASM_BYTE(JNE_rel8), ASM_BYTE(rel)};
-    _code.emit(code, sizeof(code));
+    zd4_relocation ref{+2, zd4_section_code, -_code.size() - 4, true};
+    _code.emit(code, sizeof(code), &ref, 1);
+
     return true;
 }
 

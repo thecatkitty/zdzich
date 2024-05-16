@@ -17,6 +17,8 @@ struct zd4_relocation
     unsigned address : 16;
     unsigned section : 4;
     int      offset : 12;
+    bool     relative : 1;
+    int      _res : 15;
 };
 
 enum zd4_known_section

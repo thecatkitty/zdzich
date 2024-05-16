@@ -110,12 +110,10 @@ zd4_generator::process(const par::condition_node &node)
     CAST_NODE_OR_FAIL(label, jump->target);
 
     auto &symbol = get_symbol(label->name);
-    auto  rel = (int)symbol.address - (int)_code.size();
-
     switch (node.cond)
     {
     case condition::nonequal: {
-        return _as.jne(rel);
+        return _as.jne(symbol);
     }
     }
 
