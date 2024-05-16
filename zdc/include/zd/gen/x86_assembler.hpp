@@ -75,6 +75,9 @@ class x86_assembler
     je(const symbol_ref &target);
 
     bool
+    jmp(const symbol_ref &target);
+
+    bool
     jne(const symbol_ref &target);
 
     bool

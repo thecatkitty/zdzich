@@ -59,10 +59,7 @@ class zd4_generator : public generator
     }
 
     bool
-    process(const par::jump_node &node) override
-    {
-        return false;
-    }
+    process(const par::jump_node &node) override;
 
     bool
     process(const par::label_node &node) override;
