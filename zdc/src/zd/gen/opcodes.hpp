@@ -47,6 +47,9 @@
 #define JE_rel8  0x74
 #define JE_rel16 0x840F
 
+#define JMP_rel8  0xEB
+#define JMP_rel16 0xE9
+
 #define JNE_rel8  0x75
 #define JNE_rel16 0x850F
 

@@ -179,6 +179,18 @@ zd4_generator::process(const par::end_node &node)
 }
 
 bool
+zd4_generator::process(const par::jump_node &node)
+{
+    label_node *label;
+    CAST_NODE_OR_FAIL(label, node.target);
+
+    auto &symbol = get_symbol(label->name);
+    _as.jmp(symbol);
+
+    return true;
+}
+
+bool
 zd4_generator::process(const par::label_node &node)
 {
     return set_symbol(node.name, symbol_type::label, zd4_section_code,
