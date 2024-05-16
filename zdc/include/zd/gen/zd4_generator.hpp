@@ -120,7 +120,7 @@ class zd4_generator : public generator
     set_symbol(const ustring    &name,
                symbol_type       type,
                zd4_known_section section,
-               unsigned          offset);
+               unsigned          address);
 
     friend class zd4_builtins;
 };

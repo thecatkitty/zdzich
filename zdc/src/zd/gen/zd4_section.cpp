@@ -63,7 +63,7 @@ zd4_section::emit(const uint8_t        *payload,
 
     for (auto &ref : range<zd4_relocation>(refs, ref_count))
     {
-        _relocs.push_back({_offset + ref.offset, ref.section});
+        _relocs.push_back({_offset + ref.address, ref.section, ref.offset});
     }
 
     return std::exchange(_offset, _offset + size);
@@ -94,15 +94,15 @@ zd4_section::relocate(std::FILE *output, const uint16_t *bases)
     int byte{0};
     while (size() > pos)
     {
-        if ((_relocs.end() != reloc) && (reloc->offset == pos))
+        if ((_relocs.end() != reloc) && (reloc->address == pos))
         {
-            uint16_t offset{};
-            std::fread(&offset, sizeof(offset), 1, _pf);
+            uint16_t address{};
+            std::fread(&address, sizeof(address), 1, _pf);
 
-            uint16_t address = bases[reloc->section] + offset;
-            std::fwrite(&address, sizeof(address), 1, output);
+            uint16_t value = bases[reloc->section] + address + reloc->offset;
+            std::fwrite(&value, sizeof(value), 1, output);
 
-            pos += sizeof(offset);
+            pos += sizeof(address);
             reloc++;
             continue;
         }
