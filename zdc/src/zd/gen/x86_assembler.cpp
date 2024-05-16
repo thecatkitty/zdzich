@@ -140,6 +140,17 @@ x86_assembler::cmp(mreg left, unsigned right)
 }
 
 bool
+x86_assembler::je(const symbol_ref &target)
+{
+    uint8_t code[]{ASM_WORD(JE_rel16), ASM_WORD(target.sym.address)};
+
+    zd4_relocation ref{+2, zd4_section_code, -_code.size() - 4, true};
+    _code.emit(code, sizeof(code), &ref, 1);
+
+    return true;
+}
+
+bool
 x86_assembler::jne(const symbol_ref &target)
 {
     uint8_t code[]{ASM_WORD(JNE_rel16), ASM_WORD(target.sym.address)};

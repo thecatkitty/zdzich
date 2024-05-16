@@ -44,6 +44,9 @@
 #define INC_rm16 0xFF
 #define INC_r16  0x40
 
+#define JE_rel8  0x74
+#define JE_rel16 0x840F
+
 #define JNE_rel8  0x75
 #define JNE_rel16 0x850F
 

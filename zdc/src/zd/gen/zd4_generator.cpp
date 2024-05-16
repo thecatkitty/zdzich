@@ -118,6 +118,10 @@ zd4_generator::process(const par::condition_node &node)
     auto &symbol = get_symbol(label->name);
     switch (node.cond)
     {
+    case condition::equal: {
+        return _as.je(symbol);
+    }
+
     case condition::nonequal: {
         return _as.jne(symbol);
     }
