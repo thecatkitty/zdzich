@@ -72,6 +72,9 @@ class x86_assembler
     cmp(mreg left, unsigned right);
 
     bool
+    je(const symbol_ref &target);
+
+    bool
     jne(const symbol_ref &target);
 
     bool
