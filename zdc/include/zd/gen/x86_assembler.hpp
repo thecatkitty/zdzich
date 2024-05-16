@@ -69,6 +69,9 @@ class x86_assembler
     cmp(par::cpu_register left, unsigned right);
 
     bool
+    cmp(mreg left, unsigned right);
+
+    bool
     jne(const symbol_ref &target);
 
     bool

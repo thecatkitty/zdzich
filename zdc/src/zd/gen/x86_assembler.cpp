@@ -123,6 +123,23 @@ x86_assembler::cmp(par::cpu_register left, unsigned right)
 }
 
 bool
+x86_assembler::cmp(mreg left, unsigned right)
+{
+    if (sizeof(uint16_t) == _reg_size(left.reg))
+    {
+        ASM_REQUIRE(UINT16_MAX >= right);
+
+        uint8_t code[]{ASM_BYTE(CMP_rm16_imm16),
+                       ASM_BYTE(ModRM(left.encode(), 7)), ASM_WORD(right)};
+        _code.emit(code, sizeof(code));
+
+        return true;
+    }
+
+    return false;
+}
+
+bool
 x86_assembler::jne(const symbol_ref &target)
 {
     uint8_t code[]{ASM_WORD(JNE_rel16), ASM_WORD(target.sym.address)};

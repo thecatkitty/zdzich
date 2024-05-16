@@ -37,8 +37,9 @@
 
 #define CALL_rel16 0xE8
 
-#define CMP_AL_imm8  0x3C
-#define CMP_AX_imm16 0x3D
+#define CMP_AL_imm8    0x3C
+#define CMP_AX_imm16   0x3D
+#define CMP_rm16_imm16 0x81
 
 #define INC_rm16 0xFF
 #define INC_r16  0x40
