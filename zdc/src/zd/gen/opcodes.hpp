@@ -35,6 +35,8 @@
 
 #define ADD_r16_rm16 0x03
 
+#define CALL_rel16 0xE8
+
 #define CMP_AL_imm8  0x3C
 #define CMP_AX_imm16 0x3D
 

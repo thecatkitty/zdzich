@@ -97,6 +97,12 @@ zd4_generator::process(const par::call_node &node)
         return zd4_builtins::Tryb(this, node);
     }
 
+    if (node.arguments.empty())
+    {
+        auto &symbol = get_symbol(node.callee);
+        return _as.call(symbol);
+    }
+
     return false;
 }
 

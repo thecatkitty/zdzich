@@ -78,6 +78,17 @@ _reg_size(cpu_register reg)
 }
 
 bool
+x86_assembler::call(const symbol_ref &target)
+{
+    uint8_t code[]{ASM_BYTE(CALL_rel16), ASM_WORD(target.sym.address)};
+
+    zd4_relocation ref{+1, zd4_section_code, -_code.size() - 4, true};
+    _code.emit(code, sizeof(code), &ref, 1);
+
+    return true;
+}
+
+bool
 x86_assembler::cmp(par::cpu_register left, unsigned right)
 {
     if (sizeof(uint8_t) == _reg_size(left))
