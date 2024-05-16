@@ -63,6 +63,9 @@ class x86_assembler
     }
 
     bool
+    call(const symbol_ref &target);
+
+    bool
     cmp(par::cpu_register left, unsigned right);
 
     bool
