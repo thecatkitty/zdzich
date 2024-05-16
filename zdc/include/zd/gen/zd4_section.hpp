@@ -14,8 +14,9 @@ namespace gen
 
 struct zd4_relocation
 {
-    unsigned offset : 16;
+    unsigned address : 16;
     unsigned section : 4;
+    int      offset : 12;
 };
 
 enum zd4_known_section

@@ -149,9 +149,9 @@ x86_assembler::mov(par::cpu_register dst, const symbol_ref &src)
     ASM_REQUIRE(sizeof(uint16_t) == _reg_size(dst));
 
     uint8_t code[]{ASM_BYTE(MOV_reg16_imm16 | _reg_encode(dst)),
-                   ASM_WORD(src.sym.offset + src.off)};
+                   ASM_WORD(src.sym.address)};
 
-    zd4_relocation ref{+1, src.sym.section};
+    zd4_relocation ref{+1, src.sym.section, src.off};
     _code.emit(code, sizeof(code), &ref, 1);
 
     return true;

@@ -110,7 +110,7 @@ zd4_generator::process(const par::condition_node &node)
     CAST_NODE_OR_FAIL(label, jump->target);
 
     auto &symbol = get_symbol(label->name);
-    auto  rel = (int)symbol.offset - (int)_code.size();
+    auto  rel = (int)symbol.address - (int)_code.size();
 
     switch (node.cond)
     {
@@ -267,7 +267,7 @@ bool
 zd4_generator::set_symbol(const ustring    &name,
                           symbol_type       type,
                           zd4_known_section section,
-                          unsigned          offset)
+                          unsigned          address)
 {
     auto &symbol = get_symbol(name);
     if (zd4_known_section::zd4_section_unkn != symbol.section)
@@ -278,6 +278,6 @@ zd4_generator::set_symbol(const ustring    &name,
 
     symbol.type = type;
     symbol.section = section;
-    symbol.offset = offset;
+    symbol.address = address;
     return true;
 }

@@ -22,13 +22,13 @@ struct symbol
     ustring     name;
     symbol_type type;
     unsigned    section;
-    unsigned    offset;
+    unsigned    address;
 
     symbol(ustring    &name_,
            symbol_type type_,
            unsigned    section_,
-           unsigned    offset_)
-        : name{name_}, type{type_}, section{section_}, offset{offset_}
+           unsigned    address_)
+        : name{name_}, type{type_}, section{section_}, address{address_}
     {
     }
 };
@@ -36,9 +36,9 @@ struct symbol
 struct symbol_ref
 {
     const symbol &sym;
-    unsigned      off;
+    int           off;
 
-    symbol_ref(const symbol &sym_, unsigned off_ = 0) : sym{sym_}, off{off_}
+    symbol_ref(const symbol &sym_, int off_ = 0) : sym{sym_}, off{off_}
     {
     }
 };
