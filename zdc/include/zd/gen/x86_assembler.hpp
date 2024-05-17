@@ -53,13 +53,20 @@ struct mreg
 
 class x86_assembler
 {
-    zd4_section &_code;
+    zd4_section *_code;
     zd4_section &_data;
 
   public:
-    x86_assembler(zd4_section &code, zd4_section &data)
-        : _code{code}, _data{data}
+    x86_assembler(zd4_section &data) : _code{nullptr}, _data{data}
     {
+    }
+
+    zd4_section &
+    bind_code(zd4_section &section)
+    {
+        auto old = _code;
+        _code = &section;
+        return *_code;
     }
 
     bool

@@ -10,7 +10,8 @@ static uint8_t _tmpfile_num{0};
 using namespace zd;
 using namespace zd::gen;
 
-zd4_section::zd4_section(bool load) : _pf{nullptr}, _offset{0}, _relocs{}
+zd4_section::zd4_section(unsigned index_, bool load)
+    : index{index_}, _pf{nullptr}, _offset{0}, _relocs{}
 {
     if (load)
     {
@@ -85,7 +86,9 @@ zd4_section::reserve(unsigned size)
 }
 
 bool
-zd4_section::relocate(std::FILE *output, const uint16_t *bases)
+zd4_section::relocate(std::FILE                    *output,
+                      const uint16_t               *bases,
+                      const zd4_reference_resolver *resolver)
 {
     int pos{0};
     std::rewind(_pf);
@@ -100,7 +103,28 @@ zd4_section::relocate(std::FILE *output, const uint16_t *bases)
             uint16_t address{};
             std::fread(&address, sizeof(address), 1, _pf);
 
-            uint16_t value = reloc->relative ? address + reloc->offset
+            if (zd4_section_unkn == reloc->section)
+            {
+                unsigned sym_section;
+                unsigned sym_address;
+                if (!resolver->get_symbol_address(address, sym_section,
+                                                  sym_address))
+                {
+                    std::fprintf(stderr, "error: unresolved symbol number %u\n",
+                                 address);
+                    return false;
+                }
+
+                reloc->section = sym_section;
+                reloc->address = sym_address;
+                address = reloc->address;
+            }
+
+            uint16_t abs_source = bases[index] + pos;
+            uint16_t abs_target = bases[reloc->section] + address;
+            int      diff = abs_target - abs_source;
+
+            uint16_t value = reloc->relative ? diff + reloc->offset
                                              : bases[reloc->section] + address +
                                                    reloc->offset;
             std::fwrite(&value, sizeof(value), 1, output);

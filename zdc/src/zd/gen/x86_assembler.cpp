@@ -82,8 +82,8 @@ x86_assembler::call(const symbol_ref &target)
 {
     uint8_t code[]{ASM_BYTE(CALL_rel16), ASM_WORD(target.sym.address)};
 
-    zd4_relocation ref{+1, zd4_section_code, -_code.size() - 4, true};
-    _code.emit(code, sizeof(code), &ref, 1);
+    zd4_relocation ref{+1, target.sym.section, -2, true};
+    _code->emit(code, sizeof(code), &ref, 1);
 
     return true;
 }
@@ -98,7 +98,7 @@ x86_assembler::cmp(par::cpu_register left, unsigned right)
         if (cpu_register::al == left)
         {
             uint8_t code[]{ASM_BYTE(CMP_AL_imm8), ASM_BYTE(right)};
-            _code.emit(code, sizeof(code));
+            _code->emit(code, sizeof(code));
             return true;
         }
 
@@ -112,7 +112,7 @@ x86_assembler::cmp(par::cpu_register left, unsigned right)
         if (cpu_register::ax == left)
         {
             uint8_t code[]{ASM_BYTE(CMP_AX_imm16), ASM_WORD(right)};
-            _code.emit(code, sizeof(code));
+            _code->emit(code, sizeof(code));
             return true;
         }
 
@@ -131,7 +131,7 @@ x86_assembler::cmp(mreg left, unsigned right)
 
         uint8_t code[]{ASM_BYTE(CMP_rm16_imm16),
                        ASM_BYTE(ModRM(left.encode(), 7)), ASM_WORD(right)};
-        _code.emit(code, sizeof(code));
+        _code->emit(code, sizeof(code));
 
         return true;
     }
@@ -144,8 +144,8 @@ x86_assembler::je(const symbol_ref &target)
 {
     uint8_t code[]{ASM_WORD(JE_rel16), ASM_WORD(target.sym.address)};
 
-    zd4_relocation ref{+2, zd4_section_code, -_code.size() - 4, true};
-    _code.emit(code, sizeof(code), &ref, 1);
+    zd4_relocation ref{+2, target.sym.section, -2, true};
+    _code->emit(code, sizeof(code), &ref, 1);
 
     return true;
 }
@@ -155,8 +155,8 @@ x86_assembler::jmp(const symbol_ref &target)
 {
     uint8_t code[]{ASM_BYTE(JMP_rel16), ASM_WORD(target.sym.address)};
 
-    zd4_relocation ref{+1, zd4_section_code, -_code.size() - 3, true};
-    _code.emit(code, sizeof(code), &ref, 1);
+    zd4_relocation ref{+1, target.sym.section, -2, true};
+    _code->emit(code, sizeof(code), &ref, 1);
 
     return true;
 }
@@ -166,8 +166,8 @@ x86_assembler::jne(const symbol_ref &target)
 {
     uint8_t code[]{ASM_WORD(JNE_rel16), ASM_WORD(target.sym.address)};
 
-    zd4_relocation ref{+2, zd4_section_code, -_code.size() - 4, true};
-    _code.emit(code, sizeof(code), &ref, 1);
+    zd4_relocation ref{+2, target.sym.section, -2, true};
+    _code->emit(code, sizeof(code), &ref, 1);
 
     return true;
 }
@@ -182,7 +182,7 @@ x86_assembler::mov(par::cpu_register dst, const ustring &src)
                    ASM_WORD(data_offset)};
 
     zd4_relocation ref{+1, zd4_section_data};
-    _code.emit(code, sizeof(code), &ref, 1);
+    _code->emit(code, sizeof(code), &ref, 1);
 
     return true;
 }
@@ -196,7 +196,7 @@ x86_assembler::mov(par::cpu_register dst, const symbol_ref &src)
                    ASM_WORD(src.sym.address)};
 
     zd4_relocation ref{+1, src.sym.section, src.off};
-    _code.emit(code, sizeof(code), &ref, 1);
+    _code->emit(code, sizeof(code), &ref, 1);
 
     return true;
 }
@@ -206,7 +206,7 @@ x86_assembler::mov(mreg dst, uint16_t src)
 {
     uint8_t code[]{ASM_BYTE(MOV_rm16_imm16), ASM_BYTE(dst.encode()),
                    ASM_WORD(src)};
-    _code.emit(code, sizeof(code));
+    _code->emit(code, sizeof(code));
 
     return true;
 }
@@ -218,7 +218,7 @@ x86_assembler::mov(par::cpu_register dst, mreg src)
     {
         uint8_t code[]{ASM_BYTE(MOV_r8_rm8),
                        ASM_BYTE(ModRM(src.encode(), _reg_encode(dst)))};
-        _code.emit(code, sizeof(code));
+        _code->emit(code, sizeof(code));
 
         return true;
     }
@@ -227,7 +227,7 @@ x86_assembler::mov(par::cpu_register dst, mreg src)
     {
         uint8_t code[]{ASM_BYTE(MOV_r16_rm16),
                        ASM_BYTE(ModRM(src.encode(), _reg_encode(dst)))};
-        _code.emit(code, sizeof(code));
+        _code->emit(code, sizeof(code));
 
         return true;
     }
@@ -240,7 +240,7 @@ x86_assembler::mov(mreg dst, par::cpu_register src)
 {
     uint8_t code[]{ASM_BYTE(MOV_rm16_r16),
                    ModRM(dst.encode(), _reg_encode(src))};
-    _code.emit(code, sizeof(code));
+    _code->emit(code, sizeof(code));
 
     return true;
 }
@@ -254,7 +254,7 @@ x86_assembler::mov(par::cpu_register dst, unsigned src)
 
         uint8_t code[]{ASM_BYTE(MOV_reg8_imm8 | _reg_encode(dst)),
                        ASM_BYTE(src)};
-        _code.emit(code, sizeof(code));
+        _code->emit(code, sizeof(code));
 
         return true;
     }
@@ -265,7 +265,7 @@ x86_assembler::mov(par::cpu_register dst, unsigned src)
 
         uint8_t code[]{ASM_BYTE(MOV_reg16_imm16 | _reg_encode(dst)),
                        ASM_WORD(src)};
-        _code.emit(code, sizeof(code));
+        _code->emit(code, sizeof(code));
 
         return true;
     }
@@ -317,7 +317,7 @@ x86_assembler::add(par::cpu_register dst, par::cpu_register src)
 
     uint8_t code[]{ASM_BYTE(ADD_r16_rm16),
                    ASM_BYTE(ModRM(modrm, _reg_encode(dst)))};
-    _code.emit(code, sizeof(code));
+    _code->emit(code, sizeof(code));
 
     return true;
 }
@@ -328,7 +328,7 @@ x86_assembler::inc(par::cpu_register reg)
     ASM_REQUIRE(sizeof(uint16_t) == _reg_size(reg));
 
     uint8_t code[]{ASM_BYTE(INC_r16 | _reg_encode(reg))};
-    _code.emit(code, sizeof(code));
+    _code->emit(code, sizeof(code));
 
     return true;
 }
@@ -337,7 +337,7 @@ bool
 x86_assembler::inc(mreg reg)
 {
     uint8_t code[]{ASM_BYTE(INC_rm16), ASM_BYTE(ModRM(reg.encode(), 0))};
-    _code.emit(code, sizeof(code));
+    _code->emit(code, sizeof(code));
 
     return true;
 }
@@ -348,7 +348,7 @@ x86_assembler::intr(unsigned num)
     ASM_REQUIRE(UINT8_MAX >= num);
 
     uint8_t code[]{ASM_BYTE(INT_imm8), ASM_BYTE(num)};
-    _code.emit(code, sizeof(code));
+    _code->emit(code, sizeof(code));
 
     return true;
 }
