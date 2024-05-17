@@ -13,9 +13,13 @@ namespace zd
 namespace gen
 {
 
-class zd4_generator : public generator
+class zd4_generator : public generator, public zd4_reference_resolver
 {
-    zd4_section _code;
+    using section_list = std::list<zd4_section>;
+
+    section_list           _codes;
+    section_list::iterator _curr_code;
+
     zd4_section _data;
     zd4_section _udat;
 
@@ -26,9 +30,12 @@ class zd4_generator : public generator
 
   public:
     zd4_generator()
-        : _code{}, _data{}, _udat{false}, _symbols{}, _symbol_num{0},
-          _as{_code, _data}
+        : _codes{}, _data{zd4_section_data}, _udat{zd4_section_udat, false},
+          _symbols{}, _symbol_num{0}, _as{_data}
     {
+        _codes.emplace_back(zd4_section_code);
+        _curr_code = _codes.begin();
+        _as.bind_code(*_curr_code);
     }
 
     bool
@@ -106,6 +113,11 @@ class zd4_generator : public generator
     void
     link(std::FILE *output);
 
+    bool
+    get_symbol_address(unsigned  index,
+                       unsigned &section,
+                       unsigned &address) const override;
+
   private:
     static ustring
     get_cname(const ustring &name);
@@ -118,6 +130,39 @@ class zd4_generator : public generator
                symbol_type       type,
                zd4_known_section section,
                unsigned          address);
+
+    class nesting_guard
+    {
+        zd4_generator         &_gen;
+        section_list::iterator _parent;
+
+      public:
+        nesting_guard(zd4_generator &generator)
+            : _gen{generator}, _parent{_gen._curr_code}
+        {
+            if (zd4_max_code_sections ==
+                std::distance(_gen._codes.begin(), _gen._curr_code))
+            {
+                std::fputs("error: too many nested procedures\n", stderr);
+                std::abort();
+            }
+
+            _gen._curr_code++;
+            if (_gen._codes.end() == _gen._curr_code)
+            {
+                _gen._codes.emplace_back((unsigned)_gen._codes.size());
+                _gen._curr_code = std::prev(_gen._codes.end());
+            }
+
+            _gen._as.bind_code(*_gen._curr_code);
+        }
+
+        ~nesting_guard()
+        {
+            _gen._as.bind_code(*_parent);
+            _gen._curr_code = _parent;
+        }
+    };
 
     friend class zd4_builtins;
 };

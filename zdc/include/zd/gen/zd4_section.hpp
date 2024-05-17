@@ -24,9 +24,21 @@ struct zd4_relocation
 enum zd4_known_section
 {
     zd4_section_code = 0,
-    zd4_section_data = 1,
-    zd4_section_udat = 2,
+    zd4_section_cod1,
+    zd4_section_cod2,
+    zd4_section_cod3,
+    zd4_max_code_sections,
+    zd4_section_data = 8,
+    zd4_section_udat,
     zd4_section_unkn = 15
+};
+
+struct zd4_reference_resolver
+{
+    virtual bool
+    get_symbol_address(unsigned  index,
+                       unsigned &section,
+                       unsigned &address) const = 0;
 };
 
 class zd4_section
@@ -40,7 +52,9 @@ class zd4_section
 #endif
 
   public:
-    zd4_section(bool load = true);
+    const unsigned index;
+
+    zd4_section(unsigned index_, bool load = true);
 
     ~zd4_section();
 
@@ -70,7 +84,9 @@ class zd4_section
     reserve(unsigned size);
 
     bool
-    relocate(std::FILE *output, const uint16_t *bases);
+    relocate(std::FILE                    *output,
+             const uint16_t               *bases,
+             const zd4_reference_resolver *resolver);
 };
 
 } // namespace gen

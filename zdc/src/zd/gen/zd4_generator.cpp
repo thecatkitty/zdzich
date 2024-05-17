@@ -193,8 +193,10 @@ zd4_generator::process(const par::jump_node &node)
 bool
 zd4_generator::process(const par::label_node &node)
 {
-    return set_symbol(node.name, symbol_type::label, zd4_section_code,
-                      _code.size());
+    return set_symbol(node.name, symbol_type::label,
+                      static_cast<zd4_known_section>(
+                          std::distance(_codes.begin(), _curr_code)),
+                      _curr_code->size());
 }
 
 bool
@@ -258,13 +260,55 @@ zd4_generator::process(const par::operation_node &node)
 void
 zd4_generator::link(std::FILE *output)
 {
-    uint16_t bases[3];
-    bases[0] = COM_BASE;                // CODE
-    bases[1] = bases[0] + _code.size(); // DATA
-    bases[2] = bases[1] + _data.size(); // UDAT
+    // Calculate section base addresses
+    uint16_t bases[zd4_section_unkn]{COM_BASE};
 
-    _code.relocate(output, bases);
-    _data.relocate(output, bases);
+    int i = 1;
+    for (auto &section : _codes)
+    {
+        bases[i] = section.size();
+        i++;
+    }
+
+    bases[zd4_section_udat] = _data.size();
+
+    for (int i = 1; i < zd4_section_unkn; i++)
+    {
+        bases[i] += bases[i - 1];
+    }
+
+    // Relocate all section into one output file
+    for (auto &section : _codes)
+    {
+        section.relocate(output, bases, this);
+    }
+
+    _data.relocate(output, bases, this);
+}
+
+bool
+zd::gen::zd4_generator::get_symbol_address(unsigned  index,
+                                           unsigned &section,
+                                           unsigned &address) const
+{
+    if (_symbol_num <= index)
+    {
+        return false;
+    }
+
+    auto it = _symbols.begin();
+    std::advance(it, index);
+
+    section = it->section;
+    address = it->address;
+
+    if (zd4_section_unkn == section)
+    {
+        std::fprintf(stderr, "error: unresolved symbol %s\n", it->name.data());
+        return false;
+    }
+
+    return true;
 }
 
 ustring
