@@ -65,20 +65,22 @@ class zd4_section
     }
 
     unsigned
-    emit(const uint8_t        *payload,
-         unsigned              size,
-         const zd4_relocation *refs = nullptr,
-         size_t                ref_count = 0);
+    emit(const uint8_t *payload, unsigned size);
 
     inline unsigned
-    emit(const char           *payload,
-         unsigned              size,
-         const zd4_relocation *refs = nullptr,
-         size_t                ref_count = 0)
+    emit(const char *payload, unsigned size)
     {
-        return emit(reinterpret_cast<const uint8_t *>(payload), size, refs,
-                    ref_count);
+        return emit(reinterpret_cast<const uint8_t *>(payload), size);
     }
+
+    void
+    emit_byte(uint8_t byte);
+
+    void
+    emit_word(uint16_t word);
+
+    void
+    emit_ref(const zd4_relocation &ref);
 
     unsigned
     reserve(unsigned size);
