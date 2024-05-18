@@ -47,10 +47,7 @@ zd4_section::~zd4_section()
 }
 
 unsigned
-zd4_section::emit(const uint8_t        *payload,
-                  unsigned              size,
-                  const zd4_relocation *refs,
-                  size_t                ref_count)
+zd4_section::emit(const uint8_t *payload, unsigned size)
 {
     if (!_pf)
     {
@@ -62,13 +59,28 @@ zd4_section::emit(const uint8_t        *payload,
         return UINT_MAX;
     }
 
-    for (auto &ref : range<zd4_relocation>(refs, ref_count))
-    {
-        _relocs.push_back(
-            {_offset + ref.address, ref.section, ref.offset, ref.relative});
-    }
-
     return std::exchange(_offset, _offset + size);
+}
+
+void
+zd4_section::emit_byte(uint8_t byte)
+{
+    std::fwrite(&byte, sizeof(byte), 1, _pf);
+    _offset += sizeof(byte);
+}
+
+void
+zd4_section::emit_word(uint16_t word)
+{
+    std::fwrite(&word, sizeof(word), 1, _pf);
+    _offset += sizeof(word);
+}
+
+void
+zd4_section::emit_ref(const zd4_relocation &ref)
+{
+    _relocs.push_back({_offset, ref.section, ref.offset, ref.relative});
+    emit_word(ref.address);
 }
 
 unsigned
