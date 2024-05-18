@@ -46,8 +46,7 @@ zd4_generator::process(const par::assignment_node &node)
     auto &dst = get_symbol(target->name);
     if (node.source->is<number_node>())
     {
-        _as.mov(cpu_register::bx, dst);
-        _as.mov(mreg{cpu_register::bx}, node.source->as<number_node>()->value);
+        _as.mov(dst, (uint16_t)node.source->as<number_node>()->value);
         return true;
     }
 
@@ -147,8 +146,7 @@ zd4_generator::process(const par::declaration_node &node)
         }
 
         auto &symbol = get_symbol(target->name);
-        _as.mov(cpu_register::di, symbol);
-        _as.mov(mreg{cpu_register::di}, 0x00FD);
+        _as.mov(symbol, (uint16_t)0x00FD);
         return true;
     }
 
@@ -217,8 +215,7 @@ zd4_generator::process(const par::operation_node &node)
             auto  right_num = node.right->as<number_node>();
             if (1 == right_num->value)
             {
-                _as.mov(cpu_register::di, symbol_ref{left_sym});
-                _as.inc(mreg{cpu_register::di});
+                _as.inc(symbol_ref{left_sym});
                 return true;
             }
 
@@ -244,9 +241,7 @@ zd4_generator::process(const par::operation_node &node)
             }
 
             auto &left_sym = get_symbol(left_obj->name);
-            _as.mov(cpu_register::si, left_sym);
-            _as.cmp(mreg{cpu_register::si},
-                    node.right->as<number_node>()->value);
+            _as.cmp(left_sym, (uint16_t)node.right->as<number_node>()->value);
             return true;
         }
 
