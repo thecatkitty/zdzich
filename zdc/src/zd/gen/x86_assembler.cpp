@@ -352,3 +352,12 @@ x86_assembler::intr(unsigned num)
 
     return true;
 }
+
+bool
+x86_assembler::ret()
+{
+    uint8_t code[]{ASM_BYTE(RET_near)};
+    _code->emit(code, sizeof(code));
+
+    return true;
+}

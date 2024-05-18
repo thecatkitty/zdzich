@@ -60,4 +60,6 @@
 #define MOV_reg16_imm16 0xB8
 #define MOV_rm16_imm16  0xC7
 
+#define RET_near 0xC3
+
 #define INT_imm8 0xCD
