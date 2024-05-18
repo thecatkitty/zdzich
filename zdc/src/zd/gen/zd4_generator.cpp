@@ -257,6 +257,29 @@ zd4_generator::process(const par::operation_node &node)
     return false;
 }
 
+bool
+zd4_generator::process(const par::procedure_node &node)
+{
+    nesting_guard nested{*this};
+
+    if (!set_symbol(node.name, symbol_type::procedure,
+                    static_cast<zd4_known_section>(_curr_code->index),
+                    _curr_code->size()))
+    {
+        return false;
+    }
+
+    for (auto &child : node.body)
+    {
+        if (!child->generate(this))
+        {
+            return false;
+        }
+    }
+
+    return _as.ret();
+}
+
 void
 zd4_generator::link(std::FILE *output)
 {

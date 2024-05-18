@@ -15,7 +15,7 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | KURS02 | ✅ | ✅ | ✅ |
 | KURS03 | ✅ | ✅ | ✅ |
 | KURS04 | ✅ | ✅ | ✅ |
-| EFEKT | ✅ | ✅ |
+| EFEKT | ✅ | ✅ | ✅ |
 | LEKCJA01 | ✅ | ✅ | ✅ |
 | LEKCJA02 | ✅ | ✅ |
 | LEKCJA03 | ✅ | ✅ |
