@@ -77,6 +77,9 @@ class x86_assembler
     cmp(par::cpu_register left, unsigned right);
 
     bool
+    cmp(const symbol_ref &left, uint16_t right);
+
+    bool
     cmp(mreg left, unsigned right);
 
     bool
@@ -101,6 +104,9 @@ class x86_assembler
     mov(par::cpu_register dst, mreg src);
 
     bool
+    mov(const symbol_ref &dst, uint16_t src);
+
+    bool
     mov(mreg dst, par::cpu_register src);
 
     bool
@@ -114,6 +120,9 @@ class x86_assembler
 
     bool
     inc(mreg reg);
+
+    bool
+    inc(const symbol_ref &dst);
 
     bool
     intr(unsigned num);
