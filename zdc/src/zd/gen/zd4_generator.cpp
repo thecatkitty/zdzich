@@ -56,6 +56,11 @@ zd4_generator::process(const par::assignment_node &node)
 bool
 zd4_generator::process(const par::call_node &node)
 {
+    if (text::pl_streqi("Czekaj", node.callee))
+    {
+        return zd4_builtins::Czekaj(this, node);
+    }
+
     if (text::pl_streqai("Czyść", node.callee))
     {
         return zd4_builtins::Czysc(this, node);
