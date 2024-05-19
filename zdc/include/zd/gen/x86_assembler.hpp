@@ -92,7 +92,7 @@ class x86_assembler
     jne(const symbol_ref &target);
 
     bool
-    mov(par::cpu_register dst, const ustring &src);
+    mov(par::cpu_register dst, const std::vector<char> &src);
 
     bool
     mov(par::cpu_register dst, const symbol_ref &src);
