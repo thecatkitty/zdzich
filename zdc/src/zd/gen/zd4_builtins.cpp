@@ -91,7 +91,7 @@ zd4_builtins::Klawisz(zd4_generator *generator, const par::call_node &node)
 bool
 zd4_builtins::Pisz(zd4_generator *generator)
 {
-    ustring data{"\r\n$"};
+    std::vector<char> data{'\r', '\n', '$'};
 
     // INT 21,9 - Print String
     generator->_as.mov(cpu_register::dx, data);
@@ -103,9 +103,16 @@ zd4_builtins::Pisz(zd4_generator *generator)
 bool
 zd4_builtins::Pisz(zd4_generator *generator, const ustring &str)
 {
-    ustring data{str};
-    data.append('$');
-    // TODO: Convert to CP852
+    std::vector<char> data{};
+    data.resize(str.size() + 1);
+
+    auto ptr = data.data();
+    for (auto cp : str)
+    {
+        text::encoding::ibm852->encode(ptr, cp);
+        ptr++;
+    }
+    *ptr = '$';
 
     // INT 21,9 - Print String
     generator->_as.mov(cpu_register::dx, data);

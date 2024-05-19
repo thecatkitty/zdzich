@@ -164,7 +164,7 @@ x86_assembler::jne(const symbol_ref &target)
 }
 
 bool
-x86_assembler::mov(par::cpu_register dst, const ustring &src)
+x86_assembler::mov(par::cpu_register dst, const std::vector<char> &src)
 {
     ASM_REQUIRE(sizeof(uint16_t) == _reg_size(dst));
 
