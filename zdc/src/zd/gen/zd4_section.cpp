@@ -62,25 +62,25 @@ zd4_section::emit(const uint8_t *payload, unsigned size)
     return std::exchange(_offset, _offset + size);
 }
 
-void
+unsigned
 zd4_section::emit_byte(uint8_t byte)
 {
     std::fwrite(&byte, sizeof(byte), 1, _pf);
-    _offset += sizeof(byte);
+    return std::exchange(_offset, _offset + (unsigned)sizeof(byte));
 }
 
-void
+unsigned
 zd4_section::emit_word(uint16_t word)
 {
     std::fwrite(&word, sizeof(word), 1, _pf);
-    _offset += sizeof(word);
+    return std::exchange(_offset, _offset + (unsigned)sizeof(word));
 }
 
-void
+unsigned
 zd4_section::emit_ref(const zd4_relocation &ref)
 {
     _relocs.push_back({_offset, ref.section, ref.offset, ref.relative});
-    emit_word(ref.address);
+    return emit_word(ref.address);
 }
 
 unsigned

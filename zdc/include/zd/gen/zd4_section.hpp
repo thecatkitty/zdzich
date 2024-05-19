@@ -73,13 +73,13 @@ class zd4_section
         return emit(reinterpret_cast<const uint8_t *>(payload), size);
     }
 
-    void
+    unsigned
     emit_byte(uint8_t byte);
 
-    void
+    unsigned
     emit_word(uint16_t word);
 
-    void
+    unsigned
     emit_ref(const zd4_relocation &ref);
 
     unsigned

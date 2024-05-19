@@ -142,35 +142,110 @@ zd4_generator::process(const par::condition_node &node)
 bool
 zd4_generator::process(const par::declaration_node &node)
 {
-    object_node *target;
-    CAST_NODE_OR_FAIL(target, node.target);
+    object_node     *target{nullptr};
+    assignment_node *assignment{nullptr};
 
-    switch (target->type)
+    // Variable definition or constant assigment?
+    zd4_known_section section{zd4_section_udat};
+    if (node.target->is<object_node>())
     {
-    case object_type::text: {
-        if (!set_symbol(target->name, symbol_type::var_text,
-                        zd4_known_section::zd4_section_udat,
-                        _udat.reserve(UINT8_MAX)))
+        target = node.target->as<object_node>();
+        section = zd4_section_udat;
+    }
+    else
+    {
+        if (!node.is_const)
         {
             return false;
         }
 
-        auto &symbol = get_symbol(target->name);
-        _as.mov(symbol, (uint16_t)0x00FD);
-        return true;
+        CAST_NODE_OR_FAIL(assignment, node.target);
+        CAST_NODE_OR_FAIL(target, assignment->target);
+        section = zd4_section_data;
     }
 
-    case object_type::word: {
-        return set_symbol(target->name, symbol_type::var_word,
-                          zd4_known_section::zd4_section_udat,
-                          _udat.reserve(sizeof(uint16_t)));
-    }
+    // Text or number?
+    symbol_type type{};
+    switch (target->type)
+    {
+    case object_type::text:
+        type = symbol_type::var_text;
+        break;
+
+    case object_type::word:
+        type = symbol_type::var_word;
+        break;
 
     default:
         return false;
     }
 
-    return false;
+    // Place data in proper sections
+    unsigned address{};
+    switch (type)
+    {
+    case symbol_type::var_text: {
+        if (zd4_section_udat == section)
+        {
+            address = _udat.reserve(UINT8_MAX);
+            break;
+        }
+
+        // Text constant
+        string_node *str;
+        CAST_NODE_OR_FAIL(str, assignment->source);
+        if ((UINT8_MAX - 4) < str->value.size())
+        {
+            return false;
+        }
+
+        std::vector<char> data{};
+        data.resize(str->value.size() + 4);
+
+        auto ptr = data.data();
+        *(ptr++) = str->value.size() + 2;
+        *(ptr++) = str->value.size() + 2;
+
+        for (auto cp : str->value)
+        {
+            text::encoding::ibm852->encode(ptr, cp);
+            ptr++;
+        }
+        *(ptr++) = 0;
+        *ptr = '$';
+
+        address = _data.emit(data.data(), data.size());
+        break;
+    }
+
+    case symbol_type::var_word: {
+        if (zd4_section_udat == section)
+        {
+            address = _udat.reserve(sizeof(uint16_t));
+            break;
+        }
+
+        // Integer constant
+        number_node *num;
+        CAST_NODE_OR_FAIL(num, assignment->source);
+        address = _data.emit_word(num->value);
+        break;
+    }
+    }
+
+    // Define a new symbol
+    if (!set_symbol(target->name, type, section, address))
+    {
+        return false;
+    }
+
+    // Add string variable initialization
+    if (!node.is_const && (symbol_type::var_text == type))
+    {
+        _as.mov(get_symbol(target->name), (uint16_t)0x00FD);
+    }
+
+    return true;
 }
 
 bool
