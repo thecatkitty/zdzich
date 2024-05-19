@@ -302,6 +302,16 @@ x86_assembler::add(par::cpu_register dst, par::cpu_register src)
 }
 
 bool
+x86_assembler::add(const symbol_ref &dst, unsigned src)
+{
+    _code->emit_byte(ADD_rm16_imm16);
+    _code->emit_byte(ModRM(ModRM_disp16, 0));
+    _code->emit_ref({dst.sym.address, dst.sym.section, dst.off});
+    _code->emit_word(src);
+    return true;
+}
+
+bool
 x86_assembler::inc(par::cpu_register reg)
 {
     ASM_REQUIRE(sizeof(uint16_t) == _reg_size(reg));
