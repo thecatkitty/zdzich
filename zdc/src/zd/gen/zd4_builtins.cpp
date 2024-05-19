@@ -173,6 +173,61 @@ zd4_builtins::PiszL(zd4_generator *generator, const call_node &node)
     return false;
 }
 
+// Procedure $Pisz8, input in CL
+static const uint8_t Pisz8_impl[]{
+    0xBB, 0xFF, 0xFF,       // hs:  mov bx, FFFFh
+    0xFE, 0xC3,             //      inc bl
+    0x80, 0xE9, 0x64,       //      sub cl, 100
+    0x73, 0xF9,             //      jae hs
+    0x80, 0xC1, 0x64,       // ts:  add cl, 100
+    0xFE, 0xC7,             //      inc bh
+    0x80, 0xE9, 0x0A,       //      sub cl, 10
+    0x73, 0xF9,             //      jae ts
+    0x80, 0xC1, 0x0A,       //      add cl, 10
+    0x81, 0xC3, 0x30, 0x30, //      add bx, 3030h
+    0x80, 0xC1, 0x30,       //      add cl, 30h
+    0xB4, 0x02,             //      mov ah, 2 ; INT 21,2
+    0x88, 0xDA,             //      mov dl, bl
+    0xCD, 0x21,             //      int 21h
+    0x88, 0xFA,             //      mov dl, bh
+    0xCD, 0x21,             //      int 21h
+    0x88, 0xCA,             //      mov dl, cl
+    0xCD, 0x21,             //      int 21h
+    0xC3,                   //      ret
+};
+
+bool
+zd4_builtins::Pisz8(zd4_generator *generator, const call_node &node)
+{
+    REQUIRE(1 == node.arguments.size());
+    REQUIRE(node.arguments.front()->is<object_node>());
+
+    auto num = node.arguments.front()->as<object_node>();
+    REQUIRE(object_type::word == num->type);
+
+    ustring proc_name{"$Pisz8"};
+    auto   &procedure = generator->get_symbol(proc_name);
+    if (symbol_type::undefined == procedure.type)
+    {
+        zd4_generator::nesting_guard nested{*generator};
+
+        if (!generator->set_symbol(
+                proc_name, symbol_type::procedure,
+                static_cast<zd4_known_section>(generator->_curr_code->index),
+                generator->_curr_code->emit(Pisz8_impl, sizeof(Pisz8_impl))))
+        {
+            return false;
+        }
+    }
+
+    auto &symbol = generator->get_symbol(num->name);
+    generator->_as.mov(cpu_register::bx, symbol_ref{symbol});
+    generator->_as.mov(cpu_register::cl, mreg{cpu_register::bx});
+    generator->_as.call(procedure);
+
+    return true;
+}
+
 bool
 zd4_builtins::PiszZnak(zd4_generator *generator, const call_node &node)
 {

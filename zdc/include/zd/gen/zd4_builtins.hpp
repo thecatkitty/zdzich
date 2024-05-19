@@ -35,6 +35,9 @@ struct zd4_builtins
     PiszZnak(zd4_generator *generator, const par::call_node &node);
 
     static bool
+    Pisz8(zd4_generator *generator, const par::call_node &node);
+
+    static bool
     Pozycja(zd4_generator *generator, const par::call_node &node);
 
     static bool

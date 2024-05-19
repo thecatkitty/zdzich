@@ -91,6 +91,11 @@ zd4_generator::process(const par::call_node &node)
         return zd4_builtins::PiszZnak(this, node);
     }
 
+    if (text::pl_streqi("Pisz8", node.callee))
+    {
+        return zd4_builtins::Pisz8(this, node);
+    }
+
     if (text::pl_streqi("Pozycja", node.callee))
     {
         return zd4_builtins::Pozycja(this, node);
