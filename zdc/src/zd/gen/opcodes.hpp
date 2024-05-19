@@ -33,7 +33,8 @@
 #define ModRM_SIDH         0xC6
 #define ModRM_DIBH         0xC7
 
-#define ADD_r16_rm16 0x03
+#define ADD_r16_rm16   0x03
+#define ADD_rm16_imm16 0x81
 
 #define CALL_rel16 0xE8
 

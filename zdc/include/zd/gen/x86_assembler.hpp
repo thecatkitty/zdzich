@@ -116,6 +116,9 @@ class x86_assembler
     add(par::cpu_register dst, par::cpu_register src);
 
     bool
+    add(const symbol_ref &dst, unsigned src);
+
+    bool
     inc(par::cpu_register reg);
 
     bool

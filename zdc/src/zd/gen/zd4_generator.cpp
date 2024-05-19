@@ -309,7 +309,8 @@ zd4_generator::process(const par::operation_node &node)
                 return true;
             }
 
-            return false;
+            _as.add(symbol_ref{left_sym}, right_num->value);
+            return true;
         }
 
         return false;
