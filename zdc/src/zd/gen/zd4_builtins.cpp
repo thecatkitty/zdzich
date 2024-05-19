@@ -12,6 +12,21 @@ using namespace zd::par;
     }
 
 bool
+zd4_builtins::Czekaj(zd4_generator *generator, const par::call_node &node)
+{
+    REQUIRE(1 == node.arguments.size());
+    REQUIRE(node.arguments.front()->is<number_node>());
+
+    // INT 15,86 - Elapsed Time Wait (AT and PS/2)
+    generator->_as.mov(cpu_register::ax, 0x8600);
+    generator->_as.mov(cpu_register::cx,
+                       node.arguments.front()->as<number_node>()->value);
+    generator->_as.mov(cpu_register::dx, 0);
+    generator->_as.intr(0x15);
+    return true;
+}
+
+bool
 zd4_builtins::Czysc(zd4_generator *generator, const par::call_node &node)
 {
     uint8_t attribute{0x07};
