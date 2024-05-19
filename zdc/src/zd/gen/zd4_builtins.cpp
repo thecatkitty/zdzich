@@ -174,6 +174,44 @@ zd4_builtins::PiszL(zd4_generator *generator, const call_node &node)
 }
 
 bool
+zd4_builtins::PiszZnak(zd4_generator *generator, const call_node &node)
+{
+    REQUIRE(!node.arguments.empty());
+    REQUIRE(3 >= node.arguments.size());
+
+    // Character code
+    auto it = node.arguments.begin();
+    REQUIRE((*it)->is<number_node>());
+    uint8_t character = (*it)->as<number_node>()->value;
+
+    // Display attribute (colors)
+    uint8_t attribute{7};
+    if (1 < node.arguments.size())
+    {
+        it++;
+        REQUIRE((*it)->is<number_node>());
+        attribute = (*it)->as<number_node>()->value;
+    }
+
+    // Number of repetitions
+    uint16_t count{1};
+    if (1 < node.arguments.size())
+    {
+        it++;
+        REQUIRE((*it)->is<number_node>());
+        count = (*it)->as<number_node>()->value;
+    }
+
+    // INT 10,9 - Write Character and Attribute at Cursor Position
+    generator->_as.mov(cpu_register::ax, 0x0900 | character);
+    generator->_as.mov(cpu_register::bx, attribute);
+    generator->_as.mov(cpu_register::cx, count);
+    generator->_as.intr(0x10);
+
+    return true;
+}
+
+bool
 zd4_builtins::Pozycja(zd4_generator *generator, const par::call_node &node)
 {
     REQUIRE(2 == node.arguments.size());

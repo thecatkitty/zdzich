@@ -18,9 +18,9 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | EFEKT | ✅ | ✅ | ✅ |
 | LEKCJA01 | ✅ | ✅ | ✅ |
 | LEKCJA02 | ✅ | ✅ | ✅ |
-| LEKCJA03 | ✅ | ✅ |
-| LEKCJA04 | ✅ | ✅ |
-| LEKCJA05 | ✅ | ✅ |
+| LEKCJA03 | ✅ | ✅ | ✅ |
+| LEKCJA04 | ✅ | ✅ | ✅ |
+| LEKCJA05 | ✅ | ✅ | ✅ |
 | LEKCJA06 | ✅ | ✅ |
 | LEKCJA07 | ✅ | ✅ |
 | LEKCJA08 | ✅ | ✅ |
