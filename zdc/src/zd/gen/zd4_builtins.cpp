@@ -162,6 +162,11 @@ zd4_builtins::Pisz(zd4_generator *generator, const call_node &node)
 bool
 zd4_builtins::PiszL(zd4_generator *generator, const call_node &node)
 {
+    if (node.is_bare)
+    {
+        return Pisz(generator);
+    }
+
     if (node.arguments.size() && node.arguments.front()->is<string_node>())
     {
         ustring value{node.arguments.front()->as<string_node>()->value};
