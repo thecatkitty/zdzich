@@ -117,6 +117,8 @@ struct assignment_node : public node
     const unique_node target;
     const unique_node source;
 
+    assignment_node() = default;
+
     assignment_node(unique_node target_, unique_node source_)
         : target{std::move(target_)}, source{std::move(source_)}
     {
