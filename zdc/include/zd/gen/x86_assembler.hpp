@@ -83,6 +83,9 @@ class x86_assembler
     cmp(mreg left, unsigned right);
 
     bool
+    dec(const symbol_ref &dst);
+
+    bool
     je(const symbol_ref &target);
 
     bool
@@ -132,6 +135,9 @@ class x86_assembler
 
     bool
     ret();
+
+    bool
+    sub(const symbol_ref &dst, unsigned src);
 };
 
 } // namespace gen

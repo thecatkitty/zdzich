@@ -34,7 +34,7 @@
 #define ModRM_DIBH         0xC7
 
 #define ADD_r16_rm16   0x03
-#define ADD_rm16_imm16 0x81
+#define ADD_rm16_imm16 0x81 // RegOpcode 0
 
 #define CALL_rel16 0xE8
 
@@ -42,7 +42,9 @@
 #define CMP_AX_imm16   0x3D
 #define CMP_rm16_imm16 0x81
 
-#define INC_rm16 0xFF
+#define DEC_rm16 0xFF // RegOpcode 1
+
+#define INC_rm16 0xFF // RegOpcode 0
 #define INC_r16  0x40
 
 #define JE_rel8  0x74
@@ -62,5 +64,7 @@
 #define MOV_rm16_imm16  0xC7
 
 #define RET_near 0xC3
+
+#define SUB_rm16_imm16 0x81 // RegOpcode 5
 
 #define INT_imm8 0xCD

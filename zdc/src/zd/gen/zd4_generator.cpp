@@ -338,6 +338,30 @@ zd4_generator::process(const par::operation_node &node)
 
         return false;
     }
+
+    case operation::subtract: {
+        if (node.left->is<object_node>() && node.right->is<number_node>())
+        {
+            auto left_obj = node.left->as<object_node>();
+            if (object_type::word != left_obj->type)
+            {
+                return false;
+            }
+
+            auto &left_sym = get_symbol(left_obj->name);
+            auto  right_num = node.right->as<number_node>();
+            if (1 == right_num->value)
+            {
+                _as.dec(symbol_ref{left_sym});
+                return true;
+            }
+
+            _as.sub(symbol_ref{left_sym}, right_num->value);
+            return true;
+        }
+
+        return false;
+    }
     }
 
     return false;
