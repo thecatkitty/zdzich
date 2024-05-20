@@ -86,6 +86,9 @@ class x86_assembler
     dec(const symbol_ref &dst);
 
     bool
+    jb(const symbol_ref &target);
+
+    bool
     je(const symbol_ref &target);
 
     bool

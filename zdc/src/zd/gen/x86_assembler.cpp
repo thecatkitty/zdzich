@@ -207,6 +207,14 @@ x86_assembler::cmp(const symbol_ref &left, uint16_t right)
 }
 
 bool
+x86_assembler::jb(const symbol_ref &target)
+{
+    _code->emit_word(JB_rel16);
+    _code->emit_ref({target.sym.address, target.sym.section, -2, true});
+    return true;
+}
+
+bool
 x86_assembler::je(const symbol_ref &target)
 {
     _code->emit_word(JE_rel16);
