@@ -22,11 +22,11 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | LEKCJA04 | ✅ | ✅ | ✅ |
 | LEKCJA05 | ✅ | ✅ | ✅ |
 | LEKCJA06 | ✅ | ✅ | ✅ |
-| LEKCJA07 | ✅ | ✅ |
+| LEKCJA07 | ✅ | ✅ | ✅ |
 | LEKCJA08 | ✅ | ✅ |
 | LEKCJA09 | ✅ | ✅ |
 | LEKCJA10 | ✅ | ✅ |
-| LEKCJA11 | ✅ | ✅ |
+| LEKCJA11 | ✅ | ✅ | ✅ |
 | ZADANIA | ✅ | ✅ |
 | **INC** | - | - | - |
 | DOGIER | ✅ | ✅ |
