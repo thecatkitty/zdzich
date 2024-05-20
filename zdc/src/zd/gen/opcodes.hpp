@@ -47,6 +47,9 @@
 #define INC_rm16 0xFF // RegOpcode 0
 #define INC_r16  0x40
 
+#define JB_rel8  0x72
+#define JB_rel16 0x820F
+
 #define JE_rel8  0x74
 #define JE_rel16 0x840F
 
