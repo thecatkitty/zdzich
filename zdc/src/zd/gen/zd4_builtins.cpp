@@ -205,10 +205,6 @@ bool
 zd4_builtins::Pisz8(zd4_generator *generator, const call_node &node)
 {
     REQUIRE(1 == node.arguments.size());
-    REQUIRE(node.arguments.front()->is<object_node>());
-
-    auto num = node.arguments.front()->as<object_node>();
-    REQUIRE(object_type::word == num->type);
 
     ustring proc_name{"$Pisz8"};
     auto   &procedure = generator->get_symbol(proc_name);
@@ -225,9 +221,23 @@ zd4_builtins::Pisz8(zd4_generator *generator, const call_node &node)
         }
     }
 
-    auto &symbol = generator->get_symbol(num->name);
-    generator->_as.mov(cpu_register::bx, symbol_ref{symbol});
-    generator->_as.mov(cpu_register::cl, mreg{cpu_register::bx});
+    if (node.arguments.front()->is<register_node>())
+    {
+        auto reg = node.arguments.front()->as<register_node>();
+        generator->_as.mov(cpu_register::cl, reg->reg);
+    }
+    else
+    {
+        REQUIRE(node.arguments.front()->is<object_node>());
+
+        auto num = node.arguments.front()->as<object_node>();
+        REQUIRE(object_type::word == num->type);
+
+        auto &symbol = generator->get_symbol(num->name);
+        generator->_as.mov(cpu_register::bx, symbol_ref{symbol});
+        generator->_as.mov(cpu_register::cl, mreg{cpu_register::bx});
+    }
+
     generator->_as.call(procedure);
 
     return true;

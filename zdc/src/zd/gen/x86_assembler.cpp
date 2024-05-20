@@ -19,7 +19,48 @@ _reg_base(cpu_register reg)
 }
 
 static uint8_t
-_reg_encode(cpu_register reg)
+_to_mode(cpu_register reg)
+{
+    switch (reg)
+    {
+    case cpu_register::al:
+    case cpu_register::ax:
+        return ModRM_A;
+
+    case cpu_register::bl:
+    case cpu_register::bx:
+        return ModRM_B;
+
+    case cpu_register::cl:
+    case cpu_register::cx:
+        return ModRM_C;
+
+    case cpu_register::dl:
+    case cpu_register::dx:
+        return ModRM_D;
+
+    case cpu_register::ah:
+    case cpu_register::sp:
+        return ModRM_SPAH;
+
+    case cpu_register::ch:
+    case cpu_register::bp:
+        return ModRM_BPCH;
+
+    case cpu_register::dh:
+    case cpu_register::si:
+        return ModRM_SIDH;
+
+    case cpu_register::bh:
+    case cpu_register::di:
+        return ModRM_DIBH;
+    }
+
+    return 0xFF;
+}
+
+static uint8_t
+_to_regopcode(cpu_register reg)
 {
     uint8_t ret{0};
 
@@ -69,6 +110,23 @@ _reg_size(cpu_register reg)
     }
 
     return 0;
+}
+
+uint8_t
+mreg::encode() const
+{
+    switch (reg)
+    {
+    case cpu_register::si:
+        return ModRM_SI;
+
+    case cpu_register::di:
+        return ModRM_DI;
+
+    case cpu_register::bx:
+        return ModRM_BX;
+    }
+    return 0xFF;
 }
 
 bool
@@ -173,11 +231,22 @@ x86_assembler::jne(const symbol_ref &target)
 }
 
 bool
+zd::gen::x86_assembler::mov(par::cpu_register dst, par::cpu_register src)
+{
+    ASM_REQUIRE(_reg_size(src) == _reg_size(dst));
+
+    _code->emit_byte((sizeof(uint8_t) == _reg_size(dst)) ? MOV_rm8_r8
+                                                         : MOV_rm16_r16);
+    _code->emit_byte(ModRM(_to_mode(dst), _to_regopcode(src)));
+    return true;
+}
+
+bool
 x86_assembler::mov(par::cpu_register dst, const std::vector<char> &src)
 {
     ASM_REQUIRE(sizeof(uint16_t) == _reg_size(dst));
 
-    _code->emit_byte(MOV_reg16_imm16 | _reg_encode(dst));
+    _code->emit_byte(MOV_reg16_imm16 | _to_regopcode(dst));
     _code->emit_ref({_data.emit(src.data(), src.size()), zd4_section_data});
     return true;
 }
@@ -187,7 +256,7 @@ x86_assembler::mov(par::cpu_register dst, const symbol_ref &src)
 {
     ASM_REQUIRE(sizeof(uint16_t) == _reg_size(dst));
 
-    _code->emit_byte(MOV_reg16_imm16 | _reg_encode(dst));
+    _code->emit_byte(MOV_reg16_imm16 | _to_regopcode(dst));
     _code->emit_ref({src.sym.address, src.sym.section, src.off});
     return true;
 }
@@ -207,14 +276,14 @@ x86_assembler::mov(par::cpu_register dst, mreg src)
     if (sizeof(uint8_t) == _reg_size(dst))
     {
         _code->emit_byte(MOV_r8_rm8);
-        _code->emit_byte(ModRM(src.encode(), _reg_encode(dst)));
+        _code->emit_byte(ModRM(src.encode(), _to_regopcode(dst)));
         return true;
     }
 
     if (sizeof(uint16_t) == _reg_size(dst))
     {
         _code->emit_byte(MOV_r16_rm16);
-        _code->emit_byte(ModRM(src.encode(), _reg_encode(dst)));
+        _code->emit_byte(ModRM(src.encode(), _to_regopcode(dst)));
         return true;
     }
 
@@ -235,7 +304,7 @@ bool
 x86_assembler::mov(mreg dst, par::cpu_register src)
 {
     _code->emit_byte(MOV_rm16_r16);
-    _code->emit_byte(ModRM(dst.encode(), _reg_encode(src)));
+    _code->emit_byte(ModRM(dst.encode(), _to_regopcode(src)));
     return true;
 }
 
@@ -246,7 +315,7 @@ x86_assembler::mov(par::cpu_register dst, unsigned src)
     {
         ASM_REQUIRE(UINT8_MAX >= src);
 
-        _code->emit_byte(MOV_reg8_imm8 | _reg_encode(dst));
+        _code->emit_byte(MOV_reg8_imm8 | _to_regopcode(dst));
         _code->emit_byte(src);
         return true;
     }
@@ -255,7 +324,7 @@ x86_assembler::mov(par::cpu_register dst, unsigned src)
     {
         ASM_REQUIRE(UINT16_MAX >= src);
 
-        _code->emit_byte(MOV_reg16_imm16 | _reg_encode(dst));
+        _code->emit_byte(MOV_reg16_imm16 | _to_regopcode(dst));
         _code->emit_word(src);
         return true;
     }
@@ -269,44 +338,8 @@ x86_assembler::add(par::cpu_register dst, par::cpu_register src)
     ASM_REQUIRE(_reg_size(dst) == _reg_size(src));
     ASM_REQUIRE(sizeof(uint16_t) == _reg_size(dst));
 
-    uint8_t modrm{0xFF};
-    switch (src)
-    {
-    case cpu_register::ax:
-        modrm = ModRM_A;
-        break;
-
-    case cpu_register::bx:
-        modrm = ModRM_B;
-        break;
-
-    case cpu_register::cx:
-        modrm = ModRM_C;
-        break;
-
-    case cpu_register::dx:
-        modrm = ModRM_D;
-        break;
-
-    case cpu_register::sp:
-        modrm = ModRM_SPAH;
-        break;
-
-    case cpu_register::bp:
-        modrm = ModRM_BPCH;
-        break;
-
-    case cpu_register::si:
-        modrm = ModRM_SIDH;
-        break;
-
-    case cpu_register::di:
-        modrm = ModRM_DIBH;
-        break;
-    }
-
     _code->emit_byte(ADD_r16_rm16);
-    _code->emit_byte(ModRM(modrm, _reg_encode(dst)));
+    _code->emit_byte(ModRM(_to_mode(src), _to_regopcode(dst)));
     return true;
 }
 
@@ -325,7 +358,7 @@ x86_assembler::inc(par::cpu_register reg)
 {
     ASM_REQUIRE(sizeof(uint16_t) == _reg_size(reg));
 
-    _code->emit_byte(INC_r16 | _reg_encode(reg));
+    _code->emit_byte(INC_r16 | _to_regopcode(reg));
     return true;
 }
 
