@@ -104,22 +104,11 @@ zd4_builtins::Losowa8(zd4_generator *generator, const call_node &node)
 {
     REQUIRE(node.arguments.empty());
 
-    ustring proc_name{"$Losowa8"};
-    auto   &procedure = generator->get_symbol(proc_name);
-    if (symbol_type::undefined == procedure.type)
-    {
-        zd4_generator::nesting_guard nested{*generator};
+    auto procedure =
+        get_procedure(generator, "Losowa8", Losowa8_impl, sizeof(Losowa8_impl));
+    REQUIRE(procedure);
 
-        if (!generator->set_symbol(
-                proc_name, symbol_type::procedure,
-                static_cast<zd4_known_section>(generator->_curr_code->index),
-                generator->_curr_code->emit(Losowa8_impl, sizeof(Losowa8_impl))))
-        {
-            return false;
-        }
-    }
-
-    generator->_as.call(procedure);
+    generator->_as.call(*procedure);
 
     return true;
 }
@@ -242,20 +231,9 @@ zd4_builtins::Pisz8(zd4_generator *generator, const call_node &node)
 {
     REQUIRE(1 == node.arguments.size());
 
-    ustring proc_name{"$Pisz8"};
-    auto   &procedure = generator->get_symbol(proc_name);
-    if (symbol_type::undefined == procedure.type)
-    {
-        zd4_generator::nesting_guard nested{*generator};
-
-        if (!generator->set_symbol(
-                proc_name, symbol_type::procedure,
-                static_cast<zd4_known_section>(generator->_curr_code->index),
-                generator->_curr_code->emit(Pisz8_impl, sizeof(Pisz8_impl))))
-        {
-            return false;
-        }
-    }
+    auto procedure =
+        get_procedure(generator, "$Pisz8", Pisz8_impl, sizeof(Pisz8_impl));
+    REQUIRE(procedure);
 
     if (node.arguments.front()->is<register_node>())
     {
@@ -274,7 +252,7 @@ zd4_builtins::Pisz8(zd4_generator *generator, const call_node &node)
         generator->_as.mov(cpu_register::cl, mreg{cpu_register::bx});
     }
 
-    generator->_as.call(procedure);
+    generator->_as.call(*procedure);
 
     return true;
 }
@@ -414,4 +392,27 @@ zd4_builtins::Tryb(zd4_generator *generator, const par::call_node &node)
     generator->_as.intr(0x10);
 
     return true;
+}
+
+symbol *
+zd4_builtins::get_procedure(zd4_generator *generator,
+                            const ustring &name,
+                            const uint8_t *code,
+                            unsigned       size)
+{
+    auto &procedure = generator->get_symbol(name);
+    if (symbol_type::undefined == procedure.type)
+    {
+        zd4_generator::nesting_guard nested{*generator};
+
+        if (!generator->set_symbol(
+                name, symbol_type::procedure,
+                static_cast<zd4_known_section>(generator->_curr_code->index),
+                generator->_curr_code->emit(code, size)))
+        {
+            return nullptr;
+        }
+    }
+
+    return &procedure;
 }
