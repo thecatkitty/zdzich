@@ -88,6 +88,42 @@ zd4_builtins::Klawisz(zd4_generator *generator, const par::call_node &node)
     return true;
 }
 
+// Procedure $Losowa8
+static const uint8_t Losowa8_impl[]{
+    0x1E,             // push ds
+    0x33, 0xC0,       // xor ax, ax
+    0x8E, 0xD8,       // mov ds, ax
+    0xA0, 0x6C, 0x04, // mov al, [046Ch]
+    0x34, 0xAA,       // xor al, AAh
+    0x1F,             // pop ds
+    0xC3,             // ret
+};
+
+bool
+zd4_builtins::Losowa8(zd4_generator *generator, const call_node &node)
+{
+    REQUIRE(node.arguments.empty());
+
+    ustring proc_name{"$Losowa8"};
+    auto   &procedure = generator->get_symbol(proc_name);
+    if (symbol_type::undefined == procedure.type)
+    {
+        zd4_generator::nesting_guard nested{*generator};
+
+        if (!generator->set_symbol(
+                proc_name, symbol_type::procedure,
+                static_cast<zd4_known_section>(generator->_curr_code->index),
+                generator->_curr_code->emit(Losowa8_impl, sizeof(Losowa8_impl))))
+        {
+            return false;
+        }
+    }
+
+    generator->_as.call(procedure);
+
+    return true;
+}
+
 bool
 zd4_builtins::Pisz(zd4_generator *generator)
 {
