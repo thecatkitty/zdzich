@@ -130,6 +130,15 @@ x86_assembler::cmp(mreg left, unsigned right)
 }
 
 bool
+zd::gen::x86_assembler::dec(const symbol_ref &dst)
+{
+    _code->emit_byte(DEC_rm16);
+    _code->emit_byte(ModRM(ModRM_disp16, 1));
+    _code->emit_ref({dst.sym.address, dst.sym.section, dst.off});
+    return true;
+}
+
+bool
 x86_assembler::cmp(const symbol_ref &left, uint16_t right)
 {
     _code->emit_byte(CMP_rm16_imm16);
@@ -351,5 +360,15 @@ bool
 x86_assembler::ret()
 {
     _code->emit_byte(RET_near);
+    return true;
+}
+
+bool
+zd::gen::x86_assembler::sub(const symbol_ref &dst, unsigned src)
+{
+    _code->emit_byte(SUB_rm16_imm16);
+    _code->emit_byte(ModRM(ModRM_disp16, 5));
+    _code->emit_ref({dst.sym.address, dst.sym.section, dst.off});
+    _code->emit_word(src);
     return true;
 }

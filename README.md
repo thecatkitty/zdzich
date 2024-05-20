@@ -21,7 +21,7 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | LEKCJA03 | ✅ | ✅ | ✅ |
 | LEKCJA04 | ✅ | ✅ | ✅ |
 | LEKCJA05 | ✅ | ✅ | ✅ |
-| LEKCJA06 | ✅ | ✅ |
+| LEKCJA06 | ✅ | ✅ | ✅ |
 | LEKCJA07 | ✅ | ✅ |
 | LEKCJA08 | ✅ | ✅ |
 | LEKCJA09 | ✅ | ✅ |
