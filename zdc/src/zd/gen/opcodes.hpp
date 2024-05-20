@@ -56,6 +56,7 @@
 #define JNE_rel8  0x75
 #define JNE_rel16 0x850F
 
+#define MOV_rm8_r8      0x88
 #define MOV_rm16_r16    0x89
 #define MOV_r8_rm8      0x8A
 #define MOV_r16_rm16    0x8B

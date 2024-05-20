@@ -20,23 +20,6 @@ using namespace zd::par;
         out = (node_ptr)->as<std::remove_pointer<decltype(out)>::type>();      \
     }
 
-uint8_t
-mreg::encode() const
-{
-    switch (reg)
-    {
-    case cpu_register::si:
-        return ModRM_SI;
-
-    case cpu_register::di:
-        return ModRM_DI;
-
-    case cpu_register::bx:
-        return ModRM_BX;
-    }
-    return 0xFF;
-}
-
 bool
 zd4_generator::process(const par::assignment_node &node)
 {
