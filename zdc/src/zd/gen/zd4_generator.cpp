@@ -104,6 +104,11 @@ zd4_generator::process(const par::call_node &node)
         return zd4_builtins::Tryb(this, node);
     }
 
+    if (text::pl_streqai("TwórzKatalog", node.callee))
+    {
+        return zd4_builtins::TworzKatalog(this, node);
+    }
+
     if (node.arguments.empty())
     {
         auto &symbol = get_symbol(node.callee);
