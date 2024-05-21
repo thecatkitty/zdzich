@@ -194,7 +194,7 @@ x86_assembler::cmp(mreg left, unsigned right)
 }
 
 bool
-zd::gen::x86_assembler::dec(const symbol_ref &dst)
+x86_assembler::dec(const symbol_ref &dst)
 {
     _code->emit_byte(DEC_rm16);
     _code->emit_byte(ModRM(ModRM_disp16, 1));
@@ -203,7 +203,7 @@ zd::gen::x86_assembler::dec(const symbol_ref &dst)
 }
 
 bool
-zd::gen::x86_assembler::inb()
+x86_assembler::inb()
 {
     _code->emit_byte(IN_AL_DX);
     return true;
@@ -252,7 +252,7 @@ x86_assembler::jne(const symbol_ref &target)
 }
 
 bool
-zd::gen::x86_assembler::mov(par::cpu_register dst, par::cpu_register src)
+x86_assembler::mov(par::cpu_register dst, par::cpu_register src)
 {
     ASM_REQUIRE(_reg_size(src) == _reg_size(dst));
 
@@ -354,7 +354,7 @@ x86_assembler::mov(par::cpu_register dst, unsigned src)
 }
 
 bool
-zd::gen::x86_assembler::outb()
+x86_assembler::outb()
 {
     _code->emit_byte(OUT_DX_AL);
     return true;
@@ -425,7 +425,17 @@ x86_assembler::ret()
 }
 
 bool
-zd::gen::x86_assembler::sub(const symbol_ref &dst, unsigned src)
+x86_assembler::shr(par::cpu_register reg, par::cpu_register cl)
+{
+    ASM_REQUIRE(cpu_register::cl == cl);
+
+    _code->emit_byte(SHR_rm16_CL);
+    _code->emit_byte(ModRM(_to_mode(reg), 5));
+    return true;
+}
+
+bool
+x86_assembler::sub(const symbol_ref &dst, unsigned src)
 {
     _code->emit_byte(SUB_rm16_imm16);
     _code->emit_byte(ModRM(ModRM_disp16, 5));

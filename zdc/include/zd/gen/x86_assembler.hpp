@@ -149,6 +149,9 @@ class x86_assembler
     ret();
 
     bool
+    shr(par::cpu_register reg, par::cpu_register cl);
+
+    bool
     sub(const symbol_ref &dst, unsigned src);
 };
 

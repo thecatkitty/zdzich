@@ -492,9 +492,26 @@ bool
 zd::gen::zd4_builtins::StanPrzyciskow(zd4_generator        *generator,
                                       const par::call_node &node)
 {
+    REQUIRE(1 >= node.arguments.size());
+
     // INT 33,3 - Get Mouse Position and Button Status
     generator->_as.mov(cpu_register::ax, 3);
     generator->_as.intr(0x33);
+
+    if (1 == node.arguments.size())
+    {
+        REQUIRE(node.arguments.front()->is<string_node>());
+        auto &str = node.arguments.front()->as<string_node>()->value;
+        REQUIRE(1 == str.size());
+        REQUIRE('!' == *str.data());
+
+        generator->_as.mov(cpu_register::ax, cpu_register::cx);
+        generator->_as.mov(cpu_register::cl, 3);
+        generator->_as.shr(cpu_register::ax, cpu_register::cl);
+        generator->_as.shr(cpu_register::dx, cpu_register::cl);
+        generator->_as.mov(cpu_register::cx, cpu_register::ax);
+    }
+
     return true;
 }
 
