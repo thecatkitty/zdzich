@@ -122,6 +122,9 @@ class x86_assembler
     mov(par::cpu_register dst, unsigned src);
 
     bool
+    outb();
+
+    bool
     add(par::cpu_register dst, par::cpu_register src);
 
     bool

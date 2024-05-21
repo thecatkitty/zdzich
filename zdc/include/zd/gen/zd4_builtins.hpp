@@ -23,6 +23,9 @@ struct zd4_builtins
     Czytaj(zd4_generator *generator, const par::call_node &node);
 
     static bool
+    DoPortu(zd4_generator *generator, const par::call_node &node);
+
+    static bool
     Klawisz(zd4_generator *generator, const par::call_node &node);
 
     static bool

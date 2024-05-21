@@ -67,6 +67,8 @@
 #define MOV_reg16_imm16 0xB8
 #define MOV_rm16_imm16  0xC7
 
+#define OUT_DX_AL 0xEE
+
 #define RET_near 0xC3
 
 #define SUB_rm16_imm16 0x81 // RegOpcode 5
