@@ -23,14 +23,32 @@ using namespace zd::par;
 bool
 zd4_generator::process(const par::assignment_node &node)
 {
-    object_node *target;
-    CAST_NODE_OR_FAIL(target, node.target);
-
-    auto &dst = get_symbol(target->name);
-    if (node.source->is<number_node>())
+    if (node.target->is<object_node>())
     {
-        _as.mov(dst, (uint16_t)node.source->as<number_node>()->value);
-        return true;
+        auto  target = node.target->as<object_node>();
+        auto &dst = get_symbol(target->name);
+
+        if (node.source->is<number_node>())
+        {
+            _as.mov(dst, (uint16_t)node.source->as<number_node>()->value);
+            return true;
+        }
+
+        return false;
+    }
+
+    if (node.target->is<register_node>())
+    {
+        auto target = node.target->as<register_node>();
+        auto dst = target->reg;
+
+        if (node.source->is<number_node>())
+        {
+            _as.mov(dst, (uint16_t)node.source->as<number_node>()->value);
+            return true;
+        }
+
+        return false;
     }
 
     return false;
