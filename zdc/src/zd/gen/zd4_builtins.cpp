@@ -489,6 +489,16 @@ zd4_builtins::Punkt(zd4_generator *generator, const par::call_node &node)
 }
 
 bool
+zd::gen::zd4_builtins::StanPrzyciskow(zd4_generator        *generator,
+                                      const par::call_node &node)
+{
+    // INT 33,3 - Get Mouse Position and Button Status
+    generator->_as.mov(cpu_register::ax, 3);
+    generator->_as.intr(0x33);
+    return true;
+}
+
+bool
 zd4_builtins::Tryb(zd4_generator *generator, const par::call_node &node)
 {
     REQUIRE(1 == node.arguments.size());

@@ -62,6 +62,9 @@ struct zd4_builtins
     Punkt(zd4_generator *generator, const par::call_node &node);
 
     static bool
+    StanPrzyciskow(zd4_generator *generator, const par::call_node &node);
+
+    static bool
     Tryb(zd4_generator *generator, const par::call_node &node);
 
     static bool
