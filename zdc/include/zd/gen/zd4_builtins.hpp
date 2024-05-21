@@ -80,6 +80,9 @@ struct zd4_builtins
     static bool
     Pisz(zd4_generator *generator, const ustring &str);
 
+    static bool
+    Pisz(zd4_generator *generator, unsigned fileno, const ustring &str);
+
     static symbol *
     get_procedure(zd4_generator *generator,
                   const ustring &name,
