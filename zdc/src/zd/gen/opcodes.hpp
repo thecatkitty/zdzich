@@ -39,8 +39,9 @@
 #define CALL_rel16 0xE8
 
 #define CMP_AL_imm8    0x3C
+#define CMP_rm8_imm8   0x80 // RegOpcode 7
 #define CMP_AX_imm16   0x3D
-#define CMP_rm16_imm16 0x81
+#define CMP_rm16_imm16 0x81 // RegOpcode 7
 
 #define DEC_rm16 0xFF // RegOpcode 1
 

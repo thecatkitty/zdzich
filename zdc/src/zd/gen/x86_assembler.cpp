@@ -151,7 +151,10 @@ x86_assembler::cmp(par::cpu_register left, unsigned right)
             return true;
         }
 
-        return false;
+        _code->emit_byte(CMP_rm8_imm8);
+        _code->emit_byte(ModRM(_to_mode(left), 7));
+        _code->emit_byte(right);
+        return true;
     }
 
     if (sizeof(uint16_t) == _reg_size(left))
@@ -165,7 +168,10 @@ x86_assembler::cmp(par::cpu_register left, unsigned right)
             return true;
         }
 
-        return false;
+        _code->emit_byte(CMP_rm16_imm16);
+        _code->emit_byte(ModRM(_to_mode(left), 7));
+        _code->emit_word(right);
+        return true;
     }
 
     return false;
