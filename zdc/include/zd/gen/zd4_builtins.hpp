@@ -59,6 +59,9 @@ struct zd4_builtins
     TworzPlik(zd4_generator *generator, const par::call_node &node);
 
     static bool
+    UsunKatalog(zd4_generator *generator, const par::call_node &node);
+
+    static bool
     UsunPlik(zd4_generator *generator, const par::call_node &node);
 
     static bool
