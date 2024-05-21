@@ -74,6 +74,8 @@
 
 #define RET_near 0xC3
 
+#define SHR_rm16_CL 0xD3 // RegOpcode 5
+
 #define SUB_rm16_imm16 0x81 // RegOpcode 5
 
 #define INT_imm8 0xCD
