@@ -8,6 +8,13 @@
 namespace zd
 {
 
+namespace text
+{
+
+struct encoding;
+
+}
+
 class ustring
 {
   public:
@@ -132,6 +139,9 @@ class ustring
         _capacity = 0;
         return std::exchange(_data, nullptr);
     }
+
+    char *
+    encode(char *dst, text::encoding *enc) const;
 
     bool
     reserve(size_t new_cap);
