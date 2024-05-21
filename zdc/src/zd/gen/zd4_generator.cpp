@@ -134,6 +134,11 @@ zd4_generator::process(const par::call_node &node)
         return zd4_builtins::ZmienKatalog(this, node);
     }
 
+    if (text::pl_streqai("Zamknij", node.callee))
+    {
+        return zd4_builtins::Zamknij(this, node);
+    }
+
     if (node.arguments.empty())
     {
         auto &symbol = get_symbol(node.callee);

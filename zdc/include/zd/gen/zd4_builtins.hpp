@@ -68,6 +68,9 @@ struct zd4_builtins
     UsunPlik(zd4_generator *generator, const par::call_node &node);
 
     static bool
+    Zamknij(zd4_generator *generator, const par::call_node &node);
+
+    static bool
     ZmienKatalog(zd4_generator *generator, const par::call_node &node);
 
   private:
