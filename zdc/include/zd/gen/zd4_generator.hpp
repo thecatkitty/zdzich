@@ -54,10 +54,7 @@ class zd4_generator : public generator, public zd4_reference_resolver
     process(const par::end_node &node) override;
 
     bool
-    process(const par::emit_node &node) override
-    {
-        return false;
-    }
+    process(const par::emit_node &node) override;
 
     bool
     process(const par::include_node &node) override
