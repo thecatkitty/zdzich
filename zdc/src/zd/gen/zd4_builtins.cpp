@@ -436,6 +436,16 @@ zd4_builtins::TworzPlik(zd4_generator *generator, const par::call_node &node)
 }
 
 bool
+zd4_builtins::UsunPlik(zd4_generator *generator, const par::call_node &node)
+{
+    REQUIRE(1 == node.arguments.size());
+
+    // INT 21,41 - Delete File
+    generator->_as.mov(cpu_register::ah, 0x41);
+    return file_operation(generator, *node.arguments.front());
+}
+
+bool
 zd::gen::zd4_builtins::ZmienKatalog(zd4_generator        *generator,
                                     const par::call_node &node)
 {
