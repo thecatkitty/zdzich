@@ -325,6 +325,8 @@ struct subscript_node : public node
 {
     const unique_node value;
 
+    subscript_node() = default;
+
     subscript_node(unique_node value_) : value{std::move(value_)}
     {
     }
