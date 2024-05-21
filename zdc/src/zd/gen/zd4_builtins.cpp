@@ -565,6 +565,16 @@ zd::gen::zd4_builtins::ZmienKatalog(zd4_generator        *generator,
     return file_operation(generator, *node.arguments.front());
 }
 
+bool
+zd::gen::zd4_builtins::ZPortu(zd4_generator        *generator,
+                              const par::call_node &node)
+{
+    REQUIRE(node.is_bare);
+
+    generator->_as.inb();
+    return true;
+}
+
 symbol *
 zd4_builtins::get_procedure(zd4_generator *generator,
                             const ustring &name,

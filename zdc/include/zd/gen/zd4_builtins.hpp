@@ -79,6 +79,9 @@ struct zd4_builtins
     static bool
     ZmienKatalog(zd4_generator *generator, const par::call_node &node);
 
+    static bool
+    ZPortu(zd4_generator *generator, const par::call_node &node);
+
   private:
     static bool
     Pisz(zd4_generator *generator);
