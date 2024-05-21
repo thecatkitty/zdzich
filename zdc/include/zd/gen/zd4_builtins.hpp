@@ -56,6 +56,9 @@ struct zd4_builtins
     TworzKatalog(zd4_generator *generator, const par::call_node &node);
 
     static bool
+    TworzPlik(zd4_generator *generator, const par::call_node &node);
+
+    static bool
     ZmienKatalog(zd4_generator *generator, const par::call_node &node);
 
   private:
