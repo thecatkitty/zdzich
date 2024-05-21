@@ -94,6 +94,11 @@ struct zd4_builtins
 
     static bool
     file_operation(zd4_generator *generator, par::node &arg);
+
+    static bool
+    load_numeric_argument(zd4_generator    *generator,
+                          par::cpu_register reg,
+                          par::node        &arg);
 };
 
 } // namespace gen
