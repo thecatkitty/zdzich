@@ -327,6 +327,13 @@ zd4_generator::process(const par::end_node &node)
 }
 
 bool
+zd::gen::zd4_generator::process(const par::emit_node &node)
+{
+    _curr_code->emit(node.bytes.data(), node.bytes.size());
+    return true;
+}
+
+bool
 zd4_generator::process(const par::jump_node &node)
 {
     label_node *label;
