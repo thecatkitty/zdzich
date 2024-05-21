@@ -289,9 +289,26 @@ zd4_builtins::PiszL(zd4_generator *generator, const call_node &node)
         return Pisz(generator);
     }
 
-    if (node.arguments.size() && node.arguments.front()->is<string_node>())
+    REQUIRE(node.arguments.size());
+
+    auto it = node.arguments.begin();
+    if ((*it)->is<subscript_node>())
     {
-        ustring value{node.arguments.front()->as<string_node>()->value};
+        auto subscript = (*it)->as<subscript_node>();
+        REQUIRE(subscript->value->is<number_node>());
+        auto fileno = subscript->value->as<number_node>()->value;
+
+        it++;
+        REQUIRE((*it)->is<string_node>());
+        ustring value{(*it)->as<string_node>()->value};
+        value.append('\r');
+        value.append('\n');
+        return Pisz(generator, fileno, value);
+    }
+
+    if ((*it)->is<string_node>())
+    {
+        ustring value{(*it)->as<string_node>()->value};
         value.append('\r');
         value.append('\n');
         return Pisz(generator, value);
