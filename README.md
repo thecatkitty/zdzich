@@ -30,7 +30,7 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | ZADANIA | ✅ | ✅ | ✅ |
 | **INC** | - | - | - |
 | DOGIER | ✅ | ✅ |
-| DZWIEK | ✅ | ✅ |
+| DZWIEK | ✅ | ✅ | ✅ |
 | DZWIEK2 | ✅ | ✅ |
 | KLAWIAT | ✅ | ✅ |
 | MYSZ | ✅ | ✅ |
@@ -38,24 +38,24 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | **PRZYKLAD** | - | - | - |
 | DOWCIPY | ✅ | ✅ |
 | GRA | ✅ | ✅ |
-| KWADRAT | ✅ | ✅ |
+| KWADRAT | ✅ | ✅ | ✅ |
 | LINIA | ✅ | ✅ |
-| PETLE | ✅ | ✅ |
+| PETLE | ✅ | ✅ | ✅ |
 | ZC | ✅ | ✅ |
-| !TLO | ✅ | ✅ |
-| ALARM | ✅ | ✅ |
+| !TLO | ✅ | ✅ | ✅ |
+| ALARM | ✅ | ✅ | ✅ |
 | ASCII | ✅ | ✅ |
-| COOL-GR1 | ✅ | ✅ |
+| COOL-GR1 | ✅ | ✅ | ✅ |
 | DEMO | ✅ | ✅ |
-| DZWIEK | ✅ | ✅ |
-| EFEKT | ✅ | ✅ |
+| DZWIEK | ✅ | ✅ | ✅ |
+| EFEKT | ✅ | ✅ | ✅ |
 | LOSOWE | ✅ | ✅ |
-| MYSZ | ✅ | ✅ |
-| MYSZKA | ✅ | ✅ |
+| MYSZ | ✅ | ✅ | ✅ |
+| MYSZKA | ✅ | ✅ | ✅ |
 | MYSZRYS | ✅ | ✅ |
 | PARAMETR | ✅ | ✅ |
 | PLIKI1 | ✅ | ✅ |
 | PLIKI2 | ✅ | ✅ |
-| SKOKI | ✅ | ✅ |
-| TESTMYSZ | ✅ | ✅ |
-| WSTAW | ✅ | ✅ |
+| SKOKI | ✅ | ✅ | ✅ |
+| TESTMYSZ | ✅ | ✅ | ✅ |
+| WSTAW | ✅ | ✅ | ✅ |
