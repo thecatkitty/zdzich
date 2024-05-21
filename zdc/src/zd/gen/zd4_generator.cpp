@@ -117,6 +117,11 @@ zd4_generator::process(const par::call_node &node)
         return zd4_builtins::Pisz8(this, node);
     }
 
+    if (text::pl_streqai("PokażMysz", node.callee))
+    {
+        return zd4_builtins::PokazMysz(this, node);
+    }
+
     if (text::pl_streqi("Pozycja", node.callee))
     {
         return zd4_builtins::Pozycja(this, node);
