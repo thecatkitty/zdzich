@@ -403,7 +403,7 @@ zd4_builtins::PiszZnak(zd4_generator *generator, const call_node &node)
 
     // Number of repetitions
     uint16_t count{1};
-    if (1 < node.arguments.size())
+    if (2 < node.arguments.size())
     {
         it++;
         REQUIRE((*it)->is<number_node>());
