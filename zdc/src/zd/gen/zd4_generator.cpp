@@ -212,12 +212,7 @@ zd4_generator::process(const par::declaration_node &node)
         auto ptr = data.data();
         *(ptr++) = str->value.size() + 2;
         *(ptr++) = str->value.size() + 2;
-
-        for (auto cp : str->value)
-        {
-            text::encoding::ibm852->encode(ptr, cp);
-            ptr++;
-        }
+        ptr = str->value.encode(ptr, text::encoding::ibm852);
         *(ptr++) = 0;
         *ptr = '$';
 

@@ -156,12 +156,7 @@ zd4_builtins::Pisz(zd4_generator *generator, const ustring &str)
     std::vector<char> data{};
     data.resize(str.size() + 1);
 
-    auto ptr = data.data();
-    for (auto cp : str)
-    {
-        text::encoding::ibm852->encode(ptr, cp);
-        ptr++;
-    }
+    auto ptr = str.encode(data.data(), text::encoding::ibm852);
     *ptr = '$';
 
     // INT 21,9 - Print String
@@ -430,12 +425,7 @@ zd4_builtins::TworzKatalog(zd4_generator *generator, const par::call_node &node)
     std::vector<char> data{};
     data.resize(name.size() + 1);
 
-    auto ptr = data.data();
-    for (auto cp : name)
-    {
-        text::encoding::ibm852->encode(ptr, cp);
-        ptr++;
-    }
+    auto ptr = name.encode(data.data(), text::encoding::ibm852);
     *ptr = 0;
 
     // INT 21,39 - Create Subdirectory (mkdir)

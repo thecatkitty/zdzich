@@ -67,6 +67,17 @@ ustring::operator=(ustring &&that) noexcept
     return *this;
 }
 
+char *
+zd::ustring::encode(char *dst, text::encoding *enc) const
+{
+    for (auto cp : *this)
+    {
+        dst += enc->encode(dst, cp);
+    }
+
+    return dst;
+}
+
 bool
 ustring::reserve(size_t new_cap)
 {
