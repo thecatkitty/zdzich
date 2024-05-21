@@ -139,6 +139,49 @@ zd4_builtins::Losowa8(zd4_generator *generator, const call_node &node)
 }
 
 bool
+zd::gen::zd4_builtins::Otworz(zd4_generator        *generator,
+                              const par::call_node &node)
+{
+    REQUIRE(3 >= node.arguments.size());
+
+    auto it = node.arguments.begin();
+    REQUIRE(node.arguments.end() != it);
+    REQUIRE((*it)->is<subscript_node>());
+    auto subscript = (*it)->as<subscript_node>();
+    REQUIRE(subscript->value->is<number_node>());
+    auto fileno = subscript->value->as<number_node>()->value;
+
+    it++;
+    REQUIRE(node.arguments.end() != it);
+    auto &name = *it;
+
+    // INT 21,3D - Open File Using Handle
+    it++;
+    if (node.arguments.end() != it)
+    {
+        REQUIRE((*it)->is<number_node>());
+        auto access = (*it)->as<number_node>()->value;
+        generator->_as.mov(cpu_register::al, access);
+    }
+    else
+    {
+        // Default to read/write access
+        generator->_as.mov(cpu_register::al, 2);
+    }
+
+    generator->_as.mov(cpu_register::ah, 0x3D);
+    REQUIRE(file_operation(generator, *name));
+
+    // INT 21,46 - Force Duplicate File Handle
+    generator->_as.mov(cpu_register::bx, cpu_register::ax);
+    generator->_as.mov(cpu_register::ah, 0x46);
+    generator->_as.mov(cpu_register::cx, fileno);
+    generator->_as.intr(0x21);
+
+    return true;
+}
+
+bool
 zd4_builtins::Pisz(zd4_generator *generator)
 {
     std::vector<char> data{'\r', '\n', '$'};

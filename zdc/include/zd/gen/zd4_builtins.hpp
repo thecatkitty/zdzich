@@ -32,6 +32,9 @@ struct zd4_builtins
     Losowa8(zd4_generator *generator, const par::call_node &node);
 
     static bool
+    Otworz(zd4_generator *generator, const par::call_node &node);
+
+    static bool
     Pisz(zd4_generator *generator, const par::call_node &node);
 
     static bool
