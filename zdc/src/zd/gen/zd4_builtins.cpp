@@ -442,6 +442,16 @@ zd4_builtins::Pozycja(zd4_generator *generator, const par::call_node &node)
 }
 
 bool
+zd::gen::zd4_builtins::PokazMysz(zd4_generator        *generator,
+                                 const par::call_node &node)
+{
+    // INT 33,1 - Show Mouse Cursor
+    generator->_as.mov(cpu_register::ax, 1);
+    generator->_as.intr(0x33);
+    return true;
+}
+
+bool
 zd::gen::zd4_builtins::Przerwanie(zd4_generator        *generator,
                                   const par::call_node &node)
 {
