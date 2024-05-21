@@ -436,6 +436,29 @@ zd4_builtins::TworzKatalog(zd4_generator *generator, const par::call_node &node)
     return true;
 }
 
+bool
+zd::gen::zd4_builtins::ZmienKatalog(zd4_generator        *generator,
+                                    const par::call_node &node)
+{
+    REQUIRE(1 == node.arguments.size());
+    REQUIRE(node.arguments.front()->is<string_node>());
+
+    auto &name = node.arguments.front()->as<string_node>()->value;
+
+    std::vector<char> data{};
+    data.resize(name.size() + 1);
+
+    auto ptr = name.encode(data.data(), text::encoding::ibm852);
+    *ptr = 0;
+
+    // INT 21,3B - Change Current Directory (chdir)
+    generator->_as.mov(cpu_register::ah, 0x3B);
+    generator->_as.mov(cpu_register::dx, data);
+    generator->_as.intr(0x21);
+
+    return true;
+}
+
 symbol *
 zd4_builtins::get_procedure(zd4_generator *generator,
                             const ustring &name,
