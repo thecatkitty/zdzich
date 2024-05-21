@@ -80,6 +80,16 @@ zd4_builtins::Czytaj(zd4_generator *generator, const par::call_node &node)
 }
 
 bool
+zd::gen::zd4_builtins::DoPortu(zd4_generator        *generator,
+                               const par::call_node &node)
+{
+    REQUIRE(node.is_bare);
+
+    generator->_as.outb();
+    return true;
+}
+
+bool
 zd4_builtins::Klawisz(zd4_generator *generator, const par::call_node &node)
 {
     // INT 21,7 - Direct Console Input Without Echo

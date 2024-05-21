@@ -341,6 +341,13 @@ x86_assembler::mov(par::cpu_register dst, unsigned src)
 }
 
 bool
+zd::gen::x86_assembler::outb()
+{
+    _code->emit_byte(OUT_DX_AL);
+    return true;
+}
+
+bool
 x86_assembler::add(par::cpu_register dst, par::cpu_register src)
 {
     ASM_REQUIRE(_reg_size(dst) == _reg_size(src));

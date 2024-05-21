@@ -72,6 +72,11 @@ zd4_generator::process(const par::call_node &node)
         return zd4_builtins::Czytaj(this, node);
     }
 
+    if (text::pl_streqi("DoPortu", node.callee))
+    {
+        return zd4_builtins::DoPortu(this, node);
+    }
+
     if (text::pl_streqi("Klawisz", node.callee))
     {
         return zd4_builtins::Klawisz(this, node);
