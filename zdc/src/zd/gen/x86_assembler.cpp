@@ -197,6 +197,13 @@ zd::gen::x86_assembler::dec(const symbol_ref &dst)
 }
 
 bool
+zd::gen::x86_assembler::inb()
+{
+    _code->emit_byte(IN_AL_DX);
+    return true;
+}
+
+bool
 x86_assembler::cmp(const symbol_ref &left, uint16_t right)
 {
     _code->emit_byte(CMP_rm16_imm16);

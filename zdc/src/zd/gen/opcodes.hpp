@@ -44,6 +44,8 @@
 
 #define DEC_rm16 0xFF // RegOpcode 1
 
+#define IN_AL_DX 0xEC
+
 #define INC_rm16 0xFF // RegOpcode 0
 #define INC_r16  0x40
 

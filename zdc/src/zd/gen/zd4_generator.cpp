@@ -167,6 +167,11 @@ zd4_generator::process(const par::call_node &node)
         return zd4_builtins::Zamknij(this, node);
     }
 
+    if (text::pl_streqai("ZPortu", node.callee))
+    {
+        return zd4_builtins::ZPortu(this, node);
+    }
+
     if (node.arguments.empty())
     {
         auto &symbol = get_symbol(node.callee);
