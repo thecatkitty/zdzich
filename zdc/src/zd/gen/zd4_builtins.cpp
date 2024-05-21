@@ -526,6 +526,16 @@ zd4_builtins::TworzPlik(zd4_generator *generator, const par::call_node &node)
 }
 
 bool
+zd::gen::zd4_builtins::UkryjMysz(zd4_generator        *generator,
+                                 const par::call_node &node)
+{
+    // INT 33,2 - Hide Mouse Cursor
+    generator->_as.mov(cpu_register::ax, 2);
+    generator->_as.intr(0x33);
+    return true;
+}
+
+bool
 zd4_builtins::UsunKatalog(zd4_generator *generator, const par::call_node &node)
 {
     REQUIRE(1 == node.arguments.size());
