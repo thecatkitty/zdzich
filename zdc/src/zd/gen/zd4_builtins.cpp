@@ -432,6 +432,18 @@ zd4_builtins::Pozycja(zd4_generator *generator, const par::call_node &node)
 }
 
 bool
+zd::gen::zd4_builtins::Przerwanie(zd4_generator        *generator,
+                                  const par::call_node &node)
+{
+    REQUIRE(1 == node.arguments.size());
+    REQUIRE(node.arguments.front()->is<number_node>());
+
+    generator->_as.intr(node.arguments.front()->as<number_node>()->value);
+
+    return true;
+}
+
+bool
 zd4_builtins::Punkt(zd4_generator *generator, const par::call_node &node)
 {
     REQUIRE(3 == node.arguments.size());

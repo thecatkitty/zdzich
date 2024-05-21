@@ -117,6 +117,11 @@ zd4_generator::process(const par::call_node &node)
         return zd4_builtins::Pozycja(this, node);
     }
 
+    if (text::pl_streqi("Przerwanie", node.callee))
+    {
+        return zd4_builtins::Przerwanie(this, node);
+    }
+
     if (text::pl_streqi("Punkt", node.callee))
     {
         return zd4_builtins::Punkt(this, node);
