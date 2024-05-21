@@ -438,51 +438,15 @@ zd4_builtins::Punkt(zd4_generator *generator, const par::call_node &node)
 
     // Column
     auto it = node.arguments.begin();
-    if ((*it)->is<object_node>())
-    {
-        auto arg_x = (*it)->as<object_node>();
-        REQUIRE(object_type::word == arg_x->type);
-
-        auto &sym_x = generator->get_symbol(arg_x->name);
-        generator->_as.mov(cpu_register::si, symbol_ref{sym_x});
-        generator->_as.mov(cpu_register::cx, mreg{cpu_register::si});
-    }
-    else
-    {
-        return false;
-    }
+    REQUIRE(load_numeric_argument(generator, cpu_register::cx, **it));
 
     // Row
     it++;
-    if ((*it)->is<object_node>())
-    {
-        auto arg_y = (*it)->as<object_node>();
-        REQUIRE(object_type::word == arg_y->type);
-
-        auto &sym_y = generator->get_symbol(arg_y->name);
-        generator->_as.mov(cpu_register::si, symbol_ref{sym_y});
-        generator->_as.mov(cpu_register::dx, mreg{cpu_register::si});
-    }
-    else
-    {
-        return false;
-    }
+    REQUIRE(load_numeric_argument(generator, cpu_register::dx, **it));
 
     // Color value
     it++;
-    if ((*it)->is<object_node>())
-    {
-        auto arg_c = (*it)->as<object_node>();
-        REQUIRE(object_type::word == arg_c->type);
-
-        auto &sym_c = generator->get_symbol(arg_c->name);
-        generator->_as.mov(cpu_register::si, symbol_ref{sym_c});
-        generator->_as.mov(cpu_register::al, mreg{cpu_register::si});
-    }
-    else
-    {
-        return false;
-    }
+    REQUIRE(load_numeric_argument(generator, cpu_register::al, **it));
 
     // INT 10,C - Write Graphics Pixel at Coordinate
     generator->_as.mov(cpu_register::ah, 0xC);
@@ -619,4 +583,32 @@ zd::gen::zd4_builtins::file_operation(zd4_generator *generator, par::node &arg)
     generator->_as.intr(0x21);
 
     return true;
+}
+
+bool
+zd4_builtins::load_numeric_argument(zd4_generator    *generator,
+                                    par::cpu_register reg,
+                                    par::node        &arg)
+{
+    if (arg.is<number_node>())
+    {
+        auto num = arg.as<number_node>();
+        generator->_as.mov(reg, num->value);
+
+        return true;
+    }
+
+    if (arg.is<object_node>())
+    {
+        auto obj = arg.as<object_node>();
+        REQUIRE(object_type::word == obj->type);
+
+        auto &symbol = generator->get_symbol(obj->name);
+        generator->_as.mov(cpu_register::si, symbol_ref{symbol});
+        generator->_as.mov(reg, mreg{cpu_register::si});
+
+        return true;
+    }
+
+    return false;
 }
