@@ -225,6 +225,24 @@ zd4_builtins::Pisz(zd4_generator *generator, const par::object_node &obj)
 }
 
 bool
+zd::gen::zd4_builtins::Pisz(zd4_generator *generator,
+                            unsigned       fileno,
+                            const ustring &str)
+{
+    std::vector<char> data{};
+    data.resize(str.size());
+    str.encode(data.data(), text::encoding::ibm852);
+
+    // INT 21,40 - Write To File or Device Using Handle
+    generator->_as.mov(cpu_register::ah, 0x40);
+    generator->_as.mov(cpu_register::bx, fileno);
+    generator->_as.mov(cpu_register::cx, data.size());
+    generator->_as.mov(cpu_register::dx, data);
+    generator->_as.intr(0x21);
+    return true;
+}
+
+bool
 zd4_builtins::Pisz(zd4_generator *generator, const call_node &node)
 {
     if (node.is_bare)
@@ -232,16 +250,32 @@ zd4_builtins::Pisz(zd4_generator *generator, const call_node &node)
         return Pisz(generator);
     }
 
-    REQUIRE(node.arguments.size());
-    if (node.arguments.front()->is<string_node>())
+    REQUIRE(!node.arguments.empty());
+    auto it = node.arguments.begin();
+    if ((*it)->is<subscript_node>())
     {
-        return Pisz(generator,
-                    node.arguments.front()->as<string_node>()->value);
+        REQUIRE((*it)->is<subscript_node>());
+        auto subscript = (*it)->as<subscript_node>();
+        REQUIRE(subscript->value->is<number_node>());
+        auto fileno = subscript->value->as<number_node>()->value;
+
+        it++;
+        if ((*it)->is<string_node>())
+        {
+            return Pisz(generator, fileno, (*it)->as<string_node>()->value);
+        }
+
+        return false;
+    }
+
+    if ((*it)->is<string_node>())
+    {
+        return Pisz(generator, (*it)->as<string_node>()->value);
     }
 
     if (node.arguments.front()->is<object_node>())
     {
-        return Pisz(generator, *node.arguments.front()->as<object_node>());
+        return Pisz(generator, *(*it)->as<object_node>());
     }
 
     return false;
