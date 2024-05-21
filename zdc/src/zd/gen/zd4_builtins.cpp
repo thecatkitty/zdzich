@@ -418,45 +418,21 @@ bool
 zd4_builtins::TworzKatalog(zd4_generator *generator, const par::call_node &node)
 {
     REQUIRE(1 == node.arguments.size());
-    REQUIRE(node.arguments.front()->is<string_node>());
-
-    auto &name = node.arguments.front()->as<string_node>()->value;
-
-    std::vector<char> data{};
-    data.resize(name.size() + 1);
-
-    auto ptr = name.encode(data.data(), text::encoding::ibm852);
-    *ptr = 0;
 
     // INT 21,39 - Create Subdirectory (mkdir)
     generator->_as.mov(cpu_register::ah, 0x39);
-    generator->_as.mov(cpu_register::dx, data);
-    generator->_as.intr(0x21);
-
-    return true;
+    return file_operation(generator, *node.arguments.front());
 }
 
 bool
 zd4_builtins::TworzPlik(zd4_generator *generator, const par::call_node &node)
 {
     REQUIRE(1 == node.arguments.size());
-    REQUIRE(node.arguments.front()->is<string_node>());
-
-    auto &name = node.arguments.front()->as<string_node>()->value;
-
-    std::vector<char> data{};
-    data.resize(name.size() + 1);
-
-    auto ptr = name.encode(data.data(), text::encoding::ibm852);
-    *ptr = 0;
 
     // INT 21,3C - Create File Using Handle
     generator->_as.mov(cpu_register::ah, 0x3C);
     generator->_as.mov(cpu_register::cx, 0);
-    generator->_as.mov(cpu_register::dx, data);
-    generator->_as.intr(0x21);
-
-    return true;
+    return file_operation(generator, *node.arguments.front());
 }
 
 bool
@@ -464,22 +440,10 @@ zd::gen::zd4_builtins::ZmienKatalog(zd4_generator        *generator,
                                     const par::call_node &node)
 {
     REQUIRE(1 == node.arguments.size());
-    REQUIRE(node.arguments.front()->is<string_node>());
-
-    auto &name = node.arguments.front()->as<string_node>()->value;
-
-    std::vector<char> data{};
-    data.resize(name.size() + 1);
-
-    auto ptr = name.encode(data.data(), text::encoding::ibm852);
-    *ptr = 0;
 
     // INT 21,3B - Change Current Directory (chdir)
     generator->_as.mov(cpu_register::ah, 0x3B);
-    generator->_as.mov(cpu_register::dx, data);
-    generator->_as.intr(0x21);
-
-    return true;
+    return file_operation(generator, *node.arguments.front());
 }
 
 symbol *
@@ -503,4 +467,23 @@ zd4_builtins::get_procedure(zd4_generator *generator,
     }
 
     return &procedure;
+}
+
+bool
+zd::gen::zd4_builtins::file_operation(zd4_generator *generator, par::node &arg)
+{
+    REQUIRE(arg.is<string_node>());
+
+    auto &name = arg.as<string_node>()->value;
+
+    std::vector<char> data{};
+    data.resize(name.size() + 1);
+
+    auto ptr = name.encode(data.data(), text::encoding::ibm852);
+    *ptr = 0;
+
+    generator->_as.mov(cpu_register::dx, data);
+    generator->_as.intr(0x21);
+
+    return true;
 }

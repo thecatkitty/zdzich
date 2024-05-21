@@ -76,6 +76,9 @@ struct zd4_builtins
                   const ustring &name,
                   const uint8_t *code,
                   unsigned       size);
+
+    static bool
+    file_operation(zd4_generator *generator, par::node &arg);
 };
 
 } // namespace gen
