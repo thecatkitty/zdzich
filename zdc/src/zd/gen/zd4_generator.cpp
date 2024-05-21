@@ -114,6 +114,11 @@ zd4_generator::process(const par::call_node &node)
         return zd4_builtins::TworzPlik(this, node);
     }
 
+    if (text::pl_streqai("UsuńPlik", node.callee))
+    {
+        return zd4_builtins::UsunPlik(this, node);
+    }
+
     if (text::pl_streqai("ZmieńKatalog", node.callee))
     {
         return zd4_builtins::ZmienKatalog(this, node);
