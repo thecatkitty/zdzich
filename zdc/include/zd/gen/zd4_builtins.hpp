@@ -50,6 +50,9 @@ struct zd4_builtins
     Pozycja(zd4_generator *generator, const par::call_node &node);
 
     static bool
+    Przerwanie(zd4_generator *generator, const par::call_node &node);
+
+    static bool
     Punkt(zd4_generator *generator, const par::call_node &node);
 
     static bool
