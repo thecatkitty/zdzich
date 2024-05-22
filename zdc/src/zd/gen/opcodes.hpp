@@ -68,6 +68,7 @@
 #define MOV_r16_rm16    0x8B
 #define MOV_reg8_imm8   0xB0
 #define MOV_reg16_imm16 0xB8
+#define MOV_rm8_imm8    0xC6
 #define MOV_rm16_imm16  0xC7
 
 #define OUT_DX_AL 0xEE
