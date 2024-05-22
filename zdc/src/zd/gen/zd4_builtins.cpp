@@ -149,6 +149,15 @@ zd4_builtins::Losowa8(zd4_generator *generator, const call_node &node)
 }
 
 bool
+zd4_builtins::Nic(zd4_generator *generator, const par::call_node &node)
+{
+    REQUIRE(node.arguments.empty());
+
+    generator->_as.nop();
+    return true;
+}
+
+bool
 zd::gen::zd4_builtins::Otworz(zd4_generator        *generator,
                               const par::call_node &node)
 {

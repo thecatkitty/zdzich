@@ -126,6 +126,9 @@ class x86_assembler
     mov(par::cpu_register dst, unsigned src);
 
     bool
+    nop();
+
+    bool
     outb();
 
     bool

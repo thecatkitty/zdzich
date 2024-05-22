@@ -72,6 +72,8 @@
 #define MOV_rm8_imm8    0xC6
 #define MOV_rm16_imm16  0xC7
 
+#define NOP 0x90
+
 #define OUT_DX_AL 0xEE
 
 #define RET_near 0xC3
