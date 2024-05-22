@@ -424,16 +424,17 @@ zd4_builtins::PiszZnak(zd4_generator *generator, const call_node &node)
 
     // Character code
     auto it = node.arguments.begin();
-    REQUIRE((*it)->is<number_node>());
-    uint8_t character = (*it)->as<number_node>()->value;
+    REQUIRE(load_numeric_argument(generator, cpu_register::al, **it));
 
     // Display attribute (colors)
-    uint8_t attribute{7};
     if (1 < node.arguments.size())
     {
         it++;
-        REQUIRE((*it)->is<number_node>());
-        attribute = (*it)->as<number_node>()->value;
+        REQUIRE(load_numeric_argument(generator, cpu_register::bl, **it));
+    }
+    else
+    {
+        generator->_as.mov(cpu_register::bl, 0x0007);
     }
 
     // Number of repetitions
@@ -441,14 +442,16 @@ zd4_builtins::PiszZnak(zd4_generator *generator, const call_node &node)
     if (2 < node.arguments.size())
     {
         it++;
-        REQUIRE((*it)->is<number_node>());
-        count = (*it)->as<number_node>()->value;
+        REQUIRE(load_numeric_argument(generator, cpu_register::cx, **it));
+    }
+    else
+    {
+        generator->_as.mov(cpu_register::cx, 1);
     }
 
     // INT 10,9 - Write Character and Attribute at Cursor Position
-    generator->_as.mov(cpu_register::ax, 0x0900 | character);
-    generator->_as.mov(cpu_register::bx, attribute);
-    generator->_as.mov(cpu_register::cx, count);
+    generator->_as.mov(cpu_register::ah, 0x09);
+    generator->_as.mov(cpu_register::bh, 0);
     generator->_as.intr(0x10);
 
     return true;
