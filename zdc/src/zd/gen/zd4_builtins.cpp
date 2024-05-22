@@ -680,13 +680,30 @@ zd4_builtins::load_numeric_argument(zd4_generator    *generator,
     if (arg.is<object_node>())
     {
         auto obj = arg.as<object_node>();
-        REQUIRE(object_type::word == obj->type);
-
         auto &symbol = generator->get_symbol(obj->name);
         generator->_as.mov(cpu_register::si, symbol_ref{symbol});
         generator->_as.mov(reg, mreg{cpu_register::si});
 
         return true;
+    }
+
+    if (arg.is<register_node>())
+    {
+        auto src_reg = arg.as<register_node>();
+
+        if ((unsigned)reg & 0xFF)
+        {
+            // The same register or parts
+            if (reg == src_reg->reg)
+            {
+                // The same exact register
+                return true;
+            }
+
+            return false;
+        }
+
+        return generator->_as.mov(reg, src_reg->reg);
     }
 
     return false;
