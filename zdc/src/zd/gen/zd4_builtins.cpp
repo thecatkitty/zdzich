@@ -297,7 +297,15 @@ zd4_builtins::Pisz(zd4_generator *generator, const call_node &node)
         return Pisz(generator, (*it)->as<string_node>()->value);
     }
 
-    if (node.arguments.front()->is<object_node>())
+    if ((*it)->is<number_node>())
+    {
+        char buff[6];
+        std::snprintf(buff, sizeof(buff), "%u",
+                      (*it)->as<number_node>()->value);
+        return Pisz(generator, buff);
+    }
+
+    if ((*it)->is<object_node>())
     {
         return Pisz(generator, *(*it)->as<object_node>());
     }
@@ -341,6 +349,14 @@ zd4_builtins::PiszL(zd4_generator *generator, const call_node &node)
         value.append('\r');
         value.append('\n');
         return Pisz(generator, value);
+    }
+
+    if ((*it)->is<number_node>())
+    {
+        char buff[8];
+        std::snprintf(buff, sizeof(buff), "%u\r\n",
+                      (*it)->as<number_node>()->value);
+        return Pisz(generator, buff);
     }
 
     return false;
