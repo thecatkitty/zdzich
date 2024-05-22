@@ -270,6 +270,11 @@ zd4_builtins::Pisz(zd4_generator *generator, const call_node &node)
         auto fileno = subscript->value->as<number_node>()->value;
 
         it++;
+        if (node.arguments.end() == it)
+        {
+            return Pisz(generator, fileno, "\r\n");
+        }
+
         if ((*it)->is<string_node>())
         {
             return Pisz(generator, fileno, (*it)->as<string_node>()->value);
@@ -309,6 +314,11 @@ zd4_builtins::PiszL(zd4_generator *generator, const call_node &node)
         auto fileno = subscript->value->as<number_node>()->value;
 
         it++;
+        if (node.arguments.end() == it)
+        {
+            return Pisz(generator, fileno, "\r\n");
+        }
+
         REQUIRE((*it)->is<string_node>());
         ustring value{(*it)->as<string_node>()->value};
         value.append('\r');
