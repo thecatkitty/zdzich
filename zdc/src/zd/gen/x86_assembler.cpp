@@ -409,7 +409,8 @@ x86_assembler::inc(mreg reg)
 bool
 x86_assembler::inc(const symbol_ref &dst)
 {
-    _code->emit_byte(INC_rm16);
+    _code->emit_byte((symbol_type::var_byte == dst.sym.type) ? INC_rm8
+                                                             : INC_rm16);
     _code->emit_byte(ModRM(ModRM_disp16, 0));
     _code->emit_ref({dst.sym.address, dst.sym.section, dst.off});
     return true;

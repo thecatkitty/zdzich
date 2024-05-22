@@ -25,7 +25,7 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | LEKCJA07 | ✅ | ✅ | ✅ |
 | LEKCJA08 | ✅ | ✅ | ✅ |
 | LEKCJA09 | ✅ | ✅ | ✅ |
-| LEKCJA10 | ✅ | ✅ |
+| LEKCJA10 | ✅ | ✅ | ✅ |
 | LEKCJA11 | ✅ | ✅ | ✅ |
 | ZADANIA | ✅ | ✅ | ✅ |
 | **INC** | - | - | - |
@@ -52,7 +52,7 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | LOSOWE | ✅ | ✅ |
 | MYSZ | ✅ | ✅ | ✅ |
 | MYSZKA | ✅ | ✅ | ✅ |
-| MYSZRYS | ✅ | ✅ |
+| MYSZRYS | ✅ | ✅ | ✅ |
 | PARAMETR | ✅ | ✅ |
 | PLIKI1 | ✅ | ✅ |
 | PLIKI2 | ✅ | ✅ |
