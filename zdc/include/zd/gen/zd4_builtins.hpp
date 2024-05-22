@@ -117,6 +117,11 @@ struct zd4_builtins
     load_numeric_argument(zd4_generator    *generator,
                           par::cpu_register reg,
                           par::node        &arg);
+
+    static bool
+    load_textual_argument(zd4_generator    *generator,
+                          par::cpu_register reg,
+                          par::node        &arg);
 };
 
 } // namespace gen

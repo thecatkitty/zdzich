@@ -648,17 +648,7 @@ zd4_builtins::get_procedure(zd4_generator *generator,
 bool
 zd::gen::zd4_builtins::file_operation(zd4_generator *generator, par::node &arg)
 {
-    REQUIRE(arg.is<string_node>());
-
-    auto &name = arg.as<string_node>()->value;
-
-    std::vector<char> data{};
-    data.resize(name.size() + 1);
-
-    auto ptr = name.encode(data.data(), text::encoding::ibm852);
-    *ptr = 0;
-
-    generator->_as.mov(cpu_register::dx, data);
+    REQUIRE(load_textual_argument(generator, cpu_register::dx, arg));
     generator->_as.intr(0x21);
 
     return true;
@@ -704,6 +694,40 @@ zd4_builtins::load_numeric_argument(zd4_generator    *generator,
         }
 
         return generator->_as.mov(reg, src_reg->reg);
+    }
+
+    return false;
+}
+
+bool
+zd::gen::zd4_builtins::load_textual_argument(zd4_generator    *generator,
+                                             par::cpu_register reg,
+                                             par::node        &arg)
+{
+    REQUIRE(cpu_register_word == ((unsigned)reg & 0xFF00));
+
+    if (arg.is<object_node>())
+    {
+        auto  obj = arg.as<object_node>();
+        auto &symbol = generator->get_symbol(obj->name);
+        generator->_as.mov(reg, symbol_ref{symbol, +2});
+
+        return true;
+    }
+
+    if (arg.is<string_node>())
+    {
+        auto &str = arg.as<string_node>()->value;
+
+        std::vector<char> data{};
+        data.resize(str.size() + 1);
+
+        auto ptr = str.encode(data.data(), text::encoding::ibm852);
+        *ptr = 0;
+
+        generator->_as.mov(reg, data);
+
+        return true;
     }
 
     return false;
