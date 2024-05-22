@@ -253,6 +253,10 @@ zd4_generator::process(const par::declaration_node &node)
     symbol_type type{};
     switch (target->type)
     {
+    case object_type::byte:
+        type = symbol_type::var_byte;
+        break;
+
     case object_type::text:
         type = symbol_type::var_text;
         break;
@@ -269,6 +273,20 @@ zd4_generator::process(const par::declaration_node &node)
     unsigned address{};
     switch (type)
     {
+    case symbol_type::var_byte: {
+        if (zd4_section_udat == section)
+        {
+            address = _udat.reserve(sizeof(uint8_t));
+            break;
+        }
+
+        // Integer constant
+        number_node *num;
+        CAST_NODE_OR_FAIL(num, assignment->source);
+        address = _data.emit_byte(num->value);
+        break;
+    }
+
     case symbol_type::var_text: {
         if (zd4_section_udat == section)
         {
