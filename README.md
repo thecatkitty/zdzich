@@ -29,7 +29,7 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | LEKCJA11 | ✅ | ✅ | ✅ |
 | ZADANIA | ✅ | ✅ | ✅ |
 | **INC** | - | - | - |
-| DOGIER | ✅ | ✅ |
+| DOGIER | ✅ | ✅ | ✅ |
 | DZWIEK | ✅ | ✅ | ✅ |
 | DZWIEK2 | ✅ | ✅ |
 | KLAWIAT | ✅ | ✅ |
@@ -37,7 +37,7 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | SAVER | ✅ | ✅ |
 | **PRZYKLAD** | - | - | - |
 | DOWCIPY | ✅ | ✅ | ✅ |
-| GRA | ✅ | ✅ |
+| GRA | ✅ | ✅ | ✅ |
 | KWADRAT | ✅ | ✅ | ✅ |
 | LINIA | ✅ | ✅ |
 | PETLE | ✅ | ✅ | ✅ |

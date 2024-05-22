@@ -294,6 +294,21 @@ zd4_builtins::Pisz(zd4_generator *generator, const call_node &node)
 
     if ((*it)->is<string_node>())
     {
+        if (1 < node.arguments.size())
+        {
+            ustring value{(*it)->as<string_node>()->value};
+
+            it++;
+            while (node.arguments.end() != it)
+            {
+                REQUIRE((*it)->is<string_node>());
+                value.append((*it)->as<string_node>()->value);
+                it++;
+            }
+
+            return Pisz(generator, value);
+        }
+
         return Pisz(generator, (*it)->as<string_node>()->value);
     }
 
@@ -345,6 +360,23 @@ zd4_builtins::PiszL(zd4_generator *generator, const call_node &node)
 
     if ((*it)->is<string_node>())
     {
+        if (1 < node.arguments.size())
+        {
+            ustring value{(*it)->as<string_node>()->value};
+
+            it++;
+            while (node.arguments.end() != it)
+            {
+                REQUIRE((*it)->is<string_node>());
+                value.append((*it)->as<string_node>()->value);
+                it++;
+            }
+            value.append('\r');
+            value.append('\n');
+
+            return Pisz(generator, value);
+        }
+
         ustring value{(*it)->as<string_node>()->value};
         value.append('\r');
         value.append('\n');
