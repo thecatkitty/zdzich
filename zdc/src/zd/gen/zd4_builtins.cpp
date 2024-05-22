@@ -459,18 +459,17 @@ zd4_builtins::Pozycja(zd4_generator *generator, const par::call_node &node)
 {
     REQUIRE(2 == node.arguments.size());
 
+    // Column
     auto it = node.arguments.begin();
-    REQUIRE((*it)->is<number_node>());
-    uint8_t column = it->get()->as<number_node>()->value;
+    REQUIRE(load_numeric_argument(generator, cpu_register::dl, **it));
 
+    // Row
     it++;
-    REQUIRE((*it)->is<number_node>());
-    uint8_t row = it->get()->as<number_node>()->value;
+    REQUIRE(load_numeric_argument(generator, cpu_register::dh, **it));
 
     // INT 10,2 - Set Cursor Position
     generator->_as.mov(cpu_register::ah, 2);
     generator->_as.mov(cpu_register::bh, 0);
-    generator->_as.mov(cpu_register::dx, (row << 8) | column);
     generator->_as.intr(0x10);
 
     return true;
@@ -704,7 +703,7 @@ zd4_builtins::load_numeric_argument(zd4_generator    *generator,
 
     if (arg.is<object_node>())
     {
-        auto obj = arg.as<object_node>();
+        auto  obj = arg.as<object_node>();
         auto &symbol = generator->get_symbol(obj->name);
         generator->_as.mov(cpu_register::si, symbol_ref{symbol});
         generator->_as.mov(reg, mreg{cpu_register::si});
@@ -716,7 +715,7 @@ zd4_builtins::load_numeric_argument(zd4_generator    *generator,
     {
         auto src_reg = arg.as<register_node>();
 
-        if ((unsigned)reg & 0xFF)
+        if (((unsigned)src_reg->reg & 0xFF) == ((unsigned)reg & 0xFF))
         {
             // The same register or parts
             if (reg == src_reg->reg)
