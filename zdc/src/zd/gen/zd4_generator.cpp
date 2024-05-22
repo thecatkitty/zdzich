@@ -426,11 +426,6 @@ zd4_generator::process(const par::operation_node &node)
         if (node.left->is<object_node>() && node.right->is<number_node>())
         {
             auto left_obj = node.left->as<object_node>();
-            if (object_type::word != left_obj->type)
-            {
-                return false;
-            }
-
             auto &left_sym = get_symbol(left_obj->name);
             _as.cmp(left_sym, (uint16_t)node.right->as<number_node>()->value);
             return true;
