@@ -212,7 +212,8 @@ x86_assembler::inb()
 bool
 x86_assembler::cmp(const symbol_ref &left, uint16_t right)
 {
-    _code->emit_byte(CMP_rm16_imm16);
+    _code->emit_byte((symbol_type::var_byte == left.sym.type) ? CMP_rm8_imm8
+                                                              : CMP_rm16_imm16);
     _code->emit_byte(ModRM(ModRM_disp16, 7));
     _code->emit_ref({left.sym.address, left.sym.section, left.off});
     _code->emit_word(right);
