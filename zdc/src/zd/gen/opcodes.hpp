@@ -47,6 +47,7 @@
 
 #define IN_AL_DX 0xEC
 
+#define INC_rm8  0xFE // RegOpcode 0
 #define INC_rm16 0xFF // RegOpcode 0
 #define INC_r16  0x40
 
