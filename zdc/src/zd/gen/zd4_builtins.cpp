@@ -613,7 +613,7 @@ zd::gen::zd4_builtins::Zamknij(zd4_generator        *generator,
     auto fileno = subscript->value->as<number_node>()->value;
 
     // INT 21,3E - Close File Using Handle
-    generator->_as.mov(cpu_register::ax, 0x3E);
+    generator->_as.mov(cpu_register::ah, 0x3E);
     generator->_as.mov(cpu_register::bx, fileno);
     generator->_as.intr(0x21);
 
