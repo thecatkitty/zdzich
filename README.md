@@ -39,7 +39,7 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | DOWCIPY | ✅ | ✅ | ✅ |
 | GRA | ✅ | ✅ | ✅ |
 | KWADRAT | ✅ | ✅ | ✅ |
-| LINIA | ✅ | ✅ |
+| LINIA | ✅ | ✅ | ✅ |
 | PETLE | ✅ | ✅ | ✅ |
 | ZC | ✅ | ✅ |
 | !TLO | ✅ | ✅ | ✅ |

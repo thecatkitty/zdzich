@@ -34,6 +34,19 @@ zd4_generator::process(const par::assignment_node &node)
             return true;
         }
 
+        if (node.source->is<register_node>())
+        {
+            auto src_reg = node.source->as<register_node>()->reg;
+            _as.mov(cpu_register::di, dst);
+            if ((symbol_type::var_byte != dst.type) &&
+                (cpu_register_word != ((unsigned)src_reg & 0xFF00)))
+            {
+                _as.mov(mreg{cpu_register::di}, 0);
+            }
+            _as.mov(mreg{cpu_register::di}, src_reg);
+            return true;
+        }
+
         return false;
     }
 
@@ -400,7 +413,7 @@ zd4_generator::process(const par::operation_node &node)
     case operation::add: {
         if (node.left->is<object_node>() && node.right->is<number_node>())
         {
-            auto left_obj = node.left->as<object_node>();
+            auto  left_obj = node.left->as<object_node>();
             auto &left_sym = get_symbol(left_obj->name);
             auto  right_num = node.right->as<number_node>();
             if (1 == right_num->value)
@@ -425,7 +438,7 @@ zd4_generator::process(const par::operation_node &node)
 
         if (node.left->is<object_node>() && node.right->is<number_node>())
         {
-            auto left_obj = node.left->as<object_node>();
+            auto  left_obj = node.left->as<object_node>();
             auto &left_sym = get_symbol(left_obj->name);
             _as.cmp(left_sym, (uint16_t)node.right->as<number_node>()->value);
             return true;
