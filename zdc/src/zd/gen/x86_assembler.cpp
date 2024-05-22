@@ -362,6 +362,13 @@ x86_assembler::mov(par::cpu_register dst, unsigned src)
 }
 
 bool
+x86_assembler::nop()
+{
+    _code->emit_byte(NOP);
+    return true;
+}
+
+bool
 x86_assembler::outb()
 {
     _code->emit_byte(OUT_DX_AL);
