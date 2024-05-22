@@ -14,6 +14,7 @@ enum class symbol_type
     undefined,
     label,
     procedure,
+    var_byte,
     var_text,
     var_word,
 };
