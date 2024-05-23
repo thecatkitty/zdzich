@@ -435,11 +435,11 @@ zd4_builtins::Pisz8(zd4_generator *generator, const call_node &node)
     {
         REQUIRE(node.arguments.front()->is<object_node>());
 
-        auto num = node.arguments.front()->as<object_node>();
-        REQUIRE(object_type::word == num->type);
-
-        auto &symbol = generator->get_symbol(num->name);
-        generator->_as.mov(cpu_register::bx, symbol_ref{symbol});
+        auto  obj = node.arguments.front()->as<object_node>();
+        auto &symbol = generator->get_symbol(obj->name);
+        generator->_as.mov(
+            cpu_register::bx,
+            symbol_ref{symbol, (object_type::text == obj->type) ? +2 : 0});
         generator->_as.mov(cpu_register::cl, mreg{cpu_register::bx});
     }
 

@@ -44,7 +44,7 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | ZC | ✅ | ✅ | ⚠️[^1] |
 | !TLO | ✅ | ✅ | ✅ |
 | ALARM | ✅ | ✅ | ✅ |
-| ASCII | ✅ | ✅ |
+| ASCII | ✅ | ✅ | ✅ |
 | COOL-GR1 | ✅ | ✅ | ✅ |
 | DEMO | ✅ | ✅ |
 | DZWIEK | ✅ | ✅ | ✅ |
