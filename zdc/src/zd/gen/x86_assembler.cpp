@@ -253,6 +253,13 @@ x86_assembler::jne(const symbol_ref &target)
 }
 
 bool
+x86_assembler::lodsb()
+{
+    _code->emit_byte(LODS_m8);
+    return true;
+}
+
+bool
 x86_assembler::mov(par::cpu_register dst, par::cpu_register src)
 {
     ASM_REQUIRE(_reg_size(src) == _reg_size(dst));

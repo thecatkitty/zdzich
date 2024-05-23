@@ -95,6 +95,11 @@ zd4_generator::process(const par::call_node &node)
         return zd4_builtins::Klawisz(this, node);
     }
 
+    if (text::pl_streqai("Ładuj", node.callee))
+    {
+        return zd4_builtins::Laduj(this, node);
+    }
+
     if (text::pl_streqi("Losowa16", node.callee))
     {
         return zd4_builtins::Losowa16(this, node);

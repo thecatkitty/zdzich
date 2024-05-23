@@ -29,6 +29,9 @@ struct zd4_builtins
     Klawisz(zd4_generator *generator, const par::call_node &node);
 
     static bool
+    Laduj(zd4_generator *generator, const par::call_node &node);
+
+    static bool
     Losowa16(zd4_generator *generator, const par::call_node &node);
 
     static bool
