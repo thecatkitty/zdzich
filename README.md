@@ -49,7 +49,7 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | DEMO | ✅ | ✅ | ⚠️[^2] |
 | DZWIEK | ✅ | ✅ | ✅ |
 | EFEKT | ✅ | ✅ | ✅ |
-| LOSOWE | ✅ | ✅ |
+| LOSOWE | ✅ | ✅ | ✅ |
 | MYSZ | ✅ | ✅ | ✅ |
 | MYSZKA | ✅ | ✅ | ✅ |
 | MYSZRYS | ✅ | ✅ | ✅ |
