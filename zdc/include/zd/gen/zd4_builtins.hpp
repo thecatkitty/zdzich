@@ -92,6 +92,9 @@ struct zd4_builtins
     ZmienKatalog(zd4_generator *generator, const par::call_node &node);
 
     static bool
+    ZmienNazwe(zd4_generator *generator, const par::call_node &node);
+
+    static bool
     ZPortu(zd4_generator *generator, const par::call_node &node);
 
   private:
