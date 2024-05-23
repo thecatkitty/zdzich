@@ -27,7 +27,7 @@ Pozycja 7,20
 Pisz Nacisnij dowolny klawisz...
 Klawisz
 Czyûç 31
-IMIê()
+CZYTAJIMIE()
 Klawisz
 Tryb 0
 Czyûç 52
@@ -94,10 +94,10 @@ Zamknij #5
 PiszL Zobacz plik DEMO.TXT w tym katalogu!!!
 Koniec
 
-Procedura IMIê()
+Procedura CZYTAJIMIE()
 	PiszL Jak masz na imie?
 	Czytaj $Imië
 	Pisz $Tekst
 	Pisz $Imië
 	PiszL !!!
-Koniec IMIê()
+Koniec CZYTAJIMIE()
