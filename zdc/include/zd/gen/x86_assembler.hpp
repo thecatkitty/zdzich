@@ -85,6 +85,15 @@ class x86_assembler
     call(const symbol_ref &target);
 
     bool
+    clc();
+
+    bool
+    cld();
+
+    bool
+    cli();
+
+    bool
     cmp(par::cpu_register left, unsigned right);
 
     bool
@@ -149,6 +158,15 @@ class x86_assembler
 
     bool
     push(x86_segment seg);
+
+    bool
+    stc();
+
+    bool
+    std();
+
+    bool
+    sti();
 
     bool
     add(par::cpu_register dst, unsigned src);

@@ -53,7 +53,7 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | MYSZ | ✅ | ✅ | ✅ |
 | MYSZKA | ✅ | ✅ | ✅ |
 | MYSZRYS | ✅ | ✅ | ✅ |
-| PARAMETR | ✅ | ✅ |
+| PARAMETR | ✅ | ✅ | ✅ |
 | PLIKI1 | ✅ | ✅ |
 | PLIKI2 | ✅ | ✅ |
 | SKOKI | ✅ | ✅ | ✅ |
