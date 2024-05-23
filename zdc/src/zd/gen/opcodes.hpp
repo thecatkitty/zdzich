@@ -34,6 +34,7 @@
 #define ModRM_DIBH         0xC7
 
 #define ADD_r16_rm16   0x03
+#define ADD_rm8_imm8   0x80 // RegOpcode 0
 #define ADD_rm16_imm16 0x81 // RegOpcode 0
 
 #define CALL_rel16 0xE8

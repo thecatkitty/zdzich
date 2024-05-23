@@ -439,6 +439,28 @@ zd::gen::x86_assembler::push(x86_segment seg)
 }
 
 bool
+x86_assembler::add(par::cpu_register dst, unsigned src)
+{
+    if (sizeof(uint8_t) == _reg_size(dst))
+    {
+        _code->emit_byte(ADD_rm8_imm8);
+        _code->emit_byte(ModRM(_to_mode(dst), 0));
+        _code->emit_byte(src);
+        return true;
+    }
+
+    if (sizeof(uint16_t) == _reg_size(dst))
+    {
+        _code->emit_byte(ADD_rm16_imm16);
+        _code->emit_byte(ModRM(_to_mode(dst), 0));
+        _code->emit_word(src);
+        return true;
+    }
+
+    return false;
+}
+
+bool
 x86_assembler::add(par::cpu_register dst, par::cpu_register src)
 {
     ASM_REQUIRE(_reg_size(dst) == _reg_size(src));
@@ -462,7 +484,12 @@ x86_assembler::add(const symbol_ref &dst, unsigned src)
 bool
 x86_assembler::inc(par::cpu_register reg)
 {
-    ASM_REQUIRE(sizeof(uint16_t) == _reg_size(reg));
+    if (sizeof(uint8_t) == _reg_size(reg))
+    {
+        _code->emit_byte(INC_rm8);
+        _code->emit_byte(ModRM(_to_mode(reg), 0));
+        return true;
+    }
 
     _code->emit_byte(INC_r16 | _to_regopcode(reg));
     return true;

@@ -148,6 +148,9 @@ class x86_assembler
     push(x86_segment seg);
 
     bool
+    add(par::cpu_register dst, unsigned src);
+
+    bool
     add(par::cpu_register dst, par::cpu_register src);
 
     bool
