@@ -262,6 +262,27 @@ zd::gen::zd4_builtins::Pisz(zd4_generator *generator,
 }
 
 bool
+zd4_builtins::Pisz(zd4_generator          *generator,
+                   unsigned                fileno,
+                   const par::object_node &obj)
+{
+    REQUIRE(object_type::text == obj.type);
+
+    auto &symbol = generator->get_symbol(obj.name);
+
+    // INT 21,40 - Write To File or Device Using Handle
+    generator->_as.mov(cpu_register::si, symbol_ref{symbol, +1});
+    generator->_as.mov(cpu_register::ch, 0);
+    generator->_as.mov(cpu_register::cl, mreg{cpu_register::si});
+    generator->_as.mov(cpu_register::dx, symbol_ref{symbol, +2});
+    generator->_as.mov(cpu_register::ah, 0x40);
+    generator->_as.mov(cpu_register::bx, fileno);
+    generator->_as.intr(0x21);
+
+    return true;
+}
+
+bool
 zd4_builtins::Pisz(zd4_generator *generator, const call_node &node)
 {
     if (node.is_bare)
@@ -287,6 +308,11 @@ zd4_builtins::Pisz(zd4_generator *generator, const call_node &node)
         if ((*it)->is<string_node>())
         {
             return Pisz(generator, fileno, (*it)->as<string_node>()->value);
+        }
+
+        if ((*it)->is<object_node>())
+        {
+            return Pisz(generator, fileno, *(*it)->as<object_node>());
         }
 
         return false;
