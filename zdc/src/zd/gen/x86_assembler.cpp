@@ -377,6 +377,68 @@ x86_assembler::outb()
 }
 
 bool
+zd::gen::x86_assembler::pop(x86_segment seg)
+{
+    switch (seg)
+    {
+    case x86_segment::ds:
+        _code->emit_byte(POP_DS);
+        return true;
+
+    case x86_segment::es:
+        _code->emit_byte(POP_ES);
+        return true;
+
+    case x86_segment::ss:
+        _code->emit_byte(POP_SS);
+        return true;
+
+    case x86_segment::fs:
+        _code->emit_word(POP_FS);
+        return true;
+
+    case x86_segment::gs:
+        _code->emit_word(POP_GS);
+        return true;
+    }
+
+    return false;
+}
+
+bool
+zd::gen::x86_assembler::push(x86_segment seg)
+{
+    switch (seg)
+    {
+    case x86_segment::cs:
+        _code->emit_byte(PUSH_CS);
+        return true;
+
+    case x86_segment::ss:
+        _code->emit_byte(PUSH_SS);
+        return true;
+
+    case x86_segment::ds:
+        _code->emit_byte(PUSH_DS);
+        return true;
+
+    case x86_segment::es:
+        _code->emit_byte(PUSH_ES);
+        return true;
+
+    case x86_segment::fs:
+        _code->emit_word(PUSH_FS);
+        return true;
+
+    case x86_segment::gs:
+        _code->emit_word(PUSH_GS);
+        return true;
+    }
+
+    return false;
+}
+
+bool
 x86_assembler::add(par::cpu_register dst, par::cpu_register src)
 {
     ASM_REQUIRE(_reg_size(dst) == _reg_size(src));

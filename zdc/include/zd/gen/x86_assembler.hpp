@@ -45,6 +45,16 @@ struct symbol_ref
     }
 };
 
+enum class x86_segment
+{
+    cs,
+    ss,
+    ds,
+    es,
+    fs,
+    gs
+};
+
 struct mreg
 {
     par::cpu_register reg;
@@ -130,6 +140,12 @@ class x86_assembler
 
     bool
     outb();
+
+    bool
+    pop(x86_segment seg);
+
+    bool
+    push(x86_segment seg);
 
     bool
     add(par::cpu_register dst, par::cpu_register src);

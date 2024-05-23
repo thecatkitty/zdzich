@@ -682,6 +682,27 @@ zd::gen::zd4_builtins::ZmienKatalog(zd4_generator        *generator,
 }
 
 bool
+zd::gen::zd4_builtins::ZmienNazwe(zd4_generator        *generator,
+                                  const par::call_node &node)
+{
+    REQUIRE(2 == node.arguments.size());
+
+    auto it = node.arguments.begin();
+    REQUIRE(load_textual_argument(generator, cpu_register::dx, **it));
+
+    it++;
+    REQUIRE(load_textual_argument(generator, cpu_register::di, **it));
+
+    // INT 21,56 - Rename File
+    generator->_as.push(x86_segment::ds);
+    generator->_as.pop(x86_segment::es);
+    generator->_as.mov(cpu_register::ah, 0x56);
+    generator->_as.intr(0x21);
+
+    return true;
+}
+
+bool
 zd::gen::zd4_builtins::ZPortu(zd4_generator        *generator,
                               const par::call_node &node)
 {

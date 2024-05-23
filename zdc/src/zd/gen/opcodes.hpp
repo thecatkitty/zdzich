@@ -76,6 +76,19 @@
 
 #define OUT_DX_AL 0xEE
 
+#define POP_DS 0x1F
+#define POP_ES 0x07
+#define POP_SS 0x17
+#define POP_FS 0xA10F
+#define POP_GS 0xA90F
+
+#define PUSH_CS 0x0E
+#define PUSH_SS 0x16
+#define PUSH_DS 0x1E
+#define PUSH_ES 0x06
+#define PUSH_FS 0xA00F
+#define PUSH_GS 0xA80F
+
 #define RET_near 0xC3
 
 #define SHR_rm16_CL 0xD3 // RegOpcode 5

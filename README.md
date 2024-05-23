@@ -41,7 +41,7 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | KWADRAT | ✅ | ✅ | ✅ |
 | LINIA | ✅ | ✅ | ✅ |
 | PETLE | ✅ | ✅ | ✅ |
-| ZC | ✅ | ✅ |
+| ZC | ✅ | ✅ | ⚠️[^1] |
 | !TLO | ✅ | ✅ | ✅ |
 | ALARM | ✅ | ✅ | ✅ |
 | ASCII | ✅ | ✅ |
@@ -59,3 +59,5 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | SKOKI | ✅ | ✅ | ✅ |
 | TESTMYSZ | ✅ | ✅ | ✅ |
 | WSTAW | ✅ | ✅ | ✅ |
+
+[^1]: Wiodące spacje utracone w nieregularnych ciągach tekstowych.
