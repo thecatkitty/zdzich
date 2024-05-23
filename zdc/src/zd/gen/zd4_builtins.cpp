@@ -98,6 +98,15 @@ zd4_builtins::Klawisz(zd4_generator *generator, const par::call_node &node)
     return true;
 }
 
+bool
+zd4_builtins::Laduj(zd4_generator *generator, const par::call_node &node)
+{
+    REQUIRE(node.is_bare);
+
+    generator->_as.lodsb();
+    return true;
+}
+
 // Procedure $Losowa16
 static const uint8_t Losowa16_impl[]{
     0x1E,             // push ds

@@ -112,6 +112,9 @@ class x86_assembler
     jne(const symbol_ref &target);
 
     bool
+    lodsb();
+
+    bool
     mov(par::cpu_register dst, par::cpu_register src);
 
     bool
