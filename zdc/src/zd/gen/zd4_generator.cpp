@@ -55,7 +55,41 @@ zd4_generator::process(const par::assignment_node &node)
         auto target = node.target->as<register_node>();
         auto dst = target->reg;
 
-        if (node.source->is<number_node>())
+        // Flag register
+        auto value = node.source->as<number_node>()->value;
+        if (cpu_register_flag == ((unsigned)dst & 0xFF00))
+        {
+            switch (dst)
+            {
+            case cpu_register::flag_c: {
+                if (value)
+                {
+                    return _as.stc();
+                }
+
+                return _as.clc();
+            }
+
+            case cpu_register::flag_d: {
+                if (value)
+                {
+                    return _as.std();
+                }
+
+                return _as.cld();
+            }
+
+            case cpu_register::flag_i: {
+                if (value)
+                {
+                    return _as.sti();
+                }
+
+                return _as.cli();
+            }
+            }
+        }
+        else if (node.source->is<number_node>())
         {
             _as.mov(dst, (uint16_t)node.source->as<number_node>()->value);
             return true;

@@ -39,6 +39,12 @@
 
 #define CALL_rel16 0xE8
 
+#define CLC 0xF8
+
+#define CLD 0xFC
+
+#define CLI 0xFA
+
 #define CMP_AL_imm8    0x3C
 #define CMP_rm8_imm8   0x80 // RegOpcode 7
 #define CMP_AX_imm16   0x3D
@@ -95,6 +101,12 @@
 #define RET_near 0xC3
 
 #define SHR_rm16_CL 0xD3 // RegOpcode 5
+
+#define STC 0xF9
+
+#define STD 0xFD
+
+#define STI 0xFB
 
 #define SUB_rm16_imm16 0x81 // RegOpcode 5
 

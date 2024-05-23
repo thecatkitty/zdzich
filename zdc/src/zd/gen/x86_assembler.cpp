@@ -138,6 +138,27 @@ x86_assembler::call(const symbol_ref &target)
 }
 
 bool
+x86_assembler::clc()
+{
+    _code->emit_byte(CLC);
+    return true;
+}
+
+bool
+x86_assembler::cld()
+{
+    _code->emit_byte(CLD);
+    return true;
+}
+
+bool
+x86_assembler::cli()
+{
+    _code->emit_byte(CLI);
+    return true;
+}
+
+bool
 x86_assembler::cmp(par::cpu_register left, unsigned right)
 {
     if (sizeof(uint8_t) == _reg_size(left))
@@ -443,6 +464,27 @@ zd::gen::x86_assembler::push(x86_segment seg)
     }
 
     return false;
+}
+
+bool
+x86_assembler::stc()
+{
+    _code->emit_byte(STC);
+    return true;
+}
+
+bool
+x86_assembler::std()
+{
+    _code->emit_byte(STD);
+    return true;
+}
+
+bool
+x86_assembler::sti()
+{
+    _code->emit_byte(STI);
+    return true;
 }
 
 bool
