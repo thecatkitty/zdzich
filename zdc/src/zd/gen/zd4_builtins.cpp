@@ -446,13 +446,20 @@ static const uint8_t Pisz8_impl[]{
 bool
 zd4_builtins::Pisz8(zd4_generator *generator, const call_node &node)
 {
-    REQUIRE(1 == node.arguments.size());
+    if (!node.is_bare)
+    {
+        REQUIRE(1 == node.arguments.size());
+    }
 
     auto procedure =
         get_procedure(generator, "$Pisz8", Pisz8_impl, sizeof(Pisz8_impl));
     REQUIRE(procedure);
 
-    if (node.arguments.front()->is<register_node>())
+    if (node.is_bare)
+    {
+        generator->_as.mov(cpu_register::cl, cpu_register::al);
+    }
+    else if (node.arguments.front()->is<register_node>())
     {
         auto reg = node.arguments.front()->as<register_node>();
         generator->_as.mov(cpu_register::cl, reg->reg);
