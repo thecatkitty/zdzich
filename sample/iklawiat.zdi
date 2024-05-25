@@ -1,0 +1,29 @@
+* Polski język programowania Zdzich
+* Program testowy dla biblioteki obsługi klawiatury do ZDZICHa 4
+* 2024 Mateusz Karcz
+
+AUTOR()
+
+Pisz Naciśnij spację... 
+SPACJA()
+PiszL spacja!
+
+Pisz Naciśnij Enter... 
+ENTER()
+PiszL Enter!
+
+Pisz Naciśnij spację lub Esc... 
+SPACJAESC()
+PiszL spacja!
+
+Pisz Naciśnij Enter lub Esc... 
+ENTERESC()
+PiszL Enter!
+
+Pisz Naciśnij dowolny klawisz... 
+ESC()
+PiszL nie Esc!
+
+Koniec
+
+#Wstaw INC\KLAWIAT.INC

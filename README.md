@@ -31,9 +31,9 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | **INC** | - | - | - |
 | DOGIER | ✅ | ✅ | ✅ |
 | DZWIEK | ✅ | ✅ | ✅ |
-| DZWIEK2 | ✅ | ✅ |
-| KLAWIAT | ✅ | ✅ |
-| MYSZ | ✅ | ✅ |
+| DZWIEK2 | ✅ | ✅ | ✅ |
+| KLAWIAT | ✅ | ✅ | ✅ |
+| MYSZ | ✅ | ✅ | ✅ |
 | SAVER | ✅ | ✅ | ⚠️[^1] |
 | **PRZYKLAD** | - | - | - |
 | DOWCIPY | ✅ | ✅ | ✅ |
