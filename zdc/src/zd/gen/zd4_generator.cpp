@@ -34,6 +34,13 @@ zd4_generator::process(const par::assignment_node &node)
             return true;
         }
 
+        if (node.source->is<object_node>())
+        {
+            _as.push(get_symbol(node.source->as<object_node>()->name));
+            _as.pop(get_symbol(node.target->as<object_node>()->name));
+            return true;
+        }
+
         if (node.source->is<register_node>())
         {
             auto src_reg = node.source->as<register_node>()->reg;
