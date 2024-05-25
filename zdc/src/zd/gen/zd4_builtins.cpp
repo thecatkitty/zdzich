@@ -1,5 +1,6 @@
 #include <zd/gen/zd4_builtins.hpp>
 #include <zd/gen/zd4_generator.hpp>
+#include <zd/text/characters.hpp>
 
 using namespace zd;
 using namespace zd::gen;
@@ -725,9 +726,47 @@ bool
 zd::gen::zd4_builtins::ZmienNazwe(zd4_generator        *generator,
                                   const par::call_node &node)
 {
-    REQUIRE(2 == node.arguments.size());
+    REQUIRE(!node.arguments.empty());
+    REQUIRE(2 >= node.arguments.size());
 
     auto it = node.arguments.begin();
+
+    node_list arg_list{};
+    if (1 == node.arguments.size())
+    {
+        // Irregular string literal pair
+        auto &args = node.arguments.front();
+        REQUIRE(args->is<string_node>());
+        auto &args_str = args->as<string_node>()->value;
+
+        auto comma = std::find(args_str.begin(), args_str.end(), ',');
+        REQUIRE(args_str.end() != comma);
+
+        auto str_it = args_str.begin();
+
+        ustring left{};
+        while (comma != str_it)
+        {
+            left.append(*(str_it++));
+        }
+        arg_list.emplace_back(std::make_unique<string_node>(left));
+
+        str_it++;
+        while (text::isspace(*str_it))
+        {
+            str_it++;
+        }
+
+        ustring right{};
+        while (args_str.end() != str_it)
+        {
+            right.append(*(str_it++));
+        }
+        arg_list.emplace_back(std::make_unique<string_node>(right));
+
+        it = arg_list.begin();
+    }
+
     REQUIRE(load_textual_argument(generator, cpu_register::dx, **it));
 
     it++;

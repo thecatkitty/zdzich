@@ -54,8 +54,8 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | MYSZKA | ✅ | ✅ | ✅ |
 | MYSZRYS | ✅ | ✅ | ✅ |
 | PARAMETR | ✅ | ✅ | ✅ |
-| PLIKI1 | ✅ | ✅ |
-| PLIKI2 | ✅ | ✅ |
+| PLIKI1 | ✅ | ✅ | ✅ |
+| PLIKI2 | ✅ | ✅ | ✅ |
 | SKOKI | ✅ | ✅ | ✅ |
 | TESTMYSZ | ✅ | ✅ | ✅ |
 | WSTAW | ✅ | ✅ | ✅ |
