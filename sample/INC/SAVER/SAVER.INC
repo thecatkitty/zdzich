@@ -36,9 +36,9 @@ Porownaj BX,0
 * Ruch myszy
 %PX1=CX
 %PY1=DX
-Porownaj %PX1,%PX2
+Porownaj %PX1,0
 &Skok :Ruchm
-Porownaj %PY1,%PY2
+Porownaj %PY1,0
 &Skok :Ruchm
 Skok :dal5
 :Ruchm
@@ -58,8 +58,8 @@ Koniec KONIEC()
 
 Procedura CZYKLAWISZ()
 * Jesli nacisnoles klawisz, to ta procedura konczy program
-  czekaj 4
-  OPROZNIJBUFOR()
+  AH=$0B
+  PRZERWANIE $21
   POROWNAJ AL,0
   <>SKOK :KON
   Skok :CD
