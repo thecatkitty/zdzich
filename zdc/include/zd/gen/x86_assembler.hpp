@@ -160,7 +160,13 @@ class x86_assembler
     pop(x86_segment seg);
 
     bool
+    pop(const symbol_ref &dst);
+
+    bool
     push(x86_segment seg);
+
+    bool
+    push(const symbol_ref &src);
 
     bool
     stc();

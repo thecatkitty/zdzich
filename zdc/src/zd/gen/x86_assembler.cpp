@@ -456,6 +456,15 @@ zd::gen::x86_assembler::pop(x86_segment seg)
 }
 
 bool
+x86_assembler::pop(const symbol_ref &dst)
+{
+    _code->emit_byte(POP_m16);
+    _code->emit_byte(ModRM(ModRM_disp16, 0));
+    _code->emit_ref({dst.sym.address, dst.sym.section, dst.off});
+    return true;
+}
+
+bool
 zd::gen::x86_assembler::push(x86_segment seg)
 {
     switch (seg)
@@ -486,6 +495,15 @@ zd::gen::x86_assembler::push(x86_segment seg)
     }
 
     return false;
+}
+
+bool
+x86_assembler::push(const symbol_ref &dst)
+{
+    _code->emit_byte(PUSH_m16);
+    _code->emit_byte(ModRM(ModRM_disp16, 6));
+    _code->emit_ref({dst.sym.address, dst.sym.section, dst.off});
+    return true;
 }
 
 bool
