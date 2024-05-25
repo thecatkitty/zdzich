@@ -34,19 +34,19 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | DZWIEK2 | ✅ | ✅ |
 | KLAWIAT | ✅ | ✅ |
 | MYSZ | ✅ | ✅ |
-| SAVER | ✅ | ✅ |
+| SAVER | ✅ | ✅ | ⚠️[^1] |
 | **PRZYKLAD** | - | - | - |
 | DOWCIPY | ✅ | ✅ | ✅ |
 | GRA | ✅ | ✅ | ✅ |
 | KWADRAT | ✅ | ✅ | ✅ |
 | LINIA | ✅ | ✅ | ✅ |
 | PETLE | ✅ | ✅ | ✅ |
-| ZC | ✅ | ✅ | ⚠️[^1] |
+| ZC | ✅ | ✅ | ⚠️[^2] |
 | !TLO | ✅ | ✅ | ✅ |
 | ALARM | ✅ | ✅ | ✅ |
 | ASCII | ✅ | ✅ | ✅ |
 | COOL-GR1 | ✅ | ✅ | ✅ |
-| DEMO | ✅ | ✅ | ⚠️[^2] |
+| DEMO | ✅ | ✅ | ⚠️[^3] |
 | DZWIEK | ✅ | ✅ | ✅ |
 | EFEKT | ✅ | ✅ | ✅ |
 | LOSOWE | ✅ | ✅ | ✅ |
@@ -60,5 +60,6 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 | TESTMYSZ | ✅ | ✅ | ✅ |
 | WSTAW | ✅ | ✅ | ✅ |
 
-[^1]: Wiodące spacje utracone w nieregularnych ciągach tekstowych.
-[^2]: Wymagana zmiana zduplikowanej nazwy.
+[^1]: Wymagane dostosowanie do skompilowanego przykładu dołączonego do ZDZICH5.
+[^2]: Wiodące spacje utracone w nieregularnych ciągach tekstowych.
+[^3]: Wymagana zmiana zduplikowanej nazwy.
