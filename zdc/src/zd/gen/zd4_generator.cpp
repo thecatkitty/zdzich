@@ -502,6 +502,18 @@ zd4_generator::process(const par::operation_node &node)
             return true;
         }
 
+        if (node.left->is<object_node>() && node.right->is<object_node>())
+        {
+            auto  left_obj = node.left->as<object_node>();
+            auto  right_obj = node.left->as<object_node>();
+            auto &left_sym = get_symbol(left_obj->name);
+            auto &right_sym = get_symbol(right_obj->name);
+            _as.mov(cpu_register::bx, left_sym);
+            _as.mov(cpu_register::bx, mreg{cpu_register::bx});
+            _as.cmp(cpu_register::bx, right_sym);
+            return true;
+        }
+
         return false;
     }
 

@@ -49,6 +49,8 @@
 #define CMP_rm8_imm8   0x80 // RegOpcode 7
 #define CMP_AX_imm16   0x3D
 #define CMP_rm16_imm16 0x81 // RegOpcode 7
+#define CMP_r8_rm8     0x3A
+#define CMP_r16_rm16   0x3B
 
 #define DEC_rm16 0xFF // RegOpcode 1
 
