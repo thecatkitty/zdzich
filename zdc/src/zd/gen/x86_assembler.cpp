@@ -199,6 +199,28 @@ x86_assembler::cmp(par::cpu_register left, unsigned right)
 }
 
 bool
+x86_assembler::cmp(par::cpu_register left, const symbol_ref &right)
+{
+    if (sizeof(uint8_t) == _reg_size(left))
+    {
+        _code->emit_byte(CMP_r8_rm8);
+        _code->emit_byte(ModRM(ModRM_disp16, _to_regopcode(left)));
+        _code->emit_ref({right.sym.address, right.sym.section});
+        return true;
+    }
+
+    if (sizeof(uint16_t) == _reg_size(left))
+    {
+        _code->emit_byte(CMP_r16_rm16);
+        _code->emit_byte(ModRM(ModRM_disp16, _to_regopcode(left)));
+        _code->emit_ref({right.sym.address, right.sym.section});
+        return true;
+    }
+
+    return false;
+}
+
+bool
 x86_assembler::cmp(mreg left, unsigned right)
 {
     if (sizeof(uint16_t) == _reg_size(left.reg))

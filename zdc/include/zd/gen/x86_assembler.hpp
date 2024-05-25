@@ -97,6 +97,9 @@ class x86_assembler
     cmp(par::cpu_register left, unsigned right);
 
     bool
+    cmp(par::cpu_register left, const symbol_ref &right);
+
+    bool
     cmp(const symbol_ref &left, uint16_t right);
 
     bool
