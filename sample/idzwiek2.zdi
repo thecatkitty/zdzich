@@ -1,0 +1,44 @@
+* Polski język programowania Zdzich
+* Program testowy dla biblioteki dźwiękowej do języka programowania ZDZICH 4
+* 2024 Mateusz Karcz
+
+AUTOR()
+
+GLOS()
+Czekaj 5
+CISZA()
+Klawisz
+
+DZWIEK1()
+Klawisz
+
+DZWIEK2()
+Klawisz
+
+DZWIEK3()
+Klawisz
+
+DZWIEK4()
+Klawisz
+
+DZWIEK5()
+Klawisz
+
+DZWIEK6()
+Klawisz
+
+DZWIEK7()
+Klawisz
+
+DZWIEK8()
+Klawisz
+
+DZWIEK9()
+Klawisz
+
+DZWIEK10()
+Klawisz
+
+Koniec
+
+#Wstaw INC\DZWIEK2.INC

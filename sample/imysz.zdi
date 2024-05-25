@@ -1,0 +1,21 @@
+* Polski język programowania Zdzich
+* Program testowy dla biblioteki do obsługi MYSZY
+* 2024 Mateusz Karcz
+
+AUTOR()
+
+Pisz Naciśnij lewy przycisk myszy... 
+LEWY()
+PiszL ok!
+
+Pisz Naciśnij prawy przycisk myszy... 
+PRAWY()
+PiszL ok!
+
+Pisz Naciśnij oba przyciski myszy... 
+OBYDWA()
+PiszL ok!
+
+Koniec
+
+#Wstaw INC\MYSZ.INC
