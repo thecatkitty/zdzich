@@ -89,7 +89,10 @@ class error
     }
 
   public:
-    template <typename Torigin, typename Traits = error_origin_traits<Torigin>>
+    template <typename Torigin,
+              typename Traits = error_origin_traits<Torigin>,
+              typename... Args,
+              typename std::enable_if<sizeof...(Args) == 0, int>::type = 0>
     error(const Torigin &origin, typename Traits::ordinal_type code)
         : _origin{static_cast<uint8_t>(Traits::origin_tag)},
           _ordinal{static_cast<uint8_t>(code)}, _file{Traits::path(origin)},
@@ -100,7 +103,8 @@ class error
 
     template <typename Torigin,
               typename Traits = error_origin_traits<Torigin>,
-              typename... Args>
+              typename... Args,
+              typename std::enable_if<sizeof...(Args) != 0, int>::type = 0>
     error(const Torigin                &origin,
           typename Traits::ordinal_type code,
           Args... args)
