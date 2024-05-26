@@ -12,13 +12,16 @@ jobs:
     strategy:
       matrix:
         platform:
-          - name: Linux
-            target: linux
-            os: ubuntu-latest
           - name: DOS (IA16)
             target: dos-ia16
             os: ubuntu-latest
             flags: -DCMAKE_TOOLCHAIN_FILE=ext/nicetia16/cmake/DOS-GCC-IA16.cmake
+          - name: Linux
+            target: linux
+            os: ubuntu-latest
+          - name: macOS
+            target: macos
+            os: macos-latest
           - name: Windows (x64)
             target: windows-x64
             os: windows-latest
