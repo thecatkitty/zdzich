@@ -87,6 +87,8 @@ struct node
     virtual bool
     generate(gen::generator *generator) = 0;
 
+    virtual ~node() = default;
+
     template <typename T>
     inline T *
     as()
