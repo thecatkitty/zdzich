@@ -40,7 +40,7 @@ def get_messages(input: TextIOWrapper) -> Generator[tuple[int, int, str], None, 
             message_text = str()
             continue
 
-        if re.match("^\w+=", line):
+        if re.match(r"^\w+=", line):
             key, value = get_assignment(line)
             if key == "LanguageNames":
                 lang_name, details = get_assignment(value)
