@@ -7,6 +7,10 @@ if(MSVC)
     add_compile_options(/utf-8)
 endif()
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-Wno-switch)
+endif()
+
 if(DOS)
     add_compile_options(-march=i8088)
     add_compile_options(-mcmodel=small)
