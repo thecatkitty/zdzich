@@ -1,0 +1,6 @@
+add_zdc_program(EFEKT-L EFEKT.ZDI)
+add_zdc_program(EFEKT2 EFEKT2.ZDI)
+add_zdc_program(PION PION.ZDI)
+add_zdc_program(POZIOM POZIOM.ZDI)
+add_zdc_program(SKOS SKOS.ZDI)
+add_zdc_program(SKOS2 SKOS2.ZDI)
