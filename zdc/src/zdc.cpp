@@ -218,7 +218,10 @@ action_parser(zd::lex::lexer &lexer, node_callback callback, void *context)
                     });
                 }
 
-                inc_path.append(inc_node->name);
+                for (auto ch : inc_node->name)
+                {
+                    inc_path.append(('\\' == ch) ? '/' : ch);
+                }
 
                 // Process the included file
                 zd::lex::pl_istream inc_stream{
