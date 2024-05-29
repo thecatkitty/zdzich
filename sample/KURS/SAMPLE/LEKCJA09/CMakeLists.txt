@@ -1,0 +1,5 @@
+add_zdc_program(LEK09-00 LEK09-00.ZDI)
+add_zdc_program(LEK09-01 LEK09-01.ZDI)
+add_zdc_program(LEK09-02 LEK09-02.ZDI)
+add_zdc_program(LEK09-03 LEK09-03.ZDI)
+add_zdc_program(LEK09-04 LEK09-04.ZDI)
