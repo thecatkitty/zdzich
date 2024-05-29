@@ -324,6 +324,12 @@ lex::lexer::process_string()
         RETURN_IF_ERROR_VOID(read());
     }
 
+    // Ignore single trailing spaces 
+    if (string.empty() && (2 > _spaces))
+    {
+        return token{_last_type = token_type::line_break};
+    }
+
     if (_is_register(string))
     {
         // Register name (and nothing else)
