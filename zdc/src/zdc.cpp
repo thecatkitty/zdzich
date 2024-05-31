@@ -16,9 +16,9 @@ static int
 action_lexer(zd::lex::lexer &lexer);
 
 static int
-action_parser(zd::lex::lexer &lexer,
-              node_callback   callback = nullptr,
-              void           *context = nullptr);
+action_generator(zd::lex::lexer     &lexer,
+                 zd::gen::generator *generator,
+                 const char         *separator = nullptr);
 
 static bool
 is_path_separator(int ch);
@@ -105,7 +105,8 @@ main(int argc, char *argv[])
 
     if ('P' == *opt_action)
     {
-        return action_parser(lexer);
+        zd::gen::text_generator generator{stdout};
+        return action_generator(lexer, &generator, "");
     }
 
     std::fprintf(stderr, "unknown action %c\n", *opt_action);
@@ -117,19 +118,7 @@ action_compiler(zd::lex::lexer &lexer, std::FILE *output)
 {
     zd::gen::zd4_generator generator{};
 
-    auto status = action_parser(
-        lexer,
-        [](zd::par::node *node, void *context) -> bool {
-            if (!node->generate(
-                    reinterpret_cast<zd::gen::generator *>(context)))
-            {
-                std::fputs("compilation error!\n", stderr);
-                return false;
-            }
-
-            return true;
-        },
-        &generator);
+    auto status = action_generator(lexer, &generator);
     if (0 != status)
     {
         return status;
@@ -174,10 +163,11 @@ action_lexer(zd::lex::lexer &lexer)
 }
 
 int
-action_parser(zd::lex::lexer &lexer, node_callback callback, void *context)
+action_generator(zd::lex::lexer     &lexer,
+                 zd::gen::generator *generator,
+                 const char         *separator)
 {
-    zd::par::parser         parser{lexer};
-    zd::gen::text_generator text_generator{stdout};
+    zd::par::parser parser{lexer};
 
     zd::result<zd::par::unique_node> result{};
     while (true)
@@ -228,7 +218,7 @@ action_parser(zd::lex::lexer &lexer, node_callback callback, void *context)
                     inc_path, lexer.get_stream().get_encoding()};
                 zd::lex::lexer inc_lexer{inc_stream};
 
-                int status = action_parser(inc_lexer, callback, context);
+                int status = action_generator(inc_lexer, generator);
                 if (0 != status)
                 {
                     return status;
@@ -238,16 +228,15 @@ action_parser(zd::lex::lexer &lexer, node_callback callback, void *context)
             }
         }
 
-        node->generate(&text_generator);
-
-        if (callback)
+        if (!node->generate(generator))
         {
-            if (!callback(node.get(), context))
-            {
-                return 1;
-            }
+            std::fputs("generator error!\n", stderr);
         }
-        std::puts("");
+
+        if (separator)
+        {
+            std::puts(separator);
+        }
     }
 }
 
