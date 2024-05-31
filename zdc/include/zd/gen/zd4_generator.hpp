@@ -112,12 +112,12 @@ class zd4_generator : public generator, public zd4_reference_resolver
                        unsigned &section,
                        unsigned &address) const override;
 
+    symbol &
+    get_symbol(const ustring &name);
+
   private:
     static ustring
     get_cname(const ustring &name);
-
-    symbol &
-    get_symbol(const ustring &name);
 
     bool
     set_symbol(const ustring    &name,
