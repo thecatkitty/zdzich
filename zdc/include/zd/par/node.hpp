@@ -12,6 +12,7 @@ namespace par
 {
 
 struct node;
+struct position;
 using unique_node = std::unique_ptr<node>;
 using node_list = std::list<unique_node>;
 
@@ -76,6 +77,13 @@ enum class cpu_register : uint16_t
     di = dst | cpu_register_word,
 };
 
+struct position
+{
+    const ustring &path;
+    const unsigned line;
+    const unsigned column;
+};
+
 #define IMPLEMENT_GENERATOR_ACCESS                                             \
     virtual bool generate(gen::generator *generator) override                  \
     {                                                                          \
@@ -84,6 +92,10 @@ enum class cpu_register : uint16_t
 
 struct node
 {
+    const ustring *code_path;
+    const unsigned code_line;
+    const unsigned code_column;
+
     virtual bool
     generate(gen::generator *generator) = 0;
 
@@ -112,6 +124,16 @@ struct node
         return !!dynamic_cast<T *>(this);
 #endif
     }
+
+  protected:
+    node() : code_path{nullptr}, code_line{0}, code_column{0}
+    {
+    }
+
+    node(const position &pos)
+        : code_path{&pos.path}, code_line{pos.line}, code_column{pos.column}
+    {
+    }
 };
 
 struct assignment_node : public node
@@ -121,8 +143,10 @@ struct assignment_node : public node
 
     assignment_node() = default;
 
-    assignment_node(unique_node target_, unique_node source_)
-        : target{std::move(target_)}, source{std::move(source_)}
+    assignment_node(const position &pos,
+                    unique_node     target_,
+                    unique_node     source_)
+        : node{pos}, target{std::move(target_)}, source{std::move(source_)}
     {
     }
 
@@ -135,8 +159,12 @@ struct call_node : public node
     const node_list arguments;
     const bool      is_bare;
 
-    call_node(const ustring &callee_, node_list arguments_, bool is_bare_)
-        : callee{callee_}, arguments{std::move(arguments_)}, is_bare{is_bare_}
+    call_node(const position &pos,
+              const ustring  &callee_,
+              node_list       arguments_,
+              bool            is_bare_)
+        : node{pos}, callee{callee_}, arguments{std::move(arguments_)},
+          is_bare{is_bare_}
     {
     }
 
@@ -148,8 +176,8 @@ struct condition_node : public node
     const condition   cond;
     const unique_node action;
 
-    condition_node(condition cond_, unique_node action_)
-        : cond{cond_}, action{std::move(action_)}
+    condition_node(const position &pos, condition cond_, unique_node action_)
+        : node{pos}, cond{cond_}, action{std::move(action_)}
     {
     }
 
@@ -161,8 +189,8 @@ struct declaration_node : public node
     const unique_node target;
     const bool        is_const;
 
-    declaration_node(unique_node target_, bool is_const_)
-        : target{std::move(target_)}, is_const{is_const_}
+    declaration_node(const position &pos, unique_node target_, bool is_const_)
+        : node{pos}, target{std::move(target_)}, is_const{is_const_}
     {
     }
 
@@ -173,7 +201,8 @@ struct emit_node : public node
 {
     const std::vector<uint8_t> bytes;
 
-    emit_node(std::vector<uint8_t> bytes_) : bytes{std::move(bytes_)}
+    emit_node(const position &pos, std::vector<uint8_t> bytes_)
+        : node{pos}, bytes{std::move(bytes_)}
     {
     }
 
@@ -186,7 +215,11 @@ struct end_node : public node
 
     end_node() = default;
 
-    end_node(const ustring &name_) : name{name_}
+    end_node(const position &pos) : node{pos}, name{}
+    {
+    }
+
+    end_node(const position &pos, const ustring &name_) : node{pos}, name{name_}
     {
     }
 
@@ -202,8 +235,10 @@ struct include_node : public node
     {
     }
 
-    include_node(const ustring &name_, bool is_binary_ = false)
-        : name{name_}, is_binary{is_binary_}
+    include_node(const position &pos,
+                 const ustring  &name_,
+                 bool            is_binary_ = false)
+        : node{pos}, name{name_}, is_binary{is_binary_}
     {
     }
 
@@ -216,7 +251,8 @@ struct jump_node : public node
 
     jump_node() = default;
 
-    jump_node(unique_node target_) : target{std::move(target_)}
+    jump_node(const position &pos, unique_node target_)
+        : node{pos}, target{std::move(target_)}
     {
     }
 
@@ -229,7 +265,8 @@ struct label_node : public node
 
     label_node() = default;
 
-    label_node(const ustring &name_) : name{name_}
+    label_node(const position &pos, const ustring &name_)
+        : node{pos}, name{name_}
     {
     }
 
@@ -244,7 +281,7 @@ struct number_node : public node
     {
     }
 
-    number_node(int value_) : value{value_}
+    number_node(const position &pos, int value_) : node{pos}, value{value_}
     {
     }
 
@@ -260,8 +297,8 @@ struct object_node : public node
     {
     }
 
-    object_node(const ustring &name_, object_type type_)
-        : name{name_}, type{type_}
+    object_node(const position &pos, const ustring &name_, object_type type_)
+        : node{pos}, name{name_}, type{type_}
     {
     }
 
@@ -274,8 +311,11 @@ struct operation_node : public node
     const unique_node left;
     const unique_node right;
 
-    operation_node(operation op_, unique_node left_, unique_node right_)
-        : op{op_}, left{std::move(left_)}, right{std::move(right_)}
+    operation_node(const position &pos,
+                   operation       op_,
+                   unique_node     left_,
+                   unique_node     right_)
+        : node{pos}, op{op_}, left{std::move(left_)}, right{std::move(right_)}
     {
     }
 
@@ -287,8 +327,8 @@ struct procedure_node : public node
     const ustring   name;
     const node_list body;
 
-    procedure_node(const ustring &name_, node_list body_)
-        : name{name_}, body{std::move(body_)}
+    procedure_node(const position &pos, const ustring &name_, node_list body_)
+        : node{pos}, name{name_}, body{std::move(body_)}
     {
     }
 
@@ -303,7 +343,7 @@ struct register_node : public node
     {
     }
 
-    register_node(cpu_register reg_) : reg{reg_}
+    register_node(const position &pos, cpu_register reg_) : node{pos}, reg{reg_}
     {
     }
 
@@ -316,7 +356,8 @@ struct string_node : public node
 
     string_node() = default;
 
-    string_node(const ustring &value_) : value{value_}
+    string_node(const position &pos, const ustring &value_)
+        : node{pos}, value{value_}
     {
     }
 
@@ -329,7 +370,8 @@ struct subscript_node : public node
 
     subscript_node() = default;
 
-    subscript_node(unique_node value_) : value{std::move(value_)}
+    subscript_node(const position &pos, unique_node value_)
+        : node{pos}, value{std::move(value_)}
     {
     }
 

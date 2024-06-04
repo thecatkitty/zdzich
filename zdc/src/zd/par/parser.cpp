@@ -121,6 +121,7 @@ par::parser::handle(const lex::token &head)
     bool first{true};
     while (true)
     {
+        auto       pos = track();
         lex::token token{};
 
         if (first && (lex::token_type::unknown != head.get_type()))
@@ -147,12 +148,12 @@ par::parser::handle(const lex::token &head)
             RETURN_IF_ERROR(token, _lexer.get_token());
             if (lex::token_type::name == token.get_type())
             {
-                return handle_assignment(lex::token_type::ampersand,
+                return handle_assignment(pos, lex::token_type::ampersand,
                                          cpu_register::invalid,
                                          std::move(token.get_text()));
             }
 
-            return handle_condition(lex::token_type::ampersand, token);
+            return handle_condition(pos, lex::token_type::ampersand, token);
         }
 
         case lex::token_type::cpref_lt:
@@ -160,43 +161,43 @@ par::parser::handle(const lex::token &head)
         case lex::token_type::cpref_ne:
         case lex::token_type::cpref_le:
         case lex::token_type::cpref_ge:
-            return handle_condition(token.get_type());
+            return handle_condition(pos, token.get_type());
 
         case lex::token_type::byref:
         case lex::token_type::byval:
-            return handle_assignment(token.get_type());
+            return handle_assignment(pos, token.get_type());
 
         case lex::token_type::directive:
-            return handle_directive(token.get_text());
+            return handle_directive(pos, token.get_text());
 
         case lex::token_type::end:
-            return handle_end();
+            return handle_end(pos);
 
         case lex::token_type::colon:
-            return handle_label();
+            return handle_label(pos);
 
         case lex::token_type::compare:
         case lex::token_type::decrement:
         case lex::token_type::increment:
-            return handle_operation(token.get_type());
+            return handle_operation(pos, token.get_type());
 
         case lex::token_type::jump:
-            return handle_jump();
+            return handle_jump(pos);
 
         case lex::token_type::name: {
             auto reg = _to_cpu_register(token.get_text());
             return (cpu_register::invalid == reg)
-                       ? handle_call(token.get_text())
-                       : handle_assignment(lex::token_type::name, reg);
+                       ? handle_call(pos, token.get_text())
+                       : handle_assignment(pos, lex::token_type::name, reg);
         }
 
         case lex::token_type::procedure:
-            return handle_procedure();
+            return handle_procedure(pos);
 
         case lex::token_type::constant:
         case lex::token_type::variable:
-            return handle_declaration(lex::token_type::constant ==
-                                      token.get_type());
+            return handle_declaration(pos, lex::token_type::constant ==
+                                               token.get_type());
 
         default:
             return make_error(error_code::not_a_command, token.get_type());
@@ -204,21 +205,29 @@ par::parser::handle(const lex::token &head)
     }
 }
 
+par::position
+par::parser::track()
+{
+    return {_lexer.get_path(), _lexer.get_line(), _lexer.get_column()};
+}
+
 result<par::unique_node>
-par::parser::handle_assignment(lex::token_type ttype,
+par::parser::handle_assignment(const position &pos,
+                               lex::token_type ttype,
                                cpu_register    reg,
                                ustring         name)
 {
     unique_node target{};
     if (cpu_register::invalid == reg)
     {
-        RETURN_IF_ERROR(target, handle_object(ttype, name));
+        RETURN_IF_ERROR(target, handle_object(pos, ttype, name));
     }
     else
     {
-        RETURN_IF_ERROR(target, handle_register(reg));
+        RETURN_IF_ERROR(target, handle_register(pos, reg));
     }
 
+    auto       pos_op = track();
     lex::token token{};
 
     RETURN_IF_ERROR(token, _lexer.get_token());
@@ -227,12 +236,14 @@ par::parser::handle_assignment(lex::token_type ttype,
     case lex::token_type::minus:
         // Boolean disable
         return std::make_unique<assignment_node>(
-            std::move(target), std::make_unique<number_node>(0));
+            pos_op, std::move(target),
+            std::make_unique<number_node>(pos_op, 0));
 
     case lex::token_type::plus:
         // Boolean enable
         return std::make_unique<assignment_node>(
-            std::move(target), std::make_unique<number_node>(1));
+            pos_op, std::move(target),
+            std::make_unique<number_node>(pos_op, 1));
 
     case lex::token_type::assign:
         // A regular assignment
@@ -243,15 +254,18 @@ par::parser::handle_assignment(lex::token_type ttype,
                           "assignment");
     }
 
+    auto        pos_val = track();
     unique_node source{};
-    RETURN_IF_ERROR(source, handle_value());
+    RETURN_IF_ERROR(source, handle_value(pos_val));
 
-    return std::make_unique<assignment_node>(std::move(target),
+    return std::make_unique<assignment_node>(pos, std::move(target),
                                              std::move(source));
 }
 
 result<par::unique_node>
-par::parser::handle_call(const ustring &callee, bool enclosed)
+par::parser::handle_call(const position &pos,
+                         const ustring  &callee,
+                         bool            enclosed)
 {
     node_list  arguments{};
     bool       bare{true};
@@ -260,7 +274,8 @@ par::parser::handle_call(const ustring &callee, bool enclosed)
 
     while (more)
     {
-        auto result = handle_value();
+        auto pos_arg = track();
+        auto result = handle_value(pos_arg);
         if (!result)
         {
             auto err = std::move(result.error());
@@ -299,7 +314,8 @@ par::parser::handle_call(const ustring &callee, bool enclosed)
 
                     ustring str{};
                     str.append(character);
-                    arguments.push_back(std::make_unique<string_node>(str));
+                    arguments.push_back(
+                        std::make_unique<string_node>(pos_arg, str));
                     break;
                 }
             }
@@ -341,7 +357,8 @@ par::parser::handle_call(const ustring &callee, bool enclosed)
                 str.append(')');
 
                 enclosed = false;
-                arguments.push_back(std::make_unique<string_node>(str));
+                arguments.push_back(
+                    std::make_unique<string_node>(pos_arg, str));
                 continue;
             }
 
@@ -359,7 +376,8 @@ par::parser::handle_call(const ustring &callee, bool enclosed)
                 str.append(token.get_text());
 
                 enclosed = false;
-                arguments.push_back(std::make_unique<string_node>(str));
+                arguments.push_back(
+                    std::make_unique<string_node>(pos_arg, str));
                 continue;
             }
 
@@ -381,7 +399,8 @@ par::parser::handle_call(const ustring &callee, bool enclosed)
                 ustring str{buff};
                 str.append(token.get_text());
 
-                arguments.push_back(std::make_unique<string_node>(str));
+                arguments.push_back(
+                    std::make_unique<string_node>(pos_arg, str));
                 continue;
             }
 
@@ -398,11 +417,13 @@ par::parser::handle_call(const ustring &callee, bool enclosed)
         bare = false;
     }
 
-    return std::make_unique<call_node>(callee, std::move(arguments), bare);
+    return std::make_unique<call_node>(pos, callee, std::move(arguments), bare);
 }
 
 result<par::unique_node>
-par::parser::handle_condition(lex::token_type ttype, const lex::token &head)
+par::parser::handle_condition(const position   &pos,
+                              lex::token_type   ttype,
+                              const lex::token &head)
 {
     condition cond{};
     switch (ttype)
@@ -434,12 +455,13 @@ par::parser::handle_condition(lex::token_type ttype, const lex::token &head)
 
     unique_node action{};
     RETURN_IF_ERROR(action, handle(head));
-    return std::make_unique<condition_node>(cond, std::move(action));
+    return std::make_unique<condition_node>(pos, cond, std::move(action));
 }
 
 result<par::unique_node>
-par::parser::handle_declaration(bool is_const)
+par::parser::handle_declaration(const position &pos, bool is_const)
 {
+    auto       pos_obj = track();
     lex::token token{};
     RETURN_IF_ERROR(token, _lexer.get_token());
 
@@ -447,18 +469,18 @@ par::parser::handle_declaration(bool is_const)
 
     if (is_const)
     {
-        RETURN_IF_ERROR(object, handle_assignment(token.get_type()));
+        RETURN_IF_ERROR(object, handle_assignment(pos_obj, token.get_type()));
     }
     else
     {
-        RETURN_IF_ERROR(object, handle_object(token.get_type()));
+        RETURN_IF_ERROR(object, handle_object(pos_obj, token.get_type()));
     }
 
-    return std::make_unique<declaration_node>(std::move(object), is_const);
+    return std::make_unique<declaration_node>(pos, std::move(object), is_const);
 }
 
 result<par::unique_node>
-par::parser::handle_directive(const ustring &directive)
+par::parser::handle_directive(const position &pos, const ustring &directive)
 {
     auto name_end =
         std::find_if(directive.begin(), directive.end(), text::isspace);
@@ -479,7 +501,7 @@ par::parser::handle_directive(const ustring &directive)
                 return make_error(error_code::path_expected);
             }
 
-            return std::make_unique<include_node>(path_begin.get());
+            return std::make_unique<include_node>(pos, path_begin.get());
         }
 
         if (text::pl_streqi("WstawBin", name))
@@ -492,7 +514,7 @@ par::parser::handle_directive(const ustring &directive)
                 return make_error(error_code::path_expected);
             }
 
-            return std::make_unique<include_node>(path_begin.get(), true);
+            return std::make_unique<include_node>(pos, path_begin.get(), true);
         }
     }
 
@@ -533,11 +555,11 @@ par::parser::handle_directive(const ustring &directive)
     }
     bytes.push_back(static_cast<uint8_t>(number));
 
-    return std::make_unique<emit_node>(std::move(bytes));
+    return std::make_unique<emit_node>(pos, std::move(bytes));
 }
 
 result<par::unique_node>
-par::parser::handle_end()
+par::parser::handle_end(const position &pos)
 {
     lex::token token{};
     RETURN_IF_ERROR(token, _lexer.get_token());
@@ -556,11 +578,11 @@ par::parser::handle_end()
 
     // SAVER.INC:45 - KONIEC()
     case lex::token_type::lbracket:
-        return handle_call("Koniec", true);
+        return handle_call(pos, "Koniec", true);
 
     case lex::token_type::eof:
     case lex::token_type::line_break:
-        return std::make_unique<end_node>();
+        return std::make_unique<end_node>(pos);
 
     default:
         return make_error(error_code::unexpected_token, token.get_type(),
@@ -581,12 +603,13 @@ par::parser::handle_end()
                           "end");
     }
 
-    return std::make_unique<end_node>(std::move(name));
+    return std::make_unique<end_node>(pos, std::move(name));
 }
 
 result<par::unique_node>
-par::parser::handle_jump()
+par::parser::handle_jump(const position &pos)
 {
+    auto       pos_colon = track();
     lex::token token{};
     RETURN_IF_ERROR(token, _lexer.get_token());
     if (lex::token_type::colon != token.get_type())
@@ -596,12 +619,12 @@ par::parser::handle_jump()
     }
 
     unique_node target{};
-    RETURN_IF_ERROR(target, handle_label());
-    return std::make_unique<jump_node>(std::move(target));
+    RETURN_IF_ERROR(target, handle_label(pos_colon));
+    return std::make_unique<jump_node>(pos, std::move(target));
 }
 
 result<par::unique_node>
-par::parser::handle_label()
+par::parser::handle_label(const position &pos)
 {
     lex::token token{};
     RETURN_IF_ERROR(token, _lexer.get_token());
@@ -612,17 +635,19 @@ par::parser::handle_label()
                           "label");
     }
 
-    return std::make_unique<label_node>(std::move(token.get_text()));
+    return std::make_unique<label_node>(pos, std::move(token.get_text()));
 }
 
 result<par::unique_node>
-par::parser::handle_number(int number)
+par::parser::handle_number(const position &pos, int number)
 {
-    return std::make_unique<number_node>(number);
+    return std::make_unique<number_node>(pos, number);
 }
 
 result<par::unique_node>
-par::parser::handle_object(lex::token_type ttype, ustring name)
+par::parser::handle_object(const position &pos,
+                           lex::token_type ttype,
+                           ustring         name)
 {
     object_type type{};
     switch (ttype)
@@ -645,7 +670,7 @@ par::parser::handle_object(lex::token_type ttype, ustring name)
 
     if (!name.empty())
     {
-        return std::make_unique<object_node>(std::move(name), type);
+        return std::make_unique<object_node>(pos, std::move(name), type);
     }
 
     lex::token token{};
@@ -673,17 +698,18 @@ par::parser::handle_object(lex::token_type ttype, ustring name)
 
                 str.append(token.get_text());
             }
-            return std::make_unique<string_node>(std::move(str));
+            return std::make_unique<string_node>(pos, std::move(str));
         }
 
         return make_error(error_code::name_expected, ttype, token.get_type());
     }
 
-    return std::make_unique<object_node>(std::move(token.get_text()), type);
+    return std::make_unique<object_node>(pos, std::move(token.get_text()),
+                                         type);
 }
 
 result<par::unique_node>
-par::parser::handle_operation(lex::token_type ttype)
+par::parser::handle_operation(const position &pos, lex::token_type ttype)
 {
     operation op{};
     switch (ttype)
@@ -701,17 +727,19 @@ par::parser::handle_operation(lex::token_type ttype)
         break;
     }
 
+    auto        pos_left = track();
     unique_node left{};
-    RETURN_IF_ERROR(left, handle_value());
+    RETURN_IF_ERROR(left, handle_value(pos_left));
 
+    auto       pos_right = track();
     lex::token token{};
     RETURN_IF_ERROR(token, _lexer.get_token());
     switch (token.get_type())
     {
     case lex::token_type::comma: {
         unique_node right{};
-        RETURN_IF_ERROR(right, handle_value());
-        return std::make_unique<operation_node>(op, std::move(left),
+        RETURN_IF_ERROR(right, handle_value(pos_right));
+        return std::make_unique<operation_node>(pos, op, std::move(left),
                                                 std::move(right));
     }
 
@@ -720,7 +748,8 @@ par::parser::handle_operation(lex::token_type ttype)
         if ((operation::subtract == op) || (operation::add == op))
         {
             return std::make_unique<operation_node>(
-                op, std::move(left), std::make_unique<number_node>(1));
+                pos, op, std::move(left),
+                std::make_unique<number_node>(pos_right, 1));
         }
         // Pass through
     default:
@@ -730,7 +759,7 @@ par::parser::handle_operation(lex::token_type ttype)
 }
 
 result<par::unique_node>
-par::parser::handle_procedure()
+par::parser::handle_procedure(const position &pos)
 {
     lex::token token{};
     RETURN_IF_ERROR(token, _lexer.get_token());
@@ -786,21 +815,21 @@ par::parser::handle_procedure()
         body.push_back(std::move(node));
     }
 
-    return std::make_unique<procedure_node>(name, std::move(body));
+    return std::make_unique<procedure_node>(pos, name, std::move(body));
 }
 
 result<par::unique_node>
-par::parser::handle_register(cpu_register reg)
+par::parser::handle_register(const position &pos, cpu_register reg)
 {
-    return std::make_unique<register_node>(reg);
+    return std::make_unique<register_node>(pos, reg);
 }
 
 result<par::unique_node>
-par::parser::handle_string(const ustring &str, int spaces)
+par::parser::handle_string(const position &pos, const ustring &str, int spaces)
 {
     if (!spaces)
     {
-        return std::make_unique<string_node>(str);
+        return std::make_unique<string_node>(pos, str);
     }
 
     ustring padded_str{};
@@ -809,19 +838,20 @@ par::parser::handle_string(const ustring &str, int spaces)
         padded_str.append(' ');
     }
     padded_str.append(str);
-    return std::make_unique<string_node>(padded_str);
+    return std::make_unique<string_node>(pos, padded_str);
 }
 
 result<par::unique_node>
-par::parser::handle_subscript()
+par::parser::handle_subscript(const position &pos)
 {
+    auto        pos_val = track();
     unique_node value{};
-    RETURN_IF_ERROR(value, handle_value());
-    return std::make_unique<subscript_node>(std::move(value));
+    RETURN_IF_ERROR(value, handle_value(pos_val));
+    return std::make_unique<subscript_node>(pos, std::move(value));
 }
 
 result<par::unique_node>
-par::parser::handle_value()
+par::parser::handle_value(const position &pos)
 {
     lex::token  token{};
     unique_node value{};
@@ -833,32 +863,32 @@ par::parser::handle_value()
         auto reg = _to_cpu_register(token.get_text());
         if (cpu_register::invalid != reg)
         {
-            RETURN_IF_ERROR(value, handle_register(reg));
+            RETURN_IF_ERROR(value, handle_register(pos, reg));
             break;
         }
         // Pass through
     }
     case lex::token_type::literal_str: {
         auto spaces = _lexer.get_spaces();
-        RETURN_IF_ERROR(value, handle_string(token.get_text(),
+        RETURN_IF_ERROR(value, handle_string(pos, token.get_text(),
                                              (spaces < 1) ? 0 : (spaces - 1)));
         break;
     }
 
     case lex::token_type::literal_int: {
-        RETURN_IF_ERROR(value, handle_number(token.get_number()));
+        RETURN_IF_ERROR(value, handle_number(pos, token.get_number()));
         break;
     }
 
     case lex::token_type::ampersand:
     case lex::token_type::byref:
     case lex::token_type::byval: {
-        RETURN_IF_ERROR(value, handle_object(token.get_type()));
+        RETURN_IF_ERROR(value, handle_object(pos, token.get_type()));
         break;
     }
 
     case lex::token_type::subscript:
-        RETURN_IF_ERROR(value, handle_subscript());
+        RETURN_IF_ERROR(value, handle_subscript(pos));
         break;
 
     case lex::token_type::eof:
