@@ -55,56 +55,65 @@ class parser
     };
 
   private:
+    position
+    track();
+
     result<unique_node>
-    handle_assignment(lex::token_type ttype,
+    handle_assignment(const position &pos,
+                      lex::token_type ttype,
                       cpu_register    reg = cpu_register::invalid,
                       ustring         name = ustring{});
 
     result<unique_node>
-    handle_call(const ustring &callee, bool enclosed = false);
+    handle_call(const position &pos,
+                const ustring  &callee,
+                bool            enclosed = false);
 
     result<unique_node>
-    handle_condition(lex::token_type   ttype,
+    handle_condition(const position   &pos,
+                     lex::token_type   ttype,
                      const lex::token &head = lex::token{});
 
     result<unique_node>
-    handle_declaration(bool is_const);
+    handle_declaration(const position &pos, bool is_const);
 
     result<unique_node>
-    handle_directive(const ustring &directive);
+    handle_directive(const position &pos, const ustring &directive);
 
     result<unique_node>
-    handle_end();
+    handle_end(const position &pos);
 
     result<unique_node>
-    handle_jump();
+    handle_jump(const position &pos);
 
     result<unique_node>
-    handle_label();
+    handle_label(const position &pos);
 
     result<unique_node>
-    handle_number(int number);
+    handle_number(const position &pos, int number);
 
     result<unique_node>
-    handle_object(lex::token_type ttype, ustring name = ustring{});
+    handle_object(const position &pos,
+                  lex::token_type ttype,
+                  ustring         name = ustring{});
 
     result<unique_node>
-    handle_operation(lex::token_type ttype);
+    handle_operation(const position &pos, lex::token_type ttype);
 
     result<unique_node>
-    handle_procedure();
+    handle_procedure(const position &pos);
 
     result<unique_node>
-    handle_register(cpu_register reg);
+    handle_register(const position &pos, cpu_register reg);
 
     result<unique_node>
-    handle_string(const ustring &str, int spaces = 0);
+    handle_string(const position &pos, const ustring &str, int spaces = 0);
 
     result<unique_node>
-    handle_subscript();
+    handle_subscript(const position &pos);
 
     result<unique_node>
-    handle_value();
+    handle_value(const position &pos);
 
     tl::unexpected<error>
     make_error(error_code code)
