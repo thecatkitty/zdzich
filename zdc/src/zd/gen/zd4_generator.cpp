@@ -23,6 +23,8 @@ using namespace zd::par;
 bool
 zd4_generator::process(const par::assignment_node &node)
 {
+    set_position(node);
+
     if (node.target->is<object_node>())
     {
         auto  target = node.target->as<object_node>();
@@ -111,6 +113,8 @@ zd4_generator::process(const par::assignment_node &node)
 bool
 zd4_generator::process(const par::call_node &node)
 {
+    set_position(node);
+
     zd4_builtins builtins{*this};
     if (builtins.dispatch(node.callee, node.arguments))
     {
@@ -129,6 +133,8 @@ zd4_generator::process(const par::call_node &node)
 bool
 zd4_generator::process(const par::condition_node &node)
 {
+    set_position(node);
+
     jump_node *jump;
     CAST_NODE_OR_FAIL(jump, node.action);
 
@@ -157,6 +163,8 @@ zd4_generator::process(const par::condition_node &node)
 bool
 zd4_generator::process(const par::declaration_node &node)
 {
+    set_position(node);
+
     object_node     *target{nullptr};
     assignment_node *assignment{nullptr};
 
@@ -279,6 +287,8 @@ zd4_generator::process(const par::declaration_node &node)
 bool
 zd4_generator::process(const par::end_node &node)
 {
+    set_position(node);
+
     if (node.name.empty())
     {
         _as.mov(cpu_register::ah, 0x4C);
@@ -290,8 +300,10 @@ zd4_generator::process(const par::end_node &node)
 }
 
 bool
-zd::gen::zd4_generator::process(const par::emit_node &node)
+zd4_generator::process(const par::emit_node &node)
 {
+    set_position(node);
+
     _curr_code->emit(node.bytes.data(), node.bytes.size());
     return true;
 }
@@ -299,6 +311,8 @@ zd::gen::zd4_generator::process(const par::emit_node &node)
 bool
 zd4_generator::process(const par::jump_node &node)
 {
+    set_position(node);
+
     label_node *label;
     CAST_NODE_OR_FAIL(label, node.target);
 
@@ -311,6 +325,8 @@ zd4_generator::process(const par::jump_node &node)
 bool
 zd4_generator::process(const par::label_node &node)
 {
+    set_position(node);
+
     return set_symbol(node.name, symbol_type::label,
                       static_cast<zd4_known_section>(
                           std::distance(_codes.begin(), _curr_code)),
@@ -320,6 +336,8 @@ zd4_generator::process(const par::label_node &node)
 bool
 zd4_generator::process(const par::operation_node &node)
 {
+    set_position(node);
+
     switch (node.op)
     {
     case operation::add: {
@@ -416,6 +434,8 @@ zd4_generator::process(const par::operation_node &node)
 bool
 zd4_generator::process(const par::procedure_node &node)
 {
+    set_position(node);
+
     nesting_guard nested{*this};
 
     if (!set_symbol(node.name, symbol_type::procedure,

@@ -230,7 +230,13 @@ action_generator(zd::lex::lexer     &lexer,
 
         if (!node->generate(generator))
         {
-            std::fputs("generator error!\n", stderr);
+            // Text generator doesn't err anyways
+            auto zd4 = static_cast<zd::gen::zd4_generator *>(generator);
+            std::fprintf(stderr, "%s:%u:%u: generator error!\n",
+                         zd4->get_path().empty() ? "input"
+                                                 : zd4->get_path().data(),
+                         zd4->get_line(), zd4->get_column());
+            return 1;
         }
 
         if (separator)
