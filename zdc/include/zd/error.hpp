@@ -197,6 +197,7 @@ enum class error_origin : uint8_t
     stream = 1,
     lexer = 2,
     parser = 3,
+    generator = 4,
 };
 
 template <typename T> using result = tl::expected<T, error>;

@@ -28,14 +28,40 @@ class zd4_generator : public generator, public zd4_reference_resolver
 
     x86_assembler _as;
 
+    ustring  _path;
+    unsigned _line;
+    unsigned _column;
+
   public:
     zd4_generator()
         : _codes{}, _data{zd4_section_data}, _udat{zd4_section_udat, false},
-          _symbols{}, _symbol_num{0}, _as{_data}
+          _symbols{}, _symbol_num{0}, _as{_data}, _path{}, _line{1}, _column{1}
     {
         _codes.emplace_back(zd4_section_code);
         _curr_code = _codes.begin();
         _as.bind_code(*_curr_code);
+    }
+
+    static const auto error_origin_tag = error_origin::generator;
+
+    using error_code = generator_error;
+
+    const ustring &
+    get_path() const
+    {
+        return _path;
+    }
+
+    unsigned
+    get_line() const
+    {
+        return _line;
+    }
+
+    unsigned
+    get_column() const
+    {
+        return _column;
     }
 
     bool
@@ -118,6 +144,9 @@ class zd4_generator : public generator, public zd4_reference_resolver
   private:
     static ustring
     get_cname(const ustring &name);
+
+    void
+    set_position(const par::node &node);
 
     bool
     set_symbol(const ustring    &name,

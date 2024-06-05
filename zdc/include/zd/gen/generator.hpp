@@ -82,6 +82,11 @@ struct generator
     process(const par::subscript_node &node) = 0;
 };
 
+enum class generator_error
+{
+    error, // TODO: define error codes
+};
+
 } // namespace gen
 
 } // namespace zd
