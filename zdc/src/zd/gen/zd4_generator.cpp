@@ -500,6 +500,14 @@ zd4_generator::get_cname(const ustring &name)
     return cname;
 }
 
+void
+zd4_generator::set_position(const par::node &node)
+{
+    _path = *node.code_path;
+    _line = node.code_line;
+    _column = node.code_column;
+}
+
 symbol &
 zd4_generator::get_symbol(const ustring &name)
 {
