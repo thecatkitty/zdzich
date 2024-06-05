@@ -85,6 +85,7 @@ class zd4_generator : public generator, public zd4_reference_resolver
     bool
     process(const par::include_node &node) override
     {
+        assert(false && "include node passed to the generator");
         return false;
     }
 
@@ -97,12 +98,14 @@ class zd4_generator : public generator, public zd4_reference_resolver
     bool
     process(const par::number_node &node) override
     {
+        set_position(node);
         return false;
     }
 
     bool
     process(const par::object_node &node) override
     {
+        set_position(node);
         return false;
     }
 
@@ -115,18 +118,21 @@ class zd4_generator : public generator, public zd4_reference_resolver
     bool
     process(const par::register_node &node) override
     {
+        set_position(node);
         return false;
     }
 
     bool
     process(const par::string_node &node) override
     {
+        set_position(node);
         return false;
     }
 
     bool
     process(const par::subscript_node &node) override
     {
+        set_position(node);
         return false;
     }
 
