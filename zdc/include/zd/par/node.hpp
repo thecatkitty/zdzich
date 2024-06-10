@@ -382,4 +382,7 @@ struct subscript_node : public node
 
 } // namespace par
 
+const char *
+to_cstr(par::operation op);
+
 } // namespace zd
