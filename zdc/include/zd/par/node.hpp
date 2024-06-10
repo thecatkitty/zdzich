@@ -114,14 +114,14 @@ struct node
 
     template <typename T>
     inline bool
-    is()
+    is() const
     {
 #ifdef __ia16__
         T specimen{};
-        return *reinterpret_cast<void ***>(&specimen) ==
-               *reinterpret_cast<void ***>(this);
+        return *reinterpret_cast<void **const *>(&specimen) ==
+               *reinterpret_cast<void **const *>(this);
 #else
-        return !!dynamic_cast<T *>(this);
+        return !!dynamic_cast<const T *>(this);
 #endif
     }
 
