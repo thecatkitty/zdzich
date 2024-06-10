@@ -14,14 +14,14 @@ using namespace zd::par;
 #define ASM(x, n)                                                              \
     if (!_as.x)                                                                \
     {                                                                          \
-        return make_error((n));                                                \
+        return make_assembler_error((n));                                      \
     }
 
 #define CAST_NODE_OR_FAIL(out, node_ptr)                                       \
     {                                                                          \
         if (!(node_ptr)->is<std::remove_pointer<decltype(out)>::type>())       \
         {                                                                      \
-            return make_error(*(node_ptr));                                    \
+            return make_unexpected_node(*(node_ptr));                          \
         };                                                                     \
         out = (node_ptr)->as<std::remove_pointer<decltype(out)>::type>();      \
     }
@@ -61,7 +61,7 @@ zd4_generator::process(const par::assignment_node &node)
             return {};
         }
 
-        return make_error(node);
+        return make_invalid_assignment(node);
     }
 
     if (node.target->is<register_node>())
@@ -116,7 +116,7 @@ zd4_generator::process(const par::assignment_node &node)
             return {};
         }
 
-        return make_error(node);
+        return make_invalid_assignment(node);
     }
 
     assert(false && "unhandled assignment target");
@@ -138,7 +138,7 @@ zd4_generator::process(const par::call_node &node)
         return {};
     }
 
-    return make_error(node);
+    return make_unexpected_arguments(node);
 }
 
 error
@@ -193,7 +193,7 @@ zd4_generator::process(const par::declaration_node &node)
 
         if (!node.is_const)
         {
-            return make_error(*assignment);
+            return make_nonconst_assignment(*assignment);
         }
 
         section = zd4_section_data;
@@ -249,7 +249,7 @@ zd4_generator::process(const par::declaration_node &node)
         CAST_NODE_OR_FAIL(str, assignment->source);
         if ((UINT8_MAX - 4) < str->value.size())
         {
-            return make_error(*str);
+            return make_string_too_long(*str);
         }
 
         std::vector<char> data{};
@@ -284,7 +284,7 @@ zd4_generator::process(const par::declaration_node &node)
     // Define a new symbol
     if (!set_symbol(target->name, type, section, address))
     {
-        return make_error(*target);
+        return make_symbol_redefinition(*target);
     }
 
     // Add string variable initialization
@@ -306,7 +306,7 @@ zd4_generator::process(const par::end_node &node)
         return {};
     }
 
-    return make_error(node);
+    return make_unexpected_arguments(node);
 }
 
 error
@@ -336,7 +336,7 @@ zd4_generator::process(const par::label_node &node)
                         std::distance(_codes.begin(), _curr_code)),
                     _curr_code->size()))
     {
-        return make_error(node);
+        return make_symbol_redefinition(node);
     }
 
     return {};
@@ -377,7 +377,7 @@ zd4_generator::process(const par::operation_node &node)
             return {};
         }
 
-        return make_error(node);
+        return make_invalid_operands(node);
     }
 
     case operation::compare: {
@@ -410,7 +410,7 @@ zd4_generator::process(const par::operation_node &node)
             return {};
         }
 
-        return make_error(node);
+        return make_invalid_operands(node);
     }
 
     case operation::subtract: {
@@ -419,7 +419,7 @@ zd4_generator::process(const par::operation_node &node)
             auto left_obj = node.left->as<object_node>();
             if (object_type::word != left_obj->type)
             {
-                return make_error(node);
+                return make_invalid_operands(node);
             }
 
             auto &left_sym = get_symbol(left_obj->name);
@@ -434,7 +434,7 @@ zd4_generator::process(const par::operation_node &node)
             return {};
         }
 
-        return make_error(node);
+        return make_invalid_operands(node);
     }
     }
 
@@ -452,7 +452,8 @@ zd4_generator::process(const par::procedure_node &node)
                     _curr_code->size()))
     {
         position pos{*node.code_path, node.code_line, node.code_column};
-        return make_error(node);
+        return make_symbol_redefinition(
+            object_node{pos, node.name, object_type::procedure});
     }
 
     for (auto &child : node.body)
@@ -581,8 +582,59 @@ zd4_generator::set_symbol(const ustring    &name,
 }
 
 error
-zd4_generator::make_error(const par::node &node)
+zd4_generator::make_unexpected_node(const par::node &node)
 {
     set_position(node);
-    return error{*this, error_code::error};
+    return error{*this, error_code::unexpected_node};
+}
+
+error
+zd4_generator::make_invalid_operands(const par::operation_node &node)
+{
+    set_position(node);
+    return error{*this, error_code::invalid_operands, to_cstr(node.op)};
+}
+
+error
+zd4_generator::make_invalid_assignment(const par::assignment_node &node)
+{
+    set_position(node);
+    return error{*this, error_code::invalid_assignment};
+}
+
+error
+zd4_generator::make_nonconst_assignment(const par::assignment_node &node)
+{
+    set_position(node);
+    return error{*this, error_code::nonconst_assignment,
+                 node.target->as<object_node>()->name.data()};
+}
+
+error
+zd4_generator::make_unexpected_arguments(const par::node &node)
+{
+    set_position(node);
+    return error{*this, error_code::unexpected_arguments,
+                 node.is<call_node>() ? "procedure" : "command"};
+}
+
+error
+zd4_generator::make_symbol_redefinition(const par::node &node)
+{
+    set_position(node);
+    return error{*this, error_code::symbol_redefinition};
+}
+
+error
+zd4_generator::make_string_too_long(const par::string_node &node)
+{
+    set_position(node);
+    return error{*this, error_code::string_too_long};
+}
+
+error
+zd4_generator::make_assembler_error(const par::node &node)
+{
+    set_position(node);
+    return error{*this, error_code::assembler_error};
 }

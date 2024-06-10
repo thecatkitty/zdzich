@@ -98,13 +98,13 @@ class zd4_generator : public generator, public zd4_reference_resolver
     error
     process(const par::number_node &node) override
     {
-        return make_error(node);
+        return make_unexpected_node(node);
     }
 
     error
     process(const par::object_node &node) override
     {
-        return make_error(node);
+        return make_unexpected_node(node);
     }
 
     error
@@ -116,19 +116,19 @@ class zd4_generator : public generator, public zd4_reference_resolver
     error
     process(const par::register_node &node) override
     {
-        return make_error(node);
+        return make_unexpected_node(node);
     }
 
     error
     process(const par::string_node &node) override
     {
-        return make_error(node);
+        return make_unexpected_node(node);
     }
 
     error
     process(const par::subscript_node &node) override
     {
-        return make_error(node);
+        return make_unexpected_node(node);
     }
 
     void
@@ -156,7 +156,28 @@ class zd4_generator : public generator, public zd4_reference_resolver
                unsigned          address);
 
     error
-    make_error(const par::node &node);
+    make_unexpected_node(const par::node &node);
+
+    error
+    make_invalid_operands(const par::operation_node &node);
+
+    error
+    make_invalid_assignment(const par::assignment_node &node);
+
+    error
+    make_nonconst_assignment(const par::assignment_node &node);
+
+    error
+    make_unexpected_arguments(const par::node &node);
+
+    error
+    make_symbol_redefinition(const par::node &node);
+
+    error
+    make_string_too_long(const par::string_node &node);
+
+    error
+    make_assembler_error(const par::node &node);
 
     class nesting_guard
     {

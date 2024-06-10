@@ -21,6 +21,7 @@ enum class object_type
     text,
     byte,
     word,
+    procedure,
 };
 
 enum class condition
@@ -158,6 +159,10 @@ struct call_node : public node
     const ustring   callee;
     const node_list arguments;
     const bool      is_bare;
+
+    call_node() : node{}, callee{}, arguments{}, is_bare{false}
+    {
+    }
 
     call_node(const position &pos,
               const ustring  &callee_,
