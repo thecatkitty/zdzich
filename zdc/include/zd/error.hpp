@@ -89,6 +89,17 @@ class error
     }
 
   public:
+    error()
+        : _origin{0}, _ordinal{0}, _file{}, _line{0}, _column{0}, _argc{0},
+          _argv{nullptr}
+    {
+    }
+
+    operator bool() const
+    {
+        return (0 == _origin) && (0 == _ordinal);
+    }
+
     template <typename Torigin,
               typename Traits = error_origin_traits<Torigin>,
               typename... Args,
