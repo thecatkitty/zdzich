@@ -85,7 +85,7 @@ struct position
 };
 
 #define IMPLEMENT_GENERATOR_ACCESS                                             \
-    virtual bool generate(gen::generator *generator) override                  \
+    virtual error generate(gen::generator *generator) override                 \
     {                                                                          \
         return generator->process(*this);                                      \
     }
@@ -96,7 +96,7 @@ struct node
     const unsigned code_line;
     const unsigned code_column;
 
-    virtual bool
+    virtual error
     generate(gen::generator *generator) = 0;
 
     virtual ~node() = default;
