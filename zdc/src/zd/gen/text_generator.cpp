@@ -7,7 +7,7 @@ using namespace zd;
 using namespace zd::gen;
 using namespace zd::par;
 
-bool
+error
 text_generator::process(const assignment_node &node)
 {
     std::fputs("<assignment ", _out);
@@ -15,10 +15,10 @@ text_generator::process(const assignment_node &node)
     std::fputc(' ', _out);
     node.source->generate(this);
     std::fputc('>', _out);
-    return true;
+    return {};
 }
 
-bool
+error
 text_generator::process(const call_node &node)
 {
     std::fputs("<call ", _out);
@@ -36,10 +36,10 @@ text_generator::process(const call_node &node)
     }
 
     std::fputc('>', _out);
-    return true;
+    return {};
 }
 
-bool
+error
 text_generator::process(const operation_node &node)
 {
     std::fputs("<operation ", _out);
@@ -63,10 +63,10 @@ text_generator::process(const operation_node &node)
     std::fputc(' ', _out);
     node.right->generate(this);
     std::fputc('>', _out);
-    return true;
+    return {};
 }
 
-bool
+error
 text_generator::process(const condition_node &node)
 {
     std::fputs("<condition ", _out);
@@ -101,10 +101,10 @@ text_generator::process(const condition_node &node)
     node.action->generate(this);
 
     std::fputc('>', _out);
-    return true;
+    return {};
 }
 
-bool
+error
 text_generator::process(const declaration_node &node)
 {
     std::fputs("<declaration ", _out);
@@ -116,9 +116,9 @@ text_generator::process(const declaration_node &node)
 
     node.target->generate(this);
     std::fputc('>', _out);
-    return true;
+    return {};
 }
-bool
+error
 text_generator::process(const emit_node &node)
 {
     std::fputs("<emit", _out);
@@ -129,59 +129,59 @@ text_generator::process(const emit_node &node)
     }
 
     std::fputc('>', _out);
-    return true;
+    return {};
 }
 
-bool
+error
 text_generator::process(const end_node &node)
 {
     if (node.name.empty())
     {
         std::fputs("<end>", _out);
-        return true;
+        return {};
     }
 
     std::fprintf(_out, "<end %s>", node.name.data());
-    return true;
+    return {};
 }
 
-bool
+error
 text_generator::process(const include_node &node)
 {
     if (node.is_binary)
     {
         std::fprintf(_out, "<include binary %s>", node.name.data());
-        return true;
+        return {};
     }
 
     std::fprintf(_out, "<include %s>", node.name.data());
-    return true;
+    return {};
 }
 
-bool
+error
 text_generator::process(const jump_node &node)
 {
     std::fputs("<jump ", _out);
     node.target->generate(this);
     std::fputc('>', _out);
-    return true;
+    return {};
 }
 
-bool
+error
 text_generator::process(const label_node &node)
 {
     std::fprintf(_out, "<label %s>", node.name.data());
-    return true;
+    return {};
 }
 
-bool
+error
 text_generator::process(const number_node &node)
 {
     std::fprintf(_out, "<number %d>", node.value);
-    return true;
+    return {};
 }
 
-bool
+error
 text_generator::process(const object_node &node)
 {
     std::fprintf(_out, "<object %s:", node.name.data());
@@ -202,10 +202,10 @@ text_generator::process(const object_node &node)
     }
 
     std::fputc('>', _out);
-    return true;
+    return {};
 }
 
-bool
+error
 text_generator::process(const procedure_node &node)
 {
     std::fprintf(_out, "<procedure %s", node.name.data());
@@ -217,10 +217,10 @@ text_generator::process(const procedure_node &node)
     }
 
     std::fputc('>', _out);
-    return true;
+    return {};
 }
 
-bool
+error
 text_generator::process(const register_node &node)
 {
     std::fputs("<register ", _out);
@@ -260,21 +260,21 @@ text_generator::process(const register_node &node)
     }
 
     std::fputc('>', _out);
-    return true;
+    return {};
 }
 
-bool
+error
 text_generator::process(const string_node &node)
 {
     std::fprintf(_out, "<string %s>", node.value.data());
-    return true;
+    return {};
 }
 
-bool
+error
 text_generator::process(const subscript_node &node)
 {
     std::fputs("<subscript ", _out);
     node.value->generate(this);
     std::fputc('>', _out);
-    return true;
+    return {};
 }

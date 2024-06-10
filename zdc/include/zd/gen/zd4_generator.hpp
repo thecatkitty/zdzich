@@ -64,76 +64,71 @@ class zd4_generator : public generator, public zd4_reference_resolver
         return _column;
     }
 
-    bool
+    error
     process(const par::assignment_node &node) override;
 
-    bool
+    error
     process(const par::call_node &node) override;
 
-    bool
+    error
     process(const par::condition_node &node) override;
 
-    bool
+    error
     process(const par::declaration_node &node) override;
 
-    bool
+    error
     process(const par::end_node &node) override;
 
-    bool
+    error
     process(const par::emit_node &node) override;
 
-    bool
+    error
     process(const par::include_node &node) override
     {
         assert(false && "include node passed to the generator");
-        return false;
+        return {};
     }
 
-    bool
+    error
     process(const par::jump_node &node) override;
 
-    bool
+    error
     process(const par::label_node &node) override;
 
-    bool
+    error
     process(const par::number_node &node) override
     {
-        set_position(node);
-        return false;
+        return make_error(node);
     }
 
-    bool
+    error
     process(const par::object_node &node) override
     {
-        set_position(node);
-        return false;
+        return make_error(node);
     }
 
-    bool
+    error
     process(const par::operation_node &node) override;
 
-    bool
+    error
     process(const par::procedure_node &node) override;
 
-    bool
+    error
     process(const par::register_node &node) override
     {
-        set_position(node);
-        return false;
+        return make_error(node);
     }
 
-    bool
+    error
     process(const par::string_node &node) override
     {
-        set_position(node);
-        return false;
+        return make_error(node);
     }
 
-    bool
+    error
     process(const par::subscript_node &node) override
     {
-        set_position(node);
-        return false;
+        return make_error(node);
     }
 
     void
@@ -159,6 +154,9 @@ class zd4_generator : public generator, public zd4_reference_resolver
                symbol_type       type,
                zd4_known_section section,
                unsigned          address);
+
+    error
+    make_error(const par::node &node);
 
     class nesting_guard
     {

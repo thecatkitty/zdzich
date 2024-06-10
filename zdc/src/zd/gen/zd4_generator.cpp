@@ -11,20 +11,24 @@ using namespace zd::par;
 
 #define COM_BASE ((uint16_t)0x100)
 
+#define ASM(x, n)                                                              \
+    if (!_as.x)                                                                \
+    {                                                                          \
+        return make_error((n));                                                \
+    }
+
 #define CAST_NODE_OR_FAIL(out, node_ptr)                                       \
     {                                                                          \
         if (!(node_ptr)->is<std::remove_pointer<decltype(out)>::type>())       \
         {                                                                      \
-            return false;                                                      \
+            return make_error(*(node_ptr));                                    \
         };                                                                     \
         out = (node_ptr)->as<std::remove_pointer<decltype(out)>::type>();      \
     }
 
-bool
+error
 zd4_generator::process(const par::assignment_node &node)
 {
-    set_position(node);
-
     if (node.target->is<object_node>())
     {
         auto  target = node.target->as<object_node>();
@@ -32,31 +36,32 @@ zd4_generator::process(const par::assignment_node &node)
 
         if (node.source->is<number_node>())
         {
-            _as.mov(dst, (uint16_t)node.source->as<number_node>()->value);
-            return true;
+            ASM(mov(dst, (uint16_t)node.source->as<number_node>()->value),
+                node);
+            return {};
         }
 
         if (node.source->is<object_node>())
         {
-            _as.push(get_symbol(node.source->as<object_node>()->name));
-            _as.pop(get_symbol(node.target->as<object_node>()->name));
-            return true;
+            ASM(push(get_symbol(node.source->as<object_node>()->name)), node);
+            ASM(pop(get_symbol(node.target->as<object_node>()->name)), node);
+            return {};
         }
 
         if (node.source->is<register_node>())
         {
             auto src_reg = node.source->as<register_node>()->reg;
-            _as.mov(cpu_register::di, dst);
+            ASM(mov(cpu_register::di, dst), node);
             if ((symbol_type::var_byte != dst.type) &&
                 (cpu_register_word != ((unsigned)src_reg & 0xFF00)))
             {
-                _as.mov(mreg{cpu_register::di}, 0);
+                ASM(mov(mreg{cpu_register::di}, 0), node);
             }
-            _as.mov(mreg{cpu_register::di}, src_reg);
-            return true;
+            ASM(mov(mreg{cpu_register::di}, src_reg), node);
+            return {};
         }
 
-        return false;
+        return make_error(node);
     }
 
     if (node.target->is<register_node>())
@@ -73,68 +78,72 @@ zd4_generator::process(const par::assignment_node &node)
             case cpu_register::flag_c: {
                 if (value)
                 {
-                    return _as.stc();
+                    ASM(stc(), node);
+                    return {};
                 }
 
-                return _as.clc();
+                ASM(clc(), node);
+                return {};
             }
 
             case cpu_register::flag_d: {
                 if (value)
                 {
-                    return _as.std();
+                    ASM(std(), node);
+                    return {};
                 }
 
-                return _as.cld();
+                ASM(cld(), node);
+                return {};
             }
 
             case cpu_register::flag_i: {
                 if (value)
                 {
-                    return _as.sti();
+                    ASM(sti(), node);
+                    return {};
                 }
 
-                return _as.cli();
+                ASM(cli(), node);
+                return {};
             }
             }
         }
         else if (node.source->is<number_node>())
         {
-            _as.mov(dst, (uint16_t)node.source->as<number_node>()->value);
-            return true;
+            ASM(mov(dst, (uint16_t)node.source->as<number_node>()->value),
+                node);
+            return {};
         }
 
-        return false;
+        return make_error(node);
     }
 
-    return false;
+    assert(false && "unhandled assignment target");
 }
 
-bool
+error
 zd4_generator::process(const par::call_node &node)
 {
-    set_position(node);
-
     zd4_builtins builtins{*this};
     if (builtins.dispatch(node.callee, node.arguments))
     {
-        return true;
+        return {};
     }
 
     if (node.arguments.empty())
     {
         auto &symbol = get_symbol(node.callee);
-        return _as.call(symbol);
+        ASM(call(symbol), node);
+        return {};
     }
 
-    return false;
+    return make_error(node);
 }
 
-bool
+error
 zd4_generator::process(const par::condition_node &node)
 {
-    set_position(node);
-
     jump_node *jump;
     CAST_NODE_OR_FAIL(jump, node.action);
 
@@ -145,26 +154,28 @@ zd4_generator::process(const par::condition_node &node)
     switch (node.cond)
     {
     case condition::equal: {
-        return _as.je(symbol);
+        ASM(je(symbol), node);
     }
+        return {};
 
     case condition::less_than: {
-        return _as.jb(symbol);
+        ASM(jb(symbol), node);
+        return {};
     }
 
     case condition::nonequal: {
-        return _as.jne(symbol);
+        ASM(jne(symbol), node);
+        return {};
     }
     }
 
-    return false;
+    assert(false && "unhandled condition");
+    return {};
 }
 
-bool
+error
 zd4_generator::process(const par::declaration_node &node)
 {
-    set_position(node);
-
     object_node     *target{nullptr};
     assignment_node *assignment{nullptr};
 
@@ -177,13 +188,14 @@ zd4_generator::process(const par::declaration_node &node)
     }
     else
     {
-        if (!node.is_const)
-        {
-            return false;
-        }
-
         CAST_NODE_OR_FAIL(assignment, node.target);
         CAST_NODE_OR_FAIL(target, assignment->target);
+
+        if (!node.is_const)
+        {
+            return make_error(*assignment);
+        }
+
         section = zd4_section_data;
     }
 
@@ -204,7 +216,7 @@ zd4_generator::process(const par::declaration_node &node)
         break;
 
     default:
-        return false;
+        assert(false && "unhandled object type");
     }
 
     // Place data in proper sections
@@ -237,7 +249,7 @@ zd4_generator::process(const par::declaration_node &node)
         CAST_NODE_OR_FAIL(str, assignment->source);
         if ((UINT8_MAX - 4) < str->value.size())
         {
-            return false;
+            return make_error(*str);
         }
 
         std::vector<char> data{};
@@ -272,72 +284,67 @@ zd4_generator::process(const par::declaration_node &node)
     // Define a new symbol
     if (!set_symbol(target->name, type, section, address))
     {
-        return false;
+        return make_error(*target);
     }
 
     // Add string variable initialization
     if (!node.is_const && (symbol_type::var_text == type))
     {
-        _as.mov(get_symbol(target->name), (uint16_t)0x00FD);
+        ASM(mov(get_symbol(target->name), (uint16_t)0x00FD), node);
     }
 
-    return true;
+    return {};
 }
 
-bool
+error
 zd4_generator::process(const par::end_node &node)
 {
-    set_position(node);
-
     if (node.name.empty())
     {
-        _as.mov(cpu_register::ah, 0x4C);
-        _as.intr(0x21);
-        return true;
+        ASM(mov(cpu_register::ah, 0x4C), node);
+        ASM(intr(0x21), node);
+        return {};
     }
 
-    return false;
+    return make_error(node);
 }
 
-bool
+error
 zd4_generator::process(const par::emit_node &node)
 {
-    set_position(node);
-
     _curr_code->emit(node.bytes.data(), node.bytes.size());
-    return true;
+    return {};
 }
 
-bool
+error
 zd4_generator::process(const par::jump_node &node)
 {
-    set_position(node);
-
     label_node *label;
     CAST_NODE_OR_FAIL(label, node.target);
 
     auto &symbol = get_symbol(label->name);
-    _as.jmp(symbol);
+    ASM(jmp(symbol), node);
 
-    return true;
+    return {};
 }
 
-bool
+error
 zd4_generator::process(const par::label_node &node)
 {
-    set_position(node);
+    if (!set_symbol(node.name, symbol_type::label,
+                    static_cast<zd4_known_section>(
+                        std::distance(_codes.begin(), _curr_code)),
+                    _curr_code->size()))
+    {
+        return make_error(node);
+    }
 
-    return set_symbol(node.name, symbol_type::label,
-                      static_cast<zd4_known_section>(
-                          std::distance(_codes.begin(), _curr_code)),
-                      _curr_code->size());
+    return {};
 }
 
-bool
+error
 zd4_generator::process(const par::operation_node &node)
 {
-    set_position(node);
-
     switch (node.op)
     {
     case operation::add: {
@@ -347,12 +354,12 @@ zd4_generator::process(const par::operation_node &node)
             auto right_num = node.right->as<number_node>();
             if (1 == right_num->value)
             {
-                _as.inc(left_reg->reg);
-                return true;
+                ASM(inc(left_reg->reg), node);
+                return {};
             }
 
-            _as.add(left_reg->reg, right_num->value);
-            return true;
+            ASM(add(left_reg->reg, right_num->value), node);
+            return {};
         }
 
         if (node.left->is<object_node>() && node.right->is<number_node>())
@@ -362,30 +369,33 @@ zd4_generator::process(const par::operation_node &node)
             auto  right_num = node.right->as<number_node>();
             if (1 == right_num->value)
             {
-                _as.inc(symbol_ref{left_sym});
-                return true;
+                ASM(inc(symbol_ref{left_sym}), node);
+                return {};
             }
 
-            _as.add(symbol_ref{left_sym}, right_num->value);
-            return true;
+            ASM(add(symbol_ref{left_sym}, right_num->value), node);
+            return {};
         }
 
-        return false;
+        return make_error(node);
     }
 
     case operation::compare: {
         if (node.left->is<register_node>() && node.right->is<number_node>())
         {
-            return _as.cmp(node.left->as<register_node>()->reg,
-                           node.right->as<number_node>()->value);
+            ASM(cmp(node.left->as<register_node>()->reg,
+                    node.right->as<number_node>()->value),
+                node);
+            return {};
         }
 
         if (node.left->is<object_node>() && node.right->is<number_node>())
         {
             auto  left_obj = node.left->as<object_node>();
             auto &left_sym = get_symbol(left_obj->name);
-            _as.cmp(left_sym, (uint16_t)node.right->as<number_node>()->value);
-            return true;
+            ASM(cmp(left_sym, (uint16_t)node.right->as<number_node>()->value),
+                node);
+            return {};
         }
 
         if (node.left->is<object_node>() && node.right->is<object_node>())
@@ -394,13 +404,13 @@ zd4_generator::process(const par::operation_node &node)
             auto  right_obj = node.left->as<object_node>();
             auto &left_sym = get_symbol(left_obj->name);
             auto &right_sym = get_symbol(right_obj->name);
-            _as.mov(cpu_register::bx, left_sym);
-            _as.mov(cpu_register::bx, mreg{cpu_register::bx});
-            _as.cmp(cpu_register::bx, right_sym);
-            return true;
+            ASM(mov(cpu_register::bx, left_sym), node);
+            ASM(mov(cpu_register::bx, mreg{cpu_register::bx}), node);
+            ASM(cmp(cpu_register::bx, right_sym), node);
+            return {};
         }
 
-        return false;
+        return make_error(node);
     }
 
     case operation::subtract: {
@@ -409,51 +419,53 @@ zd4_generator::process(const par::operation_node &node)
             auto left_obj = node.left->as<object_node>();
             if (object_type::word != left_obj->type)
             {
-                return false;
+                return make_error(node);
             }
 
             auto &left_sym = get_symbol(left_obj->name);
             auto  right_num = node.right->as<number_node>();
             if (1 == right_num->value)
             {
-                _as.dec(symbol_ref{left_sym});
-                return true;
+                ASM(dec(symbol_ref{left_sym}), node);
+                return {};
             }
 
-            _as.sub(symbol_ref{left_sym}, right_num->value);
-            return true;
+            ASM(sub(symbol_ref{left_sym}, right_num->value), node);
+            return {};
         }
 
-        return false;
+        return make_error(node);
     }
     }
 
-    return false;
+    assert(false && "unhandled operation");
+    return {};
 }
 
-bool
+error
 zd4_generator::process(const par::procedure_node &node)
 {
-    set_position(node);
-
     nesting_guard nested{*this};
 
     if (!set_symbol(node.name, symbol_type::procedure,
                     static_cast<zd4_known_section>(_curr_code->index),
                     _curr_code->size()))
     {
-        return false;
+        position pos{*node.code_path, node.code_line, node.code_column};
+        return make_error(node);
     }
 
     for (auto &child : node.body)
     {
-        if (!child->generate(this))
+        error status = std::move(child->generate(this));
+        if (!status)
         {
-            return false;
+            return status;
         }
     }
 
-    return _as.ret();
+    ASM(ret(), node);
+    return {};
 }
 
 void
@@ -492,7 +504,7 @@ zd::gen::zd4_generator::get_symbol_address(unsigned  index,
 {
     if (_symbol_num <= index)
     {
-        return false;
+        assert(false && "symbol index out of range");
     }
 
     auto it = _symbols.begin();
@@ -566,4 +578,11 @@ zd4_generator::set_symbol(const ustring    &name,
     symbol.section = section;
     symbol.address = address;
     return true;
+}
+
+error
+zd4_generator::make_error(const par::node &node)
+{
+    set_position(node);
+    return error{*this, error_code::error};
 }
