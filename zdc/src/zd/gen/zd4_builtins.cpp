@@ -761,6 +761,7 @@ get_arg<zd4_byte>(zd4_builtins *this_, node &arg)
     }
 
     assert(false && "unexpected argument node type for a byte");
+    return 0xFF;
 }
 
 template <>
@@ -785,6 +786,7 @@ get_arg<zd4_text>(zd4_builtins *this_, node &arg)
     }
 
     assert(false && "unexpected argument node type for a text");
+    return static_cast<symbol *>(nullptr);
 }
 
 template <>
@@ -807,6 +809,7 @@ get_arg<zd4_word>(zd4_builtins *this_, node &arg)
     }
 
     assert(false && "unexpected argument node type for a word");
+    return 0xFFFF;
 }
 
 bool
@@ -817,8 +820,8 @@ invoke(zd4_builtins *this_, bool (zd4_builtins::*mfp)(), const node_list &args)
 
 template <typename Arg1>
 bool
-invoke(zd4_builtins *this_,
-       bool (zd4_builtins::*mfp)(Arg1),
+invoke(zd4_builtins    *this_,
+       bool             (zd4_builtins::*mfp)(Arg1),
        const node_list &args)
 {
     auto it = args.begin();
@@ -828,8 +831,8 @@ invoke(zd4_builtins *this_,
 
 template <typename Arg1, typename Arg2>
 bool
-invoke(zd4_builtins *this_,
-       bool (zd4_builtins::*mfp)(Arg1, Arg2),
+invoke(zd4_builtins    *this_,
+       bool             (zd4_builtins::*mfp)(Arg1, Arg2),
        const node_list &args)
 {
     auto it = args.begin();
@@ -840,8 +843,8 @@ invoke(zd4_builtins *this_,
 
 template <typename Arg1, typename Arg2, typename Arg3>
 bool
-invoke(zd4_builtins *this_,
-       bool (zd4_builtins::*mfp)(Arg1, Arg2, Arg3),
+invoke(zd4_builtins    *this_,
+       bool             (zd4_builtins::*mfp)(Arg1, Arg2, Arg3),
        const node_list &args)
 {
     auto it = args.begin();
