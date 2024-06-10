@@ -75,3 +75,45 @@ MessageId=0x0308
 Language=English
 unexpected character %1!u! in the emit directive
 .
+
+; // Generator errors
+
+MessageId=0x0401
+Language=English
+unexpected node
+.
+
+MessageId=0x0402
+Language=English
+cannot %1!S! this pair of operands
+.
+
+MessageId=0x0403
+Language=English
+cannot assign this pair of target and source
+.
+
+MessageId=0x0404
+Language=English
+cannot assign variable %1!S! at its declaration
+.
+
+MessageId=0x0405
+Language=English
+cannot invoke %1!S! with provided arguments
+.
+
+MessageId=0x0406
+Language=English
+cannot redefine the symbol
+.
+
+MessageId=0x0407
+Language=English
+string constant is too long
+.
+
+MessageId=0x0480
+Language=English
+could not assemble
+.

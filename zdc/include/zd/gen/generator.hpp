@@ -84,7 +84,14 @@ struct generator
 
 enum class generator_error
 {
-    error, // TODO: define error codes
+    unexpected_node = 0x01,      // unexpected X
+    invalid_operands = 0x02,     // cannot X Y and Z
+    invalid_assignment = 0x03,   // cannot assign X to Y
+    nonconst_assignment = 0x04,  // cannot assign variable at declaration
+    unexpected_arguments = 0x05, // cannot invoke X with arguments
+    symbol_redefinition = 0x06,  // cannot redefine X
+    string_too_long = 0x07,      // string constant is too long
+    assembler_error = 0x80,
 };
 
 } // namespace gen
