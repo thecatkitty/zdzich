@@ -126,9 +126,12 @@ error
 zd4_generator::process(const par::call_node &node)
 {
     zd4_builtins builtins{*this};
-    if (builtins.dispatch(node.callee, node.arguments))
+
+    set_position(node);
+    error status = builtins.dispatch(node);
+    if (status || !status.is<zd4_generator>(error_code::not_a_builtin))
     {
-        return {};
+        return status;
     }
 
     if (node.arguments.empty())
@@ -630,6 +633,13 @@ zd4_generator::make_string_too_long(const par::string_node &node)
 {
     set_position(node);
     return error{*this, error_code::string_too_long};
+}
+
+error
+zd4_generator::make_invalid_argument(const par::node &node)
+{
+    set_position(node);
+    return error{*this, error_code::invalid_argument};
 }
 
 error

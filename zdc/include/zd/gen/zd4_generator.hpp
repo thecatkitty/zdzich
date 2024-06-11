@@ -177,6 +177,9 @@ class zd4_generator : public generator, public zd4_reference_resolver
     make_string_too_long(const par::string_node &node);
 
     error
+    make_invalid_argument(const par::node &node);
+
+    error
     make_assembler_error(const par::node &node);
 
     class nesting_guard
