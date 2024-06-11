@@ -36,7 +36,7 @@ def get_messages(input: TextIOWrapper) -> Generator[tuple[int, int, str], None, 
             continue
 
         if line.rstrip() == ".":
-            yield message_id, message_language, message_text.rstrip()
+            yield message_id, message_language, message_text.rstrip("\n")
             message_text = str()
             continue
 
