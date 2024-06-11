@@ -91,7 +91,9 @@ enum class generator_error
     unexpected_arguments = 0x05, // cannot invoke X with arguments
     symbol_redefinition = 0x06,  // cannot redefine X
     string_too_long = 0x07,      // string constant is too long
+    invalid_argument = 0x08,     // invalid argument
     assembler_error = 0x80,
+    not_a_builtin = 0x81,
 };
 
 } // namespace gen

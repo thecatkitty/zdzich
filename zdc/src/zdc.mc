@@ -113,6 +113,11 @@ Language=English
 string constant is too long
 .
 
+MessageId=0x0408
+Language=English
+invalid argument
+.
+
 MessageId=0x0480
 Language=English
 could not assemble
