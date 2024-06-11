@@ -122,3 +122,17 @@ MessageId=0x0480
 Language=English
 could not assemble
 .
+
+; // ZDC messages
+
+MessageId=0x8000
+SymbolicName=MSG_ERROR
+Language=English
+error: 
+.
+
+MessageId=0x8001
+SymbolicName=MSG_NO_OUTPUT
+Language=English
+no output file name provided (argument -o)
+.

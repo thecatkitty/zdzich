@@ -7,6 +7,8 @@
 #include <zd/message.hpp>
 #include <zd/par/parser.hpp>
 
+#include "zdc.hpp"
+
 typedef bool (*node_callback)(zd::par::node *, void *);
 
 static int
@@ -83,8 +85,9 @@ main(int argc, char *argv[])
     {
         if (!*opt_output)
         {
-            std::fputs("error: no output file name provided (argument -o)\n",
-                       stderr);
+            zd::message::retrieve(MSG_ERROR).print(stderr);
+            zd::message::retrieve(MSG_NO_OUTPUT).print(stderr);
+            std::fputs("\n", stderr);
             return 1;
         }
 
@@ -109,7 +112,7 @@ main(int argc, char *argv[])
         return action_generator(lexer, &generator, "");
     }
 
-    std::fprintf(stderr, "unknown action %c\n", *opt_action);
+    assert(false && "unhandled action");
     return 1;
 }
 
@@ -259,11 +262,16 @@ void
 print_error(const zd::error &err)
 {
     auto path = err.file().empty() ? "input" : err.file().data();
-    std::fprintf(stderr, "%s:%u:%u: error: ", path, err.line(), err.column());
+    std::fprintf(stderr, "%s:%u:", path, err.line());
+    if (err.column())
+    {
+        std::fprintf(stderr, "%u:", err.column());
+    }
 
+    std::fputc(' ', stderr);
+    zd::message::retrieve(MSG_ERROR).print(stderr);
     zd::message::retrieve((err.origin() << 8) | err.ordinal(), err.size(),
                           err.begin())
         .print(stderr);
-
     std::fputs("\n", stderr);
 }
