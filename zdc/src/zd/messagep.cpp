@@ -10,6 +10,7 @@
 
 #define ARGV1(argv) (argv)[0]
 #define ARGV2(argv) ARGV1(argv), (argv)[1]
+#define ARGV3(argv) ARGV2(argv), (argv)[2]
 
 #define CASE_PRINT_ARGS(num, ptr, fmt, argv, ret)                              \
     case num:                                                                  \
@@ -70,6 +71,7 @@ message::retrieve(uint16_t ordinal, size_t argc, const uintptr_t *argv)
     {
         CASE_PRINT_ARGS(1, &ptr, fmt, argv, length);
         CASE_PRINT_ARGS(2, &ptr, fmt, argv, length);
+        CASE_PRINT_ARGS(3, &ptr, fmt, argv, length);
     default:
         length = ::ASPRINTF(&ptr, "%s", fmt);
     }

@@ -80,17 +80,17 @@ unexpected character %1!u! in the emit directive
 
 MessageId=0x0401
 Language=English
-unexpected node
+unexpected '%1!S!'
 .
 
 MessageId=0x0402
 Language=English
-cannot %1!S! this pair of operands
+cannot %1!S! %2!S! and %3!S!
 .
 
 MessageId=0x0403
 Language=English
-cannot assign this pair of target and source
+cannot assign %1!S! to %2!S!
 .
 
 MessageId=0x0404
@@ -105,12 +105,12 @@ cannot invoke %1!S! with provided arguments
 
 MessageId=0x0406
 Language=English
-cannot redefine the symbol
+cannot redefine '%1!S!'
 .
 
 MessageId=0x0407
 Language=English
-string constant is too long
+string constant is %1!d! characters too long
 .
 
 MessageId=0x0408
@@ -120,12 +120,12 @@ invalid argument
 
 MessageId=0x0480
 Language=English
-could not assemble
+cannot assemble
 .
 
 MessageId=0x0482
 Language=English
-undefined name
+name '%1!S!' was never defined
 .
 
 ; // ZDC messages
