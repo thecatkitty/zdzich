@@ -97,10 +97,10 @@ zd4_section::reserve(unsigned size)
     return std::exchange(_offset, _offset + size);
 }
 
-bool
-zd4_section::relocate(std::FILE                    *output,
-                      const uint16_t               *bases,
-                      const zd4_reference_resolver *resolver)
+result<void>
+zd4_section::relocate(std::FILE              *output,
+                      const uint16_t         *bases,
+                      zd4_reference_resolver *resolver)
 {
     int pos{0};
     std::rewind(_pf);
@@ -117,18 +117,11 @@ zd4_section::relocate(std::FILE                    *output,
 
             if (zd4_section_unkn == reloc->section)
             {
-                unsigned sym_section;
-                unsigned sym_address;
-                if (!resolver->get_symbol_address(address, sym_section,
-                                                  sym_address))
-                {
-                    std::fprintf(stderr, "error: unresolved symbol number %u\n",
-                                 address);
-                    return false;
-                }
-
-                reloc->section = sym_section;
-                reloc->address = sym_address;
+                std::pair<unsigned, unsigned> sym_location;
+                RETURN_IF_ERROR(sym_location,
+                                resolver->get_symbol_address(address));
+                reloc->section = sym_location.first;
+                reloc->address = sym_location.second;
                 address = reloc->address;
             }
 
@@ -155,5 +148,5 @@ zd4_section::relocate(std::FILE                    *output,
         pos++;
     }
 
-    return true;
+    return {};
 }

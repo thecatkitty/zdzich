@@ -127,7 +127,14 @@ action_compiler(zd::lex::lexer &lexer, std::FILE *output)
         return status;
     }
 
-    generator.link(output);
+    auto link_ret = generator.link(output);
+    if (!link_ret)
+    {
+        zd::error err = std::move(link_ret.error());
+        print_error(err);
+        return 1;
+    }
+
     return 0;
 }
 
@@ -262,10 +269,15 @@ void
 print_error(const zd::error &err)
 {
     auto path = err.file().empty() ? "input" : err.file().data();
-    std::fprintf(stderr, "%s:%u:", path, err.line());
-    if (err.column())
+    std::fprintf(stderr, "%s:", path);
+    if (err.line())
     {
-        std::fprintf(stderr, "%u:", err.column());
+        std::fprintf(stderr, "%u:", err.line());
+
+        if (err.column())
+        {
+            std::fprintf(stderr, "%u:", err.column());
+        }
     }
 
     std::fputc(' ', stderr);

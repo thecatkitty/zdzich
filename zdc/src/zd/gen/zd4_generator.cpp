@@ -474,7 +474,7 @@ zd4_generator::process(const par::procedure_node &node)
     return {};
 }
 
-void
+result<void>
 zd4_generator::link(std::FILE *output)
 {
     // Calculate section base addresses
@@ -497,16 +497,15 @@ zd4_generator::link(std::FILE *output)
     // Relocate all section into one output file
     for (auto &section : _codes)
     {
-        section.relocate(output, bases, this);
+        RETURN_IF_ERROR_VOID(section.relocate(output, bases, this));
     }
 
-    _data.relocate(output, bases, this);
+    RETURN_IF_ERROR_VOID(_data.relocate(output, bases, this));
+    return {};
 }
 
-bool
-zd::gen::zd4_generator::get_symbol_address(unsigned  index,
-                                           unsigned &section,
-                                           unsigned &address) const
+result<std::pair<unsigned, unsigned>>
+zd4_generator::get_symbol_address(unsigned index)
 {
     if (_symbol_num <= index)
     {
@@ -515,17 +514,12 @@ zd::gen::zd4_generator::get_symbol_address(unsigned  index,
 
     auto it = _symbols.begin();
     std::advance(it, index);
-
-    section = it->section;
-    address = it->address;
-
-    if (zd4_section_unkn == section)
+    if (zd4_section_unkn == it->section)
     {
-        std::fprintf(stderr, "error: unresolved symbol %s\n", it->name.data());
-        return false;
+        return tl::make_unexpected(make_undefined(it->name));
     }
 
-    return true;
+    return std::pair<unsigned, unsigned>{it->section, it->address};
 }
 
 ustring
@@ -649,4 +643,13 @@ zd4_generator::make_assembler_error(const par::node &node)
 {
     set_position(node);
     return error{*this, error_code::assembler_error};
+}
+
+error
+zd4_generator::make_undefined(const ustring &name)
+{
+    _path.clear();
+    _line = 0;
+    _column = 0;
+    return error(*this, error_code::undefined_name);
 }

@@ -35,10 +35,8 @@ enum zd4_known_section
 
 struct zd4_reference_resolver
 {
-    virtual bool
-    get_symbol_address(unsigned  index,
-                       unsigned &section,
-                       unsigned &address) const = 0;
+    virtual result<std::pair<unsigned, unsigned>>
+    get_symbol_address(unsigned index) = 0;
 };
 
 class zd4_section
@@ -85,10 +83,10 @@ class zd4_section
     unsigned
     reserve(unsigned size);
 
-    bool
-    relocate(std::FILE                    *output,
-             const uint16_t               *bases,
-             const zd4_reference_resolver *resolver);
+    result<void>
+    relocate(std::FILE              *output,
+             const uint16_t         *bases,
+             zd4_reference_resolver *resolver);
 };
 
 } // namespace gen
