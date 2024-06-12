@@ -584,21 +584,23 @@ error
 zd4_generator::make_unexpected_node(const par::node &node)
 {
     set_position(node);
-    return error{*this, error_code::unexpected_node};
+    return error{*this, error_code::unexpected_node, to_cstr(node)};
 }
 
 error
 zd4_generator::make_invalid_operands(const par::operation_node &node)
 {
     set_position(node);
-    return error{*this, error_code::invalid_operands, to_cstr(node.op)};
+    return error{*this, error_code::invalid_operands, to_cstr(node.op),
+                 to_cstr(*node.left), to_cstr(*node.right)};
 }
 
 error
 zd4_generator::make_invalid_assignment(const par::assignment_node &node)
 {
     set_position(node);
-    return error{*this, error_code::invalid_assignment};
+    return error{*this, error_code::invalid_assignment, to_cstr(*node.source),
+                 to_cstr(*node.target)};
 }
 
 error
@@ -613,22 +615,33 @@ error
 zd4_generator::make_unexpected_arguments(const par::node &node)
 {
     set_position(node);
-    return error{*this, error_code::unexpected_arguments,
-                 node.is<call_node>() ? "procedure" : "command"};
+    if (node.is<call_node>())
+    {
+        return error{*this, error_code::unexpected_arguments,
+                     node.as<call_node>()->callee.data()};
+    }
+
+    return error{*this, error_code::unexpected_arguments, to_cstr(node)};
 }
 
 error
 zd4_generator::make_symbol_redefinition(const par::node &node)
 {
     set_position(node);
-    return error{*this, error_code::symbol_redefinition};
+    const char *name =
+        node.is<label_node>()       ? node.as<label_node>()->name.data()
+        : node.is<object_node>()    ? node.as<object_node>()->name.data()
+        : node.is<procedure_node>() ? node.as<procedure_node>()->name.data()
+                                    : nullptr;
+    return error{*this, error_code::symbol_redefinition, name};
 }
 
 error
 zd4_generator::make_string_too_long(const par::string_node &node)
 {
     set_position(node);
-    return error{*this, error_code::string_too_long};
+    return error{*this, error_code::string_too_long,
+                 node.value.size() - UINT8_MAX + 4};
 }
 
 error
@@ -651,5 +664,5 @@ zd4_generator::make_undefined(const ustring &name)
     _path.clear();
     _line = 0;
     _column = 0;
-    return error(*this, error_code::undefined_name);
+    return error(*this, error_code::undefined_name, name.data());
 }

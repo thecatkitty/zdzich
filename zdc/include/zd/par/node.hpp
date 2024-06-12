@@ -114,6 +114,17 @@ struct node
     }
 
     template <typename T>
+    inline const T *
+    as() const
+    {
+#ifdef __ia16__
+        return reinterpret_cast<const T *>(this);
+#else
+        return dynamic_cast<const T *>(this);
+#endif
+    }
+
+    template <typename T>
     inline bool
     is() const
     {
@@ -181,6 +192,10 @@ struct condition_node : public node
     const condition   cond;
     const unique_node action;
 
+    condition_node() : cond{condition::equal}, action{}
+    {
+    }
+
     condition_node(const position &pos, condition cond_, unique_node action_)
         : node{pos}, cond{cond_}, action{std::move(action_)}
     {
@@ -194,6 +209,10 @@ struct declaration_node : public node
     const unique_node target;
     const bool        is_const;
 
+    declaration_node() : target{}, is_const{false}
+    {
+    }
+
     declaration_node(const position &pos, unique_node target_, bool is_const_)
         : node{pos}, target{std::move(target_)}, is_const{is_const_}
     {
@@ -205,6 +224,8 @@ struct declaration_node : public node
 struct emit_node : public node
 {
     const std::vector<uint8_t> bytes;
+
+    emit_node() = default;
 
     emit_node(const position &pos, std::vector<uint8_t> bytes_)
         : node{pos}, bytes{std::move(bytes_)}
@@ -316,6 +337,10 @@ struct operation_node : public node
     const unique_node left;
     const unique_node right;
 
+    operation_node() : op{operation::add}, left{}, right{}
+    {
+    }
+
     operation_node(const position &pos,
                    operation       op_,
                    unique_node     left_,
@@ -331,6 +356,8 @@ struct procedure_node : public node
 {
     const ustring   name;
     const node_list body;
+
+    procedure_node() = default;
 
     procedure_node(const position &pos, const ustring &name_, node_list body_)
         : node{pos}, name{name_}, body{std::move(body_)}
@@ -386,6 +413,9 @@ struct subscript_node : public node
 #undef IMPLEMENT_GENERATOR_ACCESS
 
 } // namespace par
+
+const char *
+to_cstr(const par::node &node);
 
 const char *
 to_cstr(par::operation op);
