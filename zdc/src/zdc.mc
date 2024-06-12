@@ -123,6 +123,11 @@ Language=English
 could not assemble
 .
 
+MessageId=0x0482
+Language=English
+undefined name
+.
+
 ; // ZDC messages
 
 MessageId=0x8000

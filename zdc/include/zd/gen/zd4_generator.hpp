@@ -131,13 +131,11 @@ class zd4_generator : public generator, public zd4_reference_resolver
         return make_unexpected_node(node);
     }
 
-    void
+    result<void>
     link(std::FILE *output);
 
-    bool
-    get_symbol_address(unsigned  index,
-                       unsigned &section,
-                       unsigned &address) const override;
+    result<std::pair<unsigned, unsigned>>
+    get_symbol_address(unsigned index) override;
 
     symbol &
     get_symbol(const ustring &name);
@@ -181,6 +179,9 @@ class zd4_generator : public generator, public zd4_reference_resolver
 
     error
     make_assembler_error(const par::node &node);
+
+    error
+    make_undefined(const ustring &name);
 
     class nesting_guard
     {

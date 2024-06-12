@@ -94,6 +94,7 @@ enum class generator_error
     invalid_argument = 0x08,     // invalid argument
     assembler_error = 0x80,
     not_a_builtin = 0x81,
+    undefined_name = 0x82,
 };
 
 } // namespace gen
