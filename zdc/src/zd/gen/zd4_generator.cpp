@@ -37,14 +37,16 @@ zd4_generator::process(const par::assignment_node &node)
         if (node.source->is<number_node>())
         {
             ASM(mov(dst, (uint16_t)node.source->as<number_node>()->value),
-                node);
+                *node.source);
             return {};
         }
 
         if (node.source->is<object_node>())
         {
-            ASM(push(get_symbol(node.source->as<object_node>()->name)), node);
-            ASM(pop(get_symbol(node.target->as<object_node>()->name)), node);
+            ASM(push(get_symbol(node.source->as<object_node>()->name)),
+                *node.source);
+            ASM(pop(get_symbol(node.target->as<object_node>()->name)),
+                *node.source);
             return {};
         }
 
@@ -55,9 +57,9 @@ zd4_generator::process(const par::assignment_node &node)
             if ((symbol_type::var_byte != dst.type) &&
                 (cpu_register_word != ((unsigned)src_reg & 0xFF00)))
             {
-                ASM(mov(mreg{cpu_register::di}, 0), node);
+                ASM(mov(mreg{cpu_register::di}, 0), *node.target);
             }
-            ASM(mov(mreg{cpu_register::di}, src_reg), node);
+            ASM(mov(mreg{cpu_register::di}, src_reg), *node.source);
             return {};
         }
 
@@ -112,7 +114,7 @@ zd4_generator::process(const par::assignment_node &node)
         else if (node.source->is<number_node>())
         {
             ASM(mov(dst, (uint16_t)node.source->as<number_node>()->value),
-                node);
+                *node.source);
             return {};
         }
 
@@ -326,7 +328,7 @@ zd4_generator::process(const par::jump_node &node)
     CAST_NODE_OR_FAIL(label, node.target);
 
     auto &symbol = get_symbol(label->name);
-    ASM(jmp(symbol), node);
+    ASM(jmp(symbol), *label);
 
     return {};
 }
