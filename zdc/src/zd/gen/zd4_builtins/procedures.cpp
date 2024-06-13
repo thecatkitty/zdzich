@@ -1,6 +1,5 @@
 #include <zd/gen/zd4_builtins.hpp>
 #include <zd/text/characters.hpp>
-#include <zd/text/pl_string.hpp>
 
 using namespace zd;
 using namespace zd::gen;
@@ -10,6 +9,12 @@ using namespace zd::par;
     if (!as.x)                                                                 \
     {                                                                          \
         return gen.make_assembler_error(*_node);                               \
+    }
+
+#define EMIT(...)                                                              \
+    {                                                                          \
+        static const uint8_t __code[] = __VA_ARGS__;                           \
+        emit(__code, sizeof(__code));                                          \
     }
 
 #define LOAD(arg, dst)                                                         \
@@ -45,118 +50,12 @@ using namespace zd::par;
         return false;                                                          \
     }
 
-bool
-zd4_byte::load(x86_assembler &as, cpu_register dst) const
-{
-    if (sym)
-    {
-        return as.mov(cpu_register::si, *sym) &&
-               as.mov(dst, mreg{cpu_register::si});
-    }
-
-    if (cpu_register::invalid != reg)
-    {
-        if (reg == dst)
-        {
-            return true;
-        }
-
-        if (cpu_register_word == ((unsigned)reg & 0xFF00))
-        {
-            // TODO: warning
-            return as.mov(dst,
-                          static_cast<cpu_register>(((unsigned)reg & 0xFF) |
-                                                    cpu_register_lbyte));
-        }
-
-        return as.mov(dst, reg);
-    }
-
-    return as.mov(dst, val);
-}
-
-bool
-zd4_file::load(x86_assembler &as, cpu_register dst) const
-{
-    return as.mov(dst, val);
-}
-
-bool
-zd4_text::load(x86_assembler    &as,
-               par::cpu_register dst_buffer,
-               par::cpu_register dst_size) const
-{
-    RETURN_IF_FALSE(cpu_register_word == ((unsigned)dst_buffer & 0xFF00));
-
-    if (sym)
-    {
-        if (cpu_register::invalid != dst_size)
-        {
-            RETURN_IF_FALSE(as.mov(cpu_register::si, {*sym, +1}));
-            RETURN_IF_FALSE(as.mov(dst_size, mreg{cpu_register::si}));
-        }
-        return as.mov(dst_buffer, {*sym, +2});
-    }
-
-    RETURN_IF_FALSE(val);
-    std::vector<char> data{};
-    data.resize(val->size() + 2);
-
-    auto ptr = val->encode(data.data(), text::encoding::ibm852);
-    *(ptr++) = 0;
-    *(ptr++) = '$';
-
-    RETURN_IF_FALSE(as.mov(dst_buffer, data));
-    if (cpu_register::invalid != dst_size)
-    {
-        RETURN_IF_FALSE(as.mov(dst_size, ptr - data.data() - 2));
-    }
-    return true;
-}
-
-bool
-zd4_text::loadd(x86_assembler &as, par::cpu_register dst) const
-{
-    RETURN_IF_FALSE(cpu_register_word == ((unsigned)dst & 0xFF00));
-    RETURN_IF_FALSE(val);
-
-    std::vector<char> data{};
-    data.resize(val->size() + 1);
-
-    auto ptr = val->encode(data.data(), text::encoding::ibm852);
-    *ptr = '$';
-
-    return as.mov(dst, data);
-}
-
-bool
-zd4_word::load(x86_assembler &as, cpu_register dst) const
-{
-    if (sym)
-    {
-        return as.mov(cpu_register::si, *sym) &&
-               as.mov(dst, mreg{cpu_register::si});
-    }
-
-    if (cpu_register::invalid != reg)
-    {
-        if (reg == dst)
-        {
-            return true;
-        }
-
-        return as.mov(dst, reg);
-    }
-
-    return as.mov(dst, val);
-}
-
 error
 zd4_builtins::Czekaj_w(const zd4_word &czas)
 {
     // INT 15,86 - Elapsed Time Wait (AT and PS/2)
     LOAD(czas, cpu_register::cx);
-    emit({
+    EMIT({
         0xB8, 0x00, 0x86, // mov ax, 8600h
         0xBA, 0x00, 0x00, // mov dx, 0
         0xCD, 0x15,       // int 15h
@@ -169,7 +68,7 @@ zd4_builtins::Czysc_b(const zd4_byte &atrybut)
 {
     // INT 10,6 - Scroll Window Up
     LOAD(atrybut, cpu_register::bh);
-    emit({
+    EMIT({
         0xB8, 0x00, 0x06, // mov ax, 0600h
         0xB9, 0x00, 0x00, // mov cx, 0
         0xBA, 0x4F, 0x18, // mov dx, 184Fh
@@ -177,7 +76,7 @@ zd4_builtins::Czysc_b(const zd4_byte &atrybut)
     });
 
     // INT 10,2 - Set Cursor Position
-    emit({
+    EMIT({
         0xB4, 0x02,       // mov ah, 2
         0xB7, 0x00,       // mov bh, 0
         0xBA, 0x00, 0x00, // mov dx, 0
@@ -194,14 +93,14 @@ zd4_builtins::Czytaj_T(zd4_text &wyjscie)
 
     // INT 21,A - Buffered Keyboard Input
     ASM(mov(cpu_register::dx, symbol_ref{*wyjscie.sym}));
-    emit({
+    EMIT({
         0xB4, 0x0A, // mov ah, 0Ah
         0xCD, 0x21, // int 21h
     });
 
     // Append 'NUL $'
     ASM(mov(cpu_register::bx, symbol_ref{*wyjscie.sym, +1}));
-    emit({
+    EMIT({
         0x8A, 0x07,       // mov al, byte [bx]
         0xB4, 0x00,       // mov ah, 0
         0x43,             // inc bx
@@ -215,7 +114,7 @@ zd4_builtins::Czytaj_T(zd4_text &wyjscie)
 error
 zd4_builtins::DoPortu()
 {
-    emit({
+    EMIT({
         0xEE, // out dx, al
     });
     return {};
@@ -225,7 +124,7 @@ error
 zd4_builtins::Klawisz()
 {
     // INT 21,7 - Direct Console Input Without Echo
-    emit({
+    EMIT({
         0xB4, 0x07, // mov ah, 7
         0xCD, 0x21, // int 21h
     });
@@ -235,7 +134,7 @@ zd4_builtins::Klawisz()
 error
 zd4_builtins::Laduj()
 {
-    emit({
+    EMIT({
         0xAC, // lodsb
     });
     return {};
@@ -286,7 +185,7 @@ zd4_builtins::Losowa8()
 error
 zd4_builtins::Nic()
 {
-    emit({
+    EMIT({
         0x90, // nop
     });
     return {};
@@ -300,14 +199,14 @@ zd4_builtins::Otworz_ftb(const zd4_file &plik,
     // INT 21,3D - Open File Using Handle
     LOAD(nazwa, cpu_register::dx);
     LOAD(tryb, cpu_register::al);
-    emit({
+    EMIT({
         0xB4, 0x3D, // mov ah, 3Dh
         0xCD, 0x21, // int 21h
     });
 
     // INT 21,46 - Force Duplicate File Handle
     LOAD(plik, cpu_register::cx);
-    emit({
+    EMIT({
         0x89, 0xC3, // mov bx, ax
         0xB4, 0x46, // mov ah, 46h
         0xCD, 0x21, // int 21h
@@ -331,7 +230,7 @@ zd4_builtins::Pisz_t(const zd4_text &tekst)
         LOAD(tekst, cpu_register::dx);
     }
 
-    emit({
+    EMIT({
         0xB4, 0x09, // mov ah, 9
         0xCD, 0x21, // int 21h
     });
@@ -352,7 +251,7 @@ zd4_builtins::Pisz_ft(const zd4_file &plik, const zd4_text &tekst)
     // INT 21,40 - Write To File or Device Using Handle
     LOAD(plik, cpu_register::bx);
     LOAD2(tekst, cpu_register::dx, cpu_register::cl);
-    emit({
+    EMIT({
         0xB5, 0x00, // mov ch, 0
         0xB4, 0x40, // mov ah, 40h
         0xCD, 0x21, // int 21h
@@ -489,7 +388,7 @@ error
 zd4_builtins::Pisz8_t(const zd4_text &tekst)
 {
     LOAD(tekst, cpu_register::si);
-    emit({
+    EMIT({
         0x8A, 0x0C, // mov cl, byte [si]
     });
     return Pisz8_b(cpu_register::cl);
@@ -504,7 +403,7 @@ zd4_builtins::PiszZnak_bbw(const zd4_byte &znak,
     LOAD(znak, cpu_register::al);
     LOAD(atrybut, cpu_register::bl);
     LOAD(powtorzenia, cpu_register::cx);
-    emit({
+    EMIT({
         0xB4, 0x09, // mov ah, 9
         0xB7, 0x00, // mov bh, 0
         0xCD, 0x10, // int 10h
@@ -518,7 +417,7 @@ zd4_builtins::Pozycja_bb(const zd4_byte &kolumna, const zd4_byte &wiersz)
     // INT 10,2 - Set Cursor Position
     LOAD(kolumna, cpu_register::dl);
     LOAD(wiersz, cpu_register::dh);
-    emit({
+    EMIT({
         0xB4, 0x09, // mov ah, 2
         0xB7, 0x00, // mov bh, 0
         0xCD, 0x10, // int 10h
@@ -530,7 +429,7 @@ error
 zd4_builtins::PokazMysz()
 {
     // INT 33,1 - Show Mouse Cursor
-    emit({
+    EMIT({
         0xB8, 0x01, 0x00, // mov ax, 1
         0xCD, 0x33,       // int 33h
     });
@@ -555,7 +454,7 @@ zd4_builtins::Punkt_wwb(const zd4_word &kolumna,
     LOAD(kolumna, cpu_register::cx);
     LOAD(wiersz, cpu_register::dx);
     LOAD(kolor, cpu_register::al);
-    emit({
+    EMIT({
         0xB4, 0x0C,       // mov ah, 0Ch
         0xBB, 0x00, 0x00, // mov bx, 0
         0xCD, 0x10,       // int 10h
@@ -567,7 +466,7 @@ error
 zd4_builtins::StanPrzyciskow()
 {
     // INT 33,3 - Get Mouse Position and Button Status
-    emit({
+    EMIT({
         0xB8, 0x30, 0x00, // mov ax, 3
         0xCD, 0x33,       // int 22h
     });
@@ -582,7 +481,7 @@ zd4_builtins::StanPrzyciskow_t(const zd4_text &tekst)
     REQUIRE_ARG(tekst, val->data()[0] == '!');
 
     REQUIRE_SUCCESS(StanPrzyciskow());
-    emit({
+    EMIT({
         0x89, 0xC8, // mov ax, cx
         0xB1, 0x03, // mov cl, 3
         0xD3, 0xE8, // shr ax, cl
@@ -597,7 +496,7 @@ zd4_builtins::Tryb_b(const zd4_byte &tryb)
 {
     // INT 10,0 - Set Video Mode
     LOAD(tryb, cpu_register::al);
-    emit({
+    EMIT({
         0xB4, 0x00, // mov ah, 0
         0xCD, 0x10, // int 10h
     });
@@ -609,7 +508,7 @@ zd4_builtins::TworzKatalog_t(const zd4_text &tekst)
 {
     // INT 21,39 - Create Subdirectory (mkdir)
     LOAD(tekst, cpu_register::dx);
-    emit({
+    EMIT({
         0xB4, 0x39, // mov ah, 39h
         0xCD, 0x21, // int 21h
     });
@@ -621,7 +520,7 @@ zd4_builtins::TworzPlik_t(const zd4_text &tekst)
 {
     // INT 21,3C - Create File Using Handle
     LOAD(tekst, cpu_register::dx);
-    emit({
+    EMIT({
         0xB4, 0x3C, // mov ah, 3Ch
         0xCD, 0x21, // int 21h
     });
@@ -632,7 +531,7 @@ error
 zd4_builtins::UkryjMysz()
 {
     // INT 33,2 - Hide Mouse Cursor
-    emit({
+    EMIT({
         0xB8, 0x02, 0x00, // mov ax, 2
         0xCD, 0x33,       // int 33h
     });
@@ -644,7 +543,7 @@ zd4_builtins::UsunKatalog_t(const zd4_text &tekst)
 {
     // INT 21,3A - Remove Subdirectory (rmdir)
     LOAD(tekst, cpu_register::dx);
-    emit({
+    EMIT({
         0xB4, 0x3A, // mov ah, 3Ah
         0xCD, 0x21, // int 21h
     });
@@ -656,7 +555,7 @@ zd4_builtins::UsunPlik_t(const zd4_text &tekst)
 {
     // INT 21,41 - Delete File
     LOAD(tekst, cpu_register::dx);
-    emit({
+    EMIT({
         0xB4, 0x41, // mov ah, 41h
         0xCD, 0x21, // int 21h
     });
@@ -668,7 +567,7 @@ zd4_builtins::Zamknij_f(const zd4_file &plik)
 {
     // INT 21,3E - Close File Using Handle
     LOAD(plik, cpu_register::bx);
-    emit({
+    EMIT({
         0xB4, 0x3E, // mov ah, 3Eh
         0xCD, 0x21, // int 21h
     });
@@ -680,7 +579,7 @@ zd4_builtins::ZmienKatalog_t(const zd4_text &tekst)
 {
     // INT 21,3B - Change Current Directory (chdir)
     LOAD(tekst, cpu_register::dx);
-    emit({
+    EMIT({
         0xB4, 0x3B, // mov ah, 3Bh
         0xCD, 0x21, // int 21h
     });
@@ -693,7 +592,7 @@ zd4_builtins::ZmienNazwe_tt(const zd4_text &stara, const zd4_text &nowa)
     // INT 21,56 - Rename File
     LOAD(stara, cpu_register::dx);
     LOAD(nowa, cpu_register::di);
-    emit({
+    EMIT({
         0x1E,       // push ds
         0x07,       // pop es
         0xB4, 0x56, // mov ah, 56h
@@ -738,14 +637,17 @@ zd4_builtins::ZmienNazwe_t(const zd4_text &stara_nowa)
 error
 zd4_builtins::ZPortu()
 {
-    emit({
+    EMIT({
         0xEC, // in al, dx
     });
     return {};
 }
 
 std::pair<unsigned, unsigned>
-zd4_builtins::emit(const uint8_t *code, unsigned size)
+#ifdef __ia16__
+    __attribute__((noinline))
+#endif
+    zd4_builtins::emit(const uint8_t *code, unsigned size)
 {
     return {gen._curr_code->index, gen._curr_code->emit(code, size)};
 }
@@ -770,270 +672,4 @@ zd4_builtins::get_procedure(const ustring &name,
     }
 
     return &procedure;
-}
-
-static bool
-_matches_name(const char *signature, const ustring &str)
-{
-    ustring name{};
-    for (auto ch : ustring{signature})
-    {
-        if ('_' == ch)
-        {
-            break;
-        }
-
-        name.append(ch);
-    }
-
-    return text::pl_streqai(name, str);
-}
-
-static bool
-_matches_args(const char *signature, const node_list &args)
-{
-    auto arg_types = std::strchr(signature, '_');
-    if (!arg_types)
-    {
-        return args.empty();
-    }
-
-    arg_types++;
-    if (std::strlen(arg_types) != args.size())
-    {
-        return false;
-    }
-
-    for (auto &arg : args)
-    {
-        switch (*arg_types)
-        {
-        case 'b':
-        case 'w':
-            RETURN_IF_FALSE(
-                arg->is<number_node>() || arg->is<register_node>() ||
-                (arg->is<object_node>() &&
-                 (object_type::text != arg->as<object_node>()->type)));
-            break;
-
-        case 'f':
-            RETURN_IF_FALSE(
-                arg->is<subscript_node>() &&
-                arg->as<subscript_node>()->value->is<number_node>());
-            break;
-
-        case 't':
-            RETURN_IF_FALSE(
-                arg->is<string_node>() ||
-                (arg->is<object_node>() &&
-                 (object_type::text == arg->as<object_node>()->type)));
-            break;
-
-        case 'T':
-            RETURN_IF_FALSE(
-                arg->is<object_node>() &&
-                (object_type::text == arg->as<object_node>()->type));
-            break;
-
-        default:
-            assert(false && "unknown argument type");
-        }
-
-        arg_types++;
-    }
-
-    return true;
-}
-
-static bool
-_matches(const char *signature, const ustring &name, const node_list &args)
-{
-    return _matches_name(signature, name) && _matches_args(signature, args);
-}
-
-template <typename T>
-static T
-get_arg(zd4_builtins *this_, node &arg) = delete;
-
-template <>
-zd4_byte
-get_arg<zd4_byte>(zd4_builtins *this_, node &arg)
-{
-    if (arg.is<number_node>())
-    {
-        return zd4_byte(arg.as<number_node>()->value, &arg);
-    }
-
-    if (arg.is<register_node>())
-    {
-        return {arg.as<register_node>()->reg, &arg};
-    }
-
-    if (arg.is<object_node>())
-    {
-        return {&this_->gen.get_symbol(arg.as<object_node>()->name), &arg};
-    }
-
-    assert(false && "unexpected argument node type for a byte");
-    return 0xFF;
-}
-
-template <>
-zd4_file
-get_arg<zd4_file>(zd4_builtins *this_, node &arg)
-{
-    return zd4_file(arg.as<subscript_node>()->value->as<number_node>()->value,
-                    &arg);
-}
-
-template <>
-zd4_text
-get_arg<zd4_text>(zd4_builtins *this_, node &arg)
-{
-    if (arg.is<string_node>())
-    {
-        return {&arg.as<string_node>()->value, &arg};
-    }
-
-    if (arg.is<object_node>())
-    {
-        return {&this_->gen.get_symbol(arg.as<object_node>()->name), &arg};
-    }
-
-    assert(false && "unexpected argument node type for a text");
-    return static_cast<symbol *>(nullptr);
-}
-
-template <>
-zd4_word
-get_arg<zd4_word>(zd4_builtins *this_, node &arg)
-{
-    if (arg.is<number_node>())
-    {
-        return zd4_word(arg.as<number_node>()->value, &arg);
-    }
-
-    if (arg.is<register_node>())
-    {
-        return {arg.as<register_node>()->reg, &arg};
-    }
-
-    if (arg.is<object_node>())
-    {
-        return {&this_->gen.get_symbol(arg.as<object_node>()->name), &arg};
-    }
-
-    assert(false && "unexpected argument node type for a word");
-    return 0xFFFF;
-}
-
-static error
-invoke(zd4_builtins *this_, error (zd4_builtins::*mfp)(), const node_list &args)
-{
-    return (this_->*mfp)();
-}
-
-template <typename Arg1>
-static error
-invoke(zd4_builtins    *this_,
-       error            (zd4_builtins::*mfp)(Arg1),
-       const node_list &args)
-{
-    auto it = args.begin();
-    auto arg1 = get_arg<std::decay_t<Arg1>>(this_, **it);
-    return (this_->*mfp)(arg1);
-}
-
-template <typename Arg1, typename Arg2>
-static error
-invoke(zd4_builtins    *this_,
-       error            (zd4_builtins::*mfp)(Arg1, Arg2),
-       const node_list &args)
-{
-    auto it = args.begin();
-    auto arg1 = get_arg<std::decay_t<Arg1>>(this_, **(it++));
-    auto arg2 = get_arg<std::decay_t<Arg2>>(this_, **it);
-    return (this_->*mfp)(arg1, arg2);
-}
-
-template <typename Arg1, typename Arg2, typename Arg3>
-static error
-invoke(zd4_builtins    *this_,
-       error            (zd4_builtins::*mfp)(Arg1, Arg2, Arg3),
-       const node_list &args)
-{
-    auto it = args.begin();
-    auto arg1 = get_arg<std::decay_t<Arg1>>(this_, **(it++));
-    auto arg2 = get_arg<std::decay_t<Arg2>>(this_, **(it++));
-    auto arg3 = get_arg<std::decay_t<Arg3>>(this_, **it);
-    return (this_->*mfp)(arg1, arg2, arg3);
-}
-
-#define INVOKE_IF_MATCH(mf)                                                    \
-    {                                                                          \
-        auto __signature = #mf;                                                \
-        if (_matches(__signature, node.callee, node.arguments))                \
-        {                                                                      \
-            return invoke(this, &zd4_builtins::mf, node.arguments);            \
-        }                                                                      \
-    }
-
-error
-zd4_builtins::dispatch(const call_node &node)
-{
-    _node = &node;
-
-    INVOKE_IF_MATCH(Czekaj_w);
-    INVOKE_IF_MATCH(Czysc);
-    INVOKE_IF_MATCH(Czysc_b);
-    INVOKE_IF_MATCH(Czytaj_T);
-    INVOKE_IF_MATCH(DoPortu);
-    INVOKE_IF_MATCH(Klawisz);
-    INVOKE_IF_MATCH(Laduj);
-    INVOKE_IF_MATCH(Losowa16);
-    INVOKE_IF_MATCH(Losowa8);
-    INVOKE_IF_MATCH(Nic);
-    INVOKE_IF_MATCH(Otworz_ft);
-    INVOKE_IF_MATCH(Otworz_ftb);
-    INVOKE_IF_MATCH(Pisz);
-    INVOKE_IF_MATCH(Pisz_t);
-    INVOKE_IF_MATCH(Pisz_tt);
-    INVOKE_IF_MATCH(Pisz_f);
-    INVOKE_IF_MATCH(Pisz_ft);
-    INVOKE_IF_MATCH(Pisz_ftt);
-    INVOKE_IF_MATCH(Pisz_w);
-    INVOKE_IF_MATCH(Pisz_fw);
-    INVOKE_IF_MATCH(PiszL);
-    INVOKE_IF_MATCH(PiszL_t);
-    INVOKE_IF_MATCH(PiszL_tt);
-    INVOKE_IF_MATCH(PiszL_f);
-    INVOKE_IF_MATCH(PiszL_ft);
-    INVOKE_IF_MATCH(PiszL_ftt);
-    INVOKE_IF_MATCH(PiszL_w);
-    INVOKE_IF_MATCH(PiszL_fw);
-    INVOKE_IF_MATCH(Pisz8);
-    INVOKE_IF_MATCH(Pisz8_b);
-    INVOKE_IF_MATCH(Pisz8_t);
-    INVOKE_IF_MATCH(PiszZnak_b);
-    INVOKE_IF_MATCH(PiszZnak_bb);
-    INVOKE_IF_MATCH(PiszZnak_bbw);
-    INVOKE_IF_MATCH(Pozycja_bb);
-    INVOKE_IF_MATCH(PokazMysz);
-    INVOKE_IF_MATCH(Przerwanie_b);
-    INVOKE_IF_MATCH(Punkt_wwb);
-    INVOKE_IF_MATCH(StanPrzyciskow);
-    INVOKE_IF_MATCH(StanPrzyciskow_t);
-    INVOKE_IF_MATCH(Tryb_b);
-    INVOKE_IF_MATCH(TworzKatalog_t);
-    INVOKE_IF_MATCH(TworzPlik_t);
-    INVOKE_IF_MATCH(UkryjMysz);
-    INVOKE_IF_MATCH(UsunKatalog_t);
-    INVOKE_IF_MATCH(UsunPlik_t);
-    INVOKE_IF_MATCH(Zamknij_f);
-    INVOKE_IF_MATCH(ZmienKatalog_t);
-    INVOKE_IF_MATCH(ZmienNazwe_tt);
-    INVOKE_IF_MATCH(ZmienNazwe_t);
-    INVOKE_IF_MATCH(ZPortu);
-
-    return error{gen, zd4_generator::error_code::not_a_builtin};
 }
