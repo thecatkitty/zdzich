@@ -156,9 +156,11 @@ zd4_builtins::Czekaj_w(const zd4_word &czas)
 {
     // INT 15,86 - Elapsed Time Wait (AT and PS/2)
     LOAD(czas, cpu_register::cx);
-    ASM(mov(cpu_register::ax, 0x8600));
-    ASM(mov(cpu_register::dx, 0));
-    ASM(intr(0x15));
+    emit({
+        0xB8, 0x00, 0x86, // mov ax, 8600h
+        0xBA, 0x00, 0x00, // mov dx, 0
+        0xCD, 0x15,       // int 15h
+    });
     return {};
 }
 
@@ -167,17 +169,20 @@ zd4_builtins::Czysc_b(const zd4_byte &atrybut)
 {
     // INT 10,6 - Scroll Window Up
     LOAD(atrybut, cpu_register::bh);
-    ASM(mov(cpu_register::ax, 0x0600));
-    ASM(mov(cpu_register::cx, 0));
-    ASM(mov(cpu_register::dx, (24 << 8) | 79));
-    ASM(intr(0x10));
+    emit({
+        0xB8, 0x00, 0x06, // mov ax, 0600h
+        0xB9, 0x00, 0x00, // mov cx, 0
+        0xBA, 0x4F, 0x18, // mov dx, 184Fh
+        0xCD, 0x10,       // int 10h
+    });
 
     // INT 10,2 - Set Cursor Position
-    ASM(mov(cpu_register::ah, 2));
-    ASM(mov(cpu_register::bh, 0));
-    ASM(mov(cpu_register::dx, 0));
-    ASM(intr(0x10));
-
+    emit({
+        0xB4, 0x02,       // mov ah, 2
+        0xB7, 0x00,       // mov bh, 0
+        0xBA, 0x00, 0x00, // mov dx, 0
+        0xCD, 0x10,       // int 10h
+    });
     return {};
 }
 
@@ -188,26 +193,31 @@ zd4_builtins::Czytaj_T(zd4_text &wyjscie)
     REQUIRE_ARG(wyjscie, sym->section == zd4_section_udat);
 
     // INT 21,A - Buffered Keyboard Input
-    ASM(mov(cpu_register::ah, 0xA));
     ASM(mov(cpu_register::dx, symbol_ref{*wyjscie.sym}));
-    ASM(intr(0x21));
+    emit({
+        0xB4, 0x0A, // mov ah, 0Ah
+        0xCD, 0x21, // int 21h
+    });
 
+    // Append 'NUL $'
     ASM(mov(cpu_register::bx, symbol_ref{*wyjscie.sym, +1}));
-    ASM(mov(cpu_register::al, mreg{cpu_register::bx}));
-    ASM(mov(cpu_register::ah, 0));
-    ASM(inc(cpu_register::bx));
-    ASM(add(cpu_register::bx, cpu_register::ax));
-
-    ASM(mov(cpu_register::cx, 0x2400)); // NUL $
-    ASM(mov(mreg{cpu_register::bx}, cpu_register::cx));
-
+    emit({
+        0x8A, 0x07,       // mov al, byte [bx]
+        0xB4, 0x00,       // mov ah, 0
+        0x43,             // inc bx
+        0x01, 0xC3,       // add bx, ax
+        0xB9, 0x00, 0x24, // mov cx, 2400h
+        0x89, 0x0F,       // mov word [bx], cx
+    });
     return {};
 }
 
 error
 zd4_builtins::DoPortu()
 {
-    ASM(outb());
+    emit({
+        0xEE, // out dx, al
+    });
     return {};
 }
 
@@ -215,15 +225,19 @@ error
 zd4_builtins::Klawisz()
 {
     // INT 21,7 - Direct Console Input Without Echo
-    ASM(mov(cpu_register::ah, 7));
-    ASM(intr(0x21));
+    emit({
+        0xB4, 0x07, // mov ah, 7
+        0xCD, 0x21, // int 21h
+    });
     return {};
 }
 
 error
 zd4_builtins::Laduj()
 {
-    ASM(lodsb());
+    emit({
+        0xAC, // lodsb
+    });
     return {};
 }
 
@@ -272,7 +286,9 @@ zd4_builtins::Losowa8()
 error
 zd4_builtins::Nic()
 {
-    ASM(nop());
+    emit({
+        0x90, // nop
+    });
     return {};
 }
 
@@ -284,15 +300,18 @@ zd4_builtins::Otworz_ftb(const zd4_file &plik,
     // INT 21,3D - Open File Using Handle
     LOAD(nazwa, cpu_register::dx);
     LOAD(tryb, cpu_register::al);
-    ASM(mov(cpu_register::ah, 0x3D));
-    ASM(intr(0x21));
+    emit({
+        0xB4, 0x3D, // mov ah, 3Dh
+        0xCD, 0x21, // int 21h
+    });
 
     // INT 21,46 - Force Duplicate File Handle
     LOAD(plik, cpu_register::cx);
-    ASM(mov(cpu_register::bx, cpu_register::ax));
-    ASM(mov(cpu_register::ah, 0x46));
-    ASM(intr(0x21));
-
+    emit({
+        0x89, 0xC3, // mov bx, ax
+        0xB4, 0x46, // mov ah, 46h
+        0xCD, 0x21, // int 21h
+    });
     return {};
 }
 
@@ -311,8 +330,11 @@ zd4_builtins::Pisz_t(const zd4_text &tekst)
     {
         LOAD(tekst, cpu_register::dx);
     }
-    ASM(mov(cpu_register::ah, 9));
-    ASM(intr(0x21));
+
+    emit({
+        0xB4, 0x09, // mov ah, 9
+        0xCD, 0x21, // int 21h
+    });
     return {};
 }
 
@@ -330,9 +352,11 @@ zd4_builtins::Pisz_ft(const zd4_file &plik, const zd4_text &tekst)
     // INT 21,40 - Write To File or Device Using Handle
     LOAD(plik, cpu_register::bx);
     LOAD2(tekst, cpu_register::dx, cpu_register::cl);
-    ASM(mov(cpu_register::ch, 0));
-    ASM(mov(cpu_register::ah, 0x40));
-    ASM(intr(0x21));
+    emit({
+        0xB5, 0x00, // mov ch, 0
+        0xB4, 0x40, // mov ah, 40h
+        0xCD, 0x21, // int 21h
+    });
     return {};
 }
 
@@ -465,7 +489,9 @@ error
 zd4_builtins::Pisz8_t(const zd4_text &tekst)
 {
     LOAD(tekst, cpu_register::si);
-    ASM(mov(cpu_register::cl, mreg{cpu_register::si}));
+    emit({
+        0x8A, 0x0C, // mov cl, byte [si]
+    });
     return Pisz8_b(cpu_register::cl);
 }
 
@@ -478,9 +504,11 @@ zd4_builtins::PiszZnak_bbw(const zd4_byte &znak,
     LOAD(znak, cpu_register::al);
     LOAD(atrybut, cpu_register::bl);
     LOAD(powtorzenia, cpu_register::cx);
-    ASM(mov(cpu_register::ah, 0x09));
-    ASM(mov(cpu_register::bh, 0));
-    ASM(intr(0x10));
+    emit({
+        0xB4, 0x09, // mov ah, 9
+        0xB7, 0x00, // mov bh, 0
+        0xCD, 0x10, // int 10h
+    });
     return {};
 }
 
@@ -490,9 +518,11 @@ zd4_builtins::Pozycja_bb(const zd4_byte &kolumna, const zd4_byte &wiersz)
     // INT 10,2 - Set Cursor Position
     LOAD(kolumna, cpu_register::dl);
     LOAD(wiersz, cpu_register::dh);
-    ASM(mov(cpu_register::ah, 2));
-    ASM(mov(cpu_register::bh, 0));
-    ASM(intr(0x10));
+    emit({
+        0xB4, 0x09, // mov ah, 2
+        0xB7, 0x00, // mov bh, 0
+        0xCD, 0x10, // int 10h
+    });
     return {};
 }
 
@@ -500,8 +530,10 @@ error
 zd4_builtins::PokazMysz()
 {
     // INT 33,1 - Show Mouse Cursor
-    ASM(mov(cpu_register::ax, 1));
-    ASM(intr(0x33));
+    emit({
+        0xB8, 0x01, 0x00, // mov ax, 1
+        0xCD, 0x33,       // int 33h
+    });
     return {};
 }
 
@@ -523,9 +555,11 @@ zd4_builtins::Punkt_wwb(const zd4_word &kolumna,
     LOAD(kolumna, cpu_register::cx);
     LOAD(wiersz, cpu_register::dx);
     LOAD(kolor, cpu_register::al);
-    ASM(mov(cpu_register::ah, 0xC));
-    ASM(mov(cpu_register::bx, 0));
-    ASM(intr(0x10));
+    emit({
+        0xB4, 0x0C,       // mov ah, 0Ch
+        0xBB, 0x00, 0x00, // mov bx, 0
+        0xCD, 0x10,       // int 10h
+    });
     return {};
 }
 
@@ -533,8 +567,10 @@ error
 zd4_builtins::StanPrzyciskow()
 {
     // INT 33,3 - Get Mouse Position and Button Status
-    ASM(mov(cpu_register::ax, 3));
-    ASM(intr(0x33));
+    emit({
+        0xB8, 0x30, 0x00, // mov ax, 3
+        0xCD, 0x33,       // int 22h
+    });
     return {};
 }
 
@@ -546,11 +582,13 @@ zd4_builtins::StanPrzyciskow_t(const zd4_text &tekst)
     REQUIRE_ARG(tekst, val->data()[0] == '!');
 
     REQUIRE_SUCCESS(StanPrzyciskow());
-    ASM(mov(cpu_register::ax, cpu_register::cx));
-    ASM(mov(cpu_register::cl, 3));
-    ASM(shr(cpu_register::ax, cpu_register::cl));
-    ASM(shr(cpu_register::dx, cpu_register::cl));
-    ASM(mov(cpu_register::cx, cpu_register::ax));
+    emit({
+        0x89, 0xC8, // mov ax, cx
+        0xB1, 0x03, // mov cl, 3
+        0xD3, 0xE8, // shr ax, cl
+        0xD3, 0xEA, // shr dx, cl
+        0x89, 0xC1, // mov cx, ax
+    });
     return {};
 }
 
@@ -559,8 +597,10 @@ zd4_builtins::Tryb_b(const zd4_byte &tryb)
 {
     // INT 10,0 - Set Video Mode
     LOAD(tryb, cpu_register::al);
-    ASM(mov(cpu_register::ah, 0));
-    ASM(intr(0x10));
+    emit({
+        0xB4, 0x00, // mov ah, 0
+        0xCD, 0x10, // int 10h
+    });
     return {};
 }
 
@@ -569,8 +609,10 @@ zd4_builtins::TworzKatalog_t(const zd4_text &tekst)
 {
     // INT 21,39 - Create Subdirectory (mkdir)
     LOAD(tekst, cpu_register::dx);
-    ASM(mov(cpu_register::ah, 0x39));
-    ASM(intr(0x21));
+    emit({
+        0xB4, 0x39, // mov ah, 39h
+        0xCD, 0x21, // int 21h
+    });
     return {};
 }
 
@@ -579,8 +621,10 @@ zd4_builtins::TworzPlik_t(const zd4_text &tekst)
 {
     // INT 21,3C - Create File Using Handle
     LOAD(tekst, cpu_register::dx);
-    ASM(mov(cpu_register::ah, 0x3C));
-    ASM(intr(0x21));
+    emit({
+        0xB4, 0x3C, // mov ah, 3Ch
+        0xCD, 0x21, // int 21h
+    });
     return {};
 }
 
@@ -588,8 +632,10 @@ error
 zd4_builtins::UkryjMysz()
 {
     // INT 33,2 - Hide Mouse Cursor
-    ASM(mov(cpu_register::ax, 2));
-    ASM(intr(0x33));
+    emit({
+        0xB8, 0x02, 0x00, // mov ax, 2
+        0xCD, 0x33,       // int 33h
+    });
     return {};
 }
 
@@ -598,8 +644,10 @@ zd4_builtins::UsunKatalog_t(const zd4_text &tekst)
 {
     // INT 21,3A - Remove Subdirectory (rmdir)
     LOAD(tekst, cpu_register::dx);
-    ASM(mov(cpu_register::ah, 0x3A));
-    ASM(intr(0x21));
+    emit({
+        0xB4, 0x3A, // mov ah, 3Ah
+        0xCD, 0x21, // int 21h
+    });
     return {};
 }
 
@@ -608,8 +656,10 @@ zd4_builtins::UsunPlik_t(const zd4_text &tekst)
 {
     // INT 21,41 - Delete File
     LOAD(tekst, cpu_register::dx);
-    ASM(mov(cpu_register::ah, 0x41));
-    ASM(intr(0x21));
+    emit({
+        0xB4, 0x41, // mov ah, 41h
+        0xCD, 0x21, // int 21h
+    });
     return {};
 }
 
@@ -618,8 +668,10 @@ zd4_builtins::Zamknij_f(const zd4_file &plik)
 {
     // INT 21,3E - Close File Using Handle
     LOAD(plik, cpu_register::bx);
-    ASM(mov(cpu_register::ah, 0x3E));
-    ASM(intr(0x21));
+    emit({
+        0xB4, 0x3E, // mov ah, 3Eh
+        0xCD, 0x21, // int 21h
+    });
     return {};
 }
 
@@ -628,8 +680,10 @@ zd4_builtins::ZmienKatalog_t(const zd4_text &tekst)
 {
     // INT 21,3B - Change Current Directory (chdir)
     LOAD(tekst, cpu_register::dx);
-    ASM(mov(cpu_register::ah, 0x3B));
-    ASM(intr(0x21));
+    emit({
+        0xB4, 0x3B, // mov ah, 3Bh
+        0xCD, 0x21, // int 21h
+    });
     return {};
 }
 
@@ -639,10 +693,12 @@ zd4_builtins::ZmienNazwe_tt(const zd4_text &stara, const zd4_text &nowa)
     // INT 21,56 - Rename File
     LOAD(stara, cpu_register::dx);
     LOAD(nowa, cpu_register::di);
-    ASM(push(x86_segment::ds));
-    ASM(pop(x86_segment::es));
-    ASM(mov(cpu_register::ah, 0x56));
-    ASM(intr(0x21));
+    emit({
+        0x1E,       // push ds
+        0x07,       // pop es
+        0xB4, 0x56, // mov ah, 56h
+        0xCD, 0x21, // int 21h
+    });
     return {};
 }
 
@@ -682,8 +738,16 @@ zd4_builtins::ZmienNazwe_t(const zd4_text &stara_nowa)
 error
 zd4_builtins::ZPortu()
 {
-    ASM(inb());
+    emit({
+        0xEC, // in al, dx
+    });
     return {};
+}
+
+std::pair<unsigned, unsigned>
+zd4_builtins::emit(const uint8_t *code, unsigned size)
+{
+    return {gen._curr_code->index, gen._curr_code->emit(code, size)};
 }
 
 symbol *
@@ -696,10 +760,10 @@ zd4_builtins::get_procedure(const ustring &name,
     {
         zd4_generator::nesting_guard nested{gen};
 
-        if (!gen.set_symbol(
-                name, symbol_type::procedure,
-                static_cast<zd4_known_section>(gen._curr_code->index),
-                gen._curr_code->emit(code, size)))
+        auto address = emit(code, size);
+        if (!gen.set_symbol(name, symbol_type::procedure,
+                            static_cast<zd4_known_section>(address.first),
+                            address.second))
         {
             return nullptr;
         }
@@ -812,7 +876,8 @@ template <>
 zd4_file
 get_arg<zd4_file>(zd4_builtins *this_, node &arg)
 {
-    return zd4_file(arg.as<subscript_node>()->value->as<number_node>()->value, &arg);
+    return zd4_file(arg.as<subscript_node>()->value->as<number_node>()->value,
+                    &arg);
 }
 
 template <>
