@@ -2,6 +2,20 @@
 
 using namespace zd;
 
+error::error()
+    : _origin{0}, _ordinal{0}, _file{}, _line{0}, _column{0}, _argc{0},
+      _argv{nullptr}
+{
+}
+
+error::error(error &&that) noexcept
+    : _origin{that._origin}, _ordinal{that._ordinal},
+      _file{std::move(that._file)}, _line{that._line}, _column{that._column},
+      _argc{std::exchange(that._argc, 0)},
+      _argv{std::exchange(that._argv, nullptr)}
+{
+}
+
 error::~error()
 {
     if (!_argv)
@@ -22,6 +36,11 @@ error::~error()
     // Destroy the buffer
     delete[] _argv;
     _argv = nullptr;
+}
+
+error::operator bool() const
+{
+    return (0 == _origin) && (0 == _ordinal);
 }
 
 error &
