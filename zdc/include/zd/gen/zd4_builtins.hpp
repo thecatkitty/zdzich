@@ -325,6 +325,24 @@ class zd4_builtins
     error
     ZPortu();
 
+    std::pair<unsigned, unsigned>
+    emit(const uint8_t *code, unsigned size);
+
+    template <size_t N>
+    void
+    emit(const uint8_t (&code)[N])
+    {
+        emit(code, N);
+    }
+
+#ifdef __ia16__
+    void
+    emit(std::initializer_list<uint8_t> list)
+    {
+        emit(list.begin(), list.size());
+    }
+#endif
+
     symbol *
     get_procedure(const ustring &name, const uint8_t *code, unsigned size);
 
