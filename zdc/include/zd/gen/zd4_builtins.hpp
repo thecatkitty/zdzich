@@ -11,29 +11,6 @@ namespace zd
 namespace gen
 {
 
-template <typename T> struct member_function_traits;
-
-template <typename R, typename C, typename... Args>
-struct member_function_traits<R (C::*)(Args...)>
-{
-    using return_type = R;
-    using class_type = C;
-    using arg_types = std::tuple<Args...>;
-    static constexpr std::size_t arg_count = sizeof...(Args);
-};
-
-template <typename R, typename C, typename... Args>
-struct member_function_traits<R (C::*)(Args...) const>
-{
-    using return_type = R;
-    using class_type = C;
-    using arg_types = std::tuple<Args...>;
-    static constexpr std::size_t arg_count = sizeof...(Args);
-};
-
-template <typename T>
-using extract_args = typename member_function_traits<T>::arg_types;
-
 struct zd4_byte
 {
     const par::node *node;
@@ -42,20 +19,11 @@ struct zd4_byte
     par::cpu_register reg;
     uint8_t           val;
 
-    zd4_byte(symbol *sym_, const par::node *node_ = nullptr)
-        : sym{sym_}, reg{par::cpu_register::invalid}, val{}, node{node_}
-    {
-    }
+    zd4_byte(symbol *sym_, const par::node *node_ = nullptr);
 
-    zd4_byte(par::cpu_register reg_, const par::node *node_ = nullptr)
-        : sym{nullptr}, reg{reg_}, val{}, node{node_}
-    {
-    }
+    zd4_byte(par::cpu_register reg_, const par::node *node_ = nullptr);
 
-    zd4_byte(uint8_t val_, const par::node *node_ = nullptr)
-        : sym{nullptr}, reg{par::cpu_register::invalid}, val{val_}, node{node_}
-    {
-    }
+    zd4_byte(uint8_t val_, const par::node *node_ = nullptr);
 
     bool
     load(x86_assembler &as, par::cpu_register dst) const;
@@ -67,10 +35,7 @@ struct zd4_file
 
     uint16_t val;
 
-    zd4_file(uint16_t val_, const par::node *node_ = nullptr)
-        : val{val_}, node{node_}
-    {
-    }
+    zd4_file(uint16_t val_, const par::node *node_ = nullptr);
 
     bool
     load(x86_assembler &as, par::cpu_register dst) const;
@@ -83,15 +48,9 @@ struct zd4_text
     const symbol  *sym;
     const ustring *val;
 
-    zd4_text(const symbol *sym_, const par::node *node_ = nullptr)
-        : sym{sym_}, val{nullptr}, node{node_}
-    {
-    }
+    zd4_text(const symbol *sym_, const par::node *node_ = nullptr);
 
-    zd4_text(const ustring *val_, const par::node *node_ = nullptr)
-        : sym{nullptr}, val{val_}, node{node_}
-    {
-    }
+    zd4_text(const ustring *val_, const par::node *node_ = nullptr);
 
     bool
     load(x86_assembler    &as,
@@ -110,20 +69,11 @@ struct zd4_word
     par::cpu_register reg;
     uint16_t          val;
 
-    zd4_word(const symbol *sym_, const par::node *node_ = nullptr)
-        : sym{sym_}, reg{par::cpu_register::invalid}, val{}, node{node_}
-    {
-    }
+    zd4_word(const symbol *sym_, const par::node *node_ = nullptr);
 
-    zd4_word(par::cpu_register reg_, const par::node *node_ = nullptr)
-        : sym{nullptr}, reg{reg_}, val{}, node{node_}
-    {
-    }
+    zd4_word(par::cpu_register reg_, const par::node *node_ = nullptr);
 
-    zd4_word(uint16_t val_, const par::node *node_ = nullptr)
-        : sym{nullptr}, reg{par::cpu_register::invalid}, val{val_}, node{node_}
-    {
-    }
+    zd4_word(uint16_t val_, const par::node *node_ = nullptr);
 
     bool
     load(x86_assembler &as, par::cpu_register dst) const;
@@ -327,21 +277,6 @@ class zd4_builtins
 
     std::pair<unsigned, unsigned>
     emit(const uint8_t *code, unsigned size);
-
-    template <size_t N>
-    void
-    emit(const uint8_t (&code)[N])
-    {
-        emit(code, N);
-    }
-
-#ifdef __ia16__
-    void
-    emit(std::initializer_list<uint8_t> list)
-    {
-        emit(list.begin(), list.size());
-    }
-#endif
 
     symbol *
     get_procedure(const ustring &name, const uint8_t *code, unsigned size);
