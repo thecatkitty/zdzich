@@ -845,8 +845,14 @@ _matches_args(const char *signature, const node_list &args)
     return true;
 }
 
+static bool
+_matches(const char *signature, const ustring &name, const node_list &args)
+{
+    return _matches_name(signature, name) && _matches_args(signature, args);
+}
+
 template <typename T>
-T
+static T
 get_arg(zd4_builtins *this_, node &arg) = delete;
 
 template <>
@@ -921,16 +927,16 @@ get_arg<zd4_word>(zd4_builtins *this_, node &arg)
     return 0xFFFF;
 }
 
-error
+static error
 invoke(zd4_builtins *this_, error (zd4_builtins::*mfp)(), const node_list &args)
 {
     return (this_->*mfp)();
 }
 
 template <typename Arg1>
-error
-invoke(zd4_builtins *this_,
-       error (zd4_builtins::*mfp)(Arg1),
+static error
+invoke(zd4_builtins    *this_,
+       error            (zd4_builtins::*mfp)(Arg1),
        const node_list &args)
 {
     auto it = args.begin();
@@ -939,9 +945,9 @@ invoke(zd4_builtins *this_,
 }
 
 template <typename Arg1, typename Arg2>
-error
-invoke(zd4_builtins *this_,
-       error (zd4_builtins::*mfp)(Arg1, Arg2),
+static error
+invoke(zd4_builtins    *this_,
+       error            (zd4_builtins::*mfp)(Arg1, Arg2),
        const node_list &args)
 {
     auto it = args.begin();
@@ -951,9 +957,9 @@ invoke(zd4_builtins *this_,
 }
 
 template <typename Arg1, typename Arg2, typename Arg3>
-error
-invoke(zd4_builtins *this_,
-       error (zd4_builtins::*mfp)(Arg1, Arg2, Arg3),
+static error
+invoke(zd4_builtins    *this_,
+       error            (zd4_builtins::*mfp)(Arg1, Arg2, Arg3),
        const node_list &args)
 {
     auto it = args.begin();
@@ -966,8 +972,7 @@ invoke(zd4_builtins *this_,
 #define INVOKE_IF_MATCH(mf)                                                    \
     {                                                                          \
         auto __signature = #mf;                                                \
-        if (_matches_name(__signature, node.callee) &&                         \
-            _matches_args(__signature, node.arguments))                        \
+        if (_matches(__signature, node.callee, node.arguments))                \
         {                                                                      \
             return invoke(this, &zd4_builtins::mf, node.arguments);            \
         }                                                                      \
