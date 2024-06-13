@@ -89,16 +89,9 @@ class error
     }
 
   public:
-    error()
-        : _origin{0}, _ordinal{0}, _file{}, _line{0}, _column{0}, _argc{0},
-          _argv{nullptr}
-    {
-    }
+    error();
 
-    operator bool() const
-    {
-        return (0 == _origin) && (0 == _ordinal);
-    }
+    operator bool() const;
 
     template <typename Torigin,
               typename Traits = error_origin_traits<Torigin>,
@@ -130,13 +123,7 @@ class error
 
     error(const error &) = delete;
 
-    error(error &&that) noexcept
-        : _origin{that._origin}, _ordinal{that._ordinal},
-          _file{std::move(that._file)}, _line{that._line},
-          _column{that._column}, _argc{std::exchange(that._argc, 0)},
-          _argv{std::exchange(that._argv, nullptr)}
-    {
-    }
+    error(error &&that) noexcept;
 
     ~error();
 
