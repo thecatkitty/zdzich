@@ -56,6 +56,32 @@ _load_codepoint(const char *&ptr, int &codepoint)
     return true;
 }
 
+static int
+_to_upper(int codepoint)
+{
+    if (zd::text::isascii(codepoint))
+    {
+        return std::toupper(codepoint);
+    }
+
+    auto mapping =
+        std::find_if(std::begin(POLISH_LETTERS), std::end(POLISH_LETTERS),
+                     [codepoint](const _code_mapping &cm) {
+                         return cm.codepoint == codepoint;
+                     });
+    if (std::end(POLISH_LETTERS) == mapping)
+    {
+        return codepoint;
+    }
+
+    if (std::isupper(mapping->ascii))
+    {
+        return codepoint;
+    }
+
+    return mapping[-1].codepoint;
+}
+
 bool
 zd::text::pl_streqi(const ustring &left, const ustring &right)
 {
@@ -68,11 +94,11 @@ zd::text::pl_streqi(const char *left, const char *right)
     while (*left && *right)
     {
         if (isascii(*left) && isascii(*right))
-                          {
-            if (std::toupper(*left) == std::toupper(*right))
+        {
+            if (_to_upper(*left) != _to_upper(*right))
             {
                 return false;
-                          }
+            }
         }
         else if (*left != *right)
         {
@@ -85,7 +111,7 @@ zd::text::pl_streqi(const char *left, const char *right)
 
     if ((0 != *left) || (0 != *right))
     {
-    return false;
+        return false;
     }
 
     return true;
