@@ -221,34 +221,11 @@ x86_assembler::cmp(par::cpu_register left, const symbol_ref &right)
 }
 
 bool
-x86_assembler::cmp(mreg left, unsigned right)
-{
-    if (sizeof(uint16_t) == _reg_size(left.reg))
-    {
-        ASM_REQUIRE(UINT16_MAX >= right);
-
-        _code->emit_byte(CMP_rm16_imm16);
-        _code->emit_byte(ModRM(left.encode(), 7));
-        _code->emit_word(right);
-        return true;
-    }
-
-    return false;
-}
-
-bool
 x86_assembler::dec(const symbol_ref &dst)
 {
     _code->emit_byte(DEC_rm16);
     _code->emit_byte(ModRM(ModRM_disp16, 1));
     _code->emit_ref({dst.sym.address, dst.sym.section, dst.off});
-    return true;
-}
-
-bool
-x86_assembler::inb()
-{
-    _code->emit_byte(IN_AL_DX);
     return true;
 }
 
@@ -292,13 +269,6 @@ x86_assembler::jne(const symbol_ref &target)
 {
     _code->emit_word(JNE_rel16);
     _code->emit_ref({target.sym.address, target.sym.section, -2, true});
-    return true;
-}
-
-bool
-x86_assembler::lodsb()
-{
-    _code->emit_byte(LODS_m8);
     return true;
 }
 
@@ -413,49 +383,6 @@ x86_assembler::mov(par::cpu_register dst, unsigned src)
 }
 
 bool
-x86_assembler::nop()
-{
-    _code->emit_byte(NOP);
-    return true;
-}
-
-bool
-x86_assembler::outb()
-{
-    _code->emit_byte(OUT_DX_AL);
-    return true;
-}
-
-bool
-zd::gen::x86_assembler::pop(x86_segment seg)
-{
-    switch (seg)
-    {
-    case x86_segment::ds:
-        _code->emit_byte(POP_DS);
-        return true;
-
-    case x86_segment::es:
-        _code->emit_byte(POP_ES);
-        return true;
-
-    case x86_segment::ss:
-        _code->emit_byte(POP_SS);
-        return true;
-
-    case x86_segment::fs:
-        _code->emit_word(POP_FS);
-        return true;
-
-    case x86_segment::gs:
-        _code->emit_word(POP_GS);
-        return true;
-    }
-
-    return false;
-}
-
-bool
 x86_assembler::pop(const symbol_ref &dst)
 {
     _code->emit_byte(POP_m16);
@@ -550,17 +477,6 @@ x86_assembler::add(par::cpu_register dst, unsigned src)
 }
 
 bool
-x86_assembler::add(par::cpu_register dst, par::cpu_register src)
-{
-    ASM_REQUIRE(_reg_size(dst) == _reg_size(src));
-    ASM_REQUIRE(sizeof(uint16_t) == _reg_size(dst));
-
-    _code->emit_byte(ADD_r16_rm16);
-    _code->emit_byte(ModRM(_to_mode(src), _to_regopcode(dst)));
-    return true;
-}
-
-bool
 x86_assembler::add(const symbol_ref &dst, unsigned src)
 {
     _code->emit_byte(ADD_rm16_imm16);
@@ -581,14 +497,6 @@ x86_assembler::inc(par::cpu_register reg)
     }
 
     _code->emit_byte(INC_r16 | _to_regopcode(reg));
-    return true;
-}
-
-bool
-x86_assembler::inc(mreg reg)
-{
-    _code->emit_byte(INC_rm16);
-    _code->emit_byte(ModRM(reg.encode(), 0));
     return true;
 }
 
@@ -616,16 +524,6 @@ bool
 x86_assembler::ret()
 {
     _code->emit_byte(RET_near);
-    return true;
-}
-
-bool
-x86_assembler::shr(par::cpu_register reg, par::cpu_register cl)
-{
-    ASM_REQUIRE(cpu_register::cl == cl);
-
-    _code->emit_byte(SHR_rm16_CL);
-    _code->emit_byte(ModRM(_to_mode(reg), 5));
     return true;
 }
 

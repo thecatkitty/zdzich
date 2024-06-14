@@ -103,13 +103,7 @@ class x86_assembler
     cmp(const symbol_ref &left, uint16_t right);
 
     bool
-    cmp(mreg left, unsigned right);
-
-    bool
     dec(const symbol_ref &dst);
-
-    bool
-    inb();
 
     bool
     jb(const symbol_ref &target);
@@ -122,9 +116,6 @@ class x86_assembler
 
     bool
     jne(const symbol_ref &target);
-
-    bool
-    lodsb();
 
     bool
     mov(par::cpu_register dst, par::cpu_register src);
@@ -151,15 +142,6 @@ class x86_assembler
     mov(par::cpu_register dst, unsigned src);
 
     bool
-    nop();
-
-    bool
-    outb();
-
-    bool
-    pop(x86_segment seg);
-
-    bool
     pop(const symbol_ref &dst);
 
     bool
@@ -181,16 +163,10 @@ class x86_assembler
     add(par::cpu_register dst, unsigned src);
 
     bool
-    add(par::cpu_register dst, par::cpu_register src);
-
-    bool
     add(const symbol_ref &dst, unsigned src);
 
     bool
     inc(par::cpu_register reg);
-
-    bool
-    inc(mreg reg);
 
     bool
     inc(const symbol_ref &dst);
@@ -200,9 +176,6 @@ class x86_assembler
 
     bool
     ret();
-
-    bool
-    shr(par::cpu_register reg, par::cpu_register cl);
 
     bool
     sub(const symbol_ref &dst, unsigned src);
