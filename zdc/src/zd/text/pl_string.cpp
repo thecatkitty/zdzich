@@ -59,34 +59,57 @@ _load_codepoint(const char *&ptr, int &codepoint)
 bool
 zd::text::pl_streqi(const ustring &left, const ustring &right)
 {
-    return std::equal(left.begin(), left.end(), right.begin(), right.end(),
-                      [](int a, int b) -> bool {
-                          if (isascii(a) && isascii(b))
-                          {
-                              return std::toupper(a) == std::toupper(b);
-                          }
+    return pl_streqi(left.data(), right.data());
+}
 
-                          return a == b;
-                      });
+bool
+zd::text::pl_streqi(const char *left, const char *right)
+{
+    while (*left && *right)
+    {
+        if (isascii(*left) && isascii(*right))
+                          {
+            if (std::toupper(*left) == std::toupper(*right))
+            {
+                return false;
+                          }
+        }
+        else if (*left != *right)
+        {
+            return false;
+        }
+
+        left++;
+        right++;
+    }
+
+    if ((0 != *left) || (0 != *right))
+    {
     return false;
+    }
+
+    return true;
 }
 
 bool
 zd::text::pl_streqai(const ustring &left, const ustring &right)
 {
-    auto ptr_left = left.data();
-    auto ptr_right = right.data();
+    return pl_streqai(left.data(), right.data());
+}
 
-    while (*ptr_left && *ptr_right)
+bool
+zd::text::pl_streqai(const char *left, const char *right)
+{
+    while (*left && *right)
     {
         int codepoint_left, codepoint_right;
 
-        if (!_load_codepoint(ptr_left, codepoint_left))
+        if (!_load_codepoint(left, codepoint_left))
         {
             return false;
         }
 
-        if (!_load_codepoint(ptr_right, codepoint_right))
+        if (!_load_codepoint(right, codepoint_right))
         {
             return false;
         }
@@ -98,7 +121,7 @@ zd::text::pl_streqai(const ustring &left, const ustring &right)
         }
     }
 
-    if ((0 != *ptr_left) || (0 != *ptr_right))
+    if ((0 != *left) || (0 != *right))
     {
         return false;
     }
