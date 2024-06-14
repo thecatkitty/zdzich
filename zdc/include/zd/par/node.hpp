@@ -85,7 +85,16 @@ struct position
     const unsigned column;
 };
 
+#ifdef __ia16__
+#define IMPLEMENT_TYPE_TAG static const unsigned _type_tag = __LINE__;
+#define TTAG               _type_tag,
+#else
+#define IMPLEMENT_TYPE_TAG
+#define TTAG
+#endif
+
 #define IMPLEMENT_GENERATOR_ACCESS                                             \
+    IMPLEMENT_TYPE_TAG;                                                        \
     virtual error generate(gen::generator *generator) override                 \
     {                                                                          \
         return generator->process(*this);                                      \
@@ -129,23 +138,29 @@ struct node
     is() const
     {
 #ifdef __ia16__
-        T specimen{};
-        return *reinterpret_cast<void **const *>(&specimen) ==
-               *reinterpret_cast<void **const *>(this);
+        return _ttag == T::_type_tag;
 #else
         return !!dynamic_cast<const T *>(this);
 #endif
     }
 
   protected:
-    node() : code_path{nullptr}, code_line{0}, code_column{0}
+    node(
+#ifdef __ia16__
+        unsigned ttag,
+#endif
+        const position &pos)
+        : code_path{&pos.path}, code_line{pos.line}, code_column{pos.column}
+#ifdef __ia16__
+          ,
+          _ttag{ttag}
+#endif
     {
     }
 
-    node(const position &pos)
-        : code_path{&pos.path}, code_line{pos.line}, code_column{pos.column}
-    {
-    }
+#ifdef __ia16__
+    unsigned _ttag;
+#endif
 };
 
 struct assignment_node : public node
@@ -153,12 +168,10 @@ struct assignment_node : public node
     const unique_node target;
     const unique_node source;
 
-    assignment_node() = default;
-
     assignment_node(const position &pos,
                     unique_node     target_,
                     unique_node     source_)
-        : node{pos}, target{std::move(target_)}, source{std::move(source_)}
+        : node{TTAG pos}, target{std::move(target_)}, source{std::move(source_)}
     {
     }
 
@@ -171,15 +184,11 @@ struct call_node : public node
     const node_list arguments;
     const bool      is_bare;
 
-    call_node() : node{}, callee{}, arguments{}, is_bare{false}
-    {
-    }
-
     call_node(const position &pos,
               const ustring  &callee_,
               node_list       arguments_,
               bool            is_bare_)
-        : node{pos}, callee{callee_}, arguments{std::move(arguments_)},
+        : node{TTAG pos}, callee{callee_}, arguments{std::move(arguments_)},
           is_bare{is_bare_}
     {
     }
@@ -192,12 +201,8 @@ struct condition_node : public node
     const condition   cond;
     const unique_node action;
 
-    condition_node() : cond{condition::equal}, action{}
-    {
-    }
-
     condition_node(const position &pos, condition cond_, unique_node action_)
-        : node{pos}, cond{cond_}, action{std::move(action_)}
+        : node{TTAG pos}, cond{cond_}, action{std::move(action_)}
     {
     }
 
@@ -209,12 +214,8 @@ struct declaration_node : public node
     const unique_node target;
     const bool        is_const;
 
-    declaration_node() : target{}, is_const{false}
-    {
-    }
-
     declaration_node(const position &pos, unique_node target_, bool is_const_)
-        : node{pos}, target{std::move(target_)}, is_const{is_const_}
+        : node{TTAG pos}, target{std::move(target_)}, is_const{is_const_}
     {
     }
 
@@ -225,10 +226,8 @@ struct emit_node : public node
 {
     const std::vector<uint8_t> bytes;
 
-    emit_node() = default;
-
     emit_node(const position &pos, std::vector<uint8_t> bytes_)
-        : node{pos}, bytes{std::move(bytes_)}
+        : node{TTAG pos}, bytes{std::move(bytes_)}
     {
     }
 
@@ -239,13 +238,12 @@ struct end_node : public node
 {
     const ustring name;
 
-    end_node() = default;
-
-    end_node(const position &pos) : node{pos}, name{}
+    end_node(const position &pos) : node{TTAG pos}, name{}
     {
     }
 
-    end_node(const position &pos, const ustring &name_) : node{pos}, name{name_}
+    end_node(const position &pos, const ustring &name_)
+        : node{TTAG pos}, name{name_}
     {
     }
 
@@ -257,14 +255,10 @@ struct include_node : public node
     const ustring name;
     const bool    is_binary;
 
-    include_node() : name{}, is_binary{false}
-    {
-    }
-
     include_node(const position &pos,
                  const ustring  &name_,
                  bool            is_binary_ = false)
-        : node{pos}, name{name_}, is_binary{is_binary_}
+        : node{TTAG pos}, name{name_}, is_binary{is_binary_}
     {
     }
 
@@ -275,10 +269,8 @@ struct jump_node : public node
 {
     const unique_node target;
 
-    jump_node() = default;
-
     jump_node(const position &pos, unique_node target_)
-        : node{pos}, target{std::move(target_)}
+        : node{TTAG pos}, target{std::move(target_)}
     {
     }
 
@@ -289,10 +281,8 @@ struct label_node : public node
 {
     const ustring name;
 
-    label_node() = default;
-
     label_node(const position &pos, const ustring &name_)
-        : node{pos}, name{name_}
+        : node{TTAG pos}, name{name_}
     {
     }
 
@@ -303,11 +293,7 @@ struct number_node : public node
 {
     const int value;
 
-    number_node() : value{0}
-    {
-    }
-
-    number_node(const position &pos, int value_) : node{pos}, value{value_}
+    number_node(const position &pos, int value_) : node{TTAG pos}, value{value_}
     {
     }
 
@@ -319,12 +305,8 @@ struct object_node : public node
     const ustring     name;
     const object_type type;
 
-    object_node() : name{}, type{object_type::text}
-    {
-    }
-
     object_node(const position &pos, const ustring &name_, object_type type_)
-        : node{pos}, name{name_}, type{type_}
+        : node{TTAG pos}, name{name_}, type{type_}
     {
     }
 
@@ -337,15 +319,12 @@ struct operation_node : public node
     const unique_node left;
     const unique_node right;
 
-    operation_node() : op{operation::add}, left{}, right{}
-    {
-    }
-
     operation_node(const position &pos,
                    operation       op_,
                    unique_node     left_,
                    unique_node     right_)
-        : node{pos}, op{op_}, left{std::move(left_)}, right{std::move(right_)}
+        : node{TTAG pos}, op{op_}, left{std::move(left_)},
+          right{std::move(right_)}
     {
     }
 
@@ -357,10 +336,8 @@ struct procedure_node : public node
     const ustring   name;
     const node_list body;
 
-    procedure_node() = default;
-
     procedure_node(const position &pos, const ustring &name_, node_list body_)
-        : node{pos}, name{name_}, body{std::move(body_)}
+        : node{TTAG pos}, name{name_}, body{std::move(body_)}
     {
     }
 
@@ -371,11 +348,8 @@ struct register_node : public node
 {
     const cpu_register reg;
 
-    register_node() : reg{cpu_register::invalid}
-    {
-    }
-
-    register_node(const position &pos, cpu_register reg_) : node{pos}, reg{reg_}
+    register_node(const position &pos, cpu_register reg_)
+        : node{TTAG pos}, reg{reg_}
     {
     }
 
@@ -386,10 +360,8 @@ struct string_node : public node
 {
     const ustring value;
 
-    string_node() = default;
-
     string_node(const position &pos, const ustring &value_)
-        : node{pos}, value{value_}
+        : node{TTAG pos}, value{value_}
     {
     }
 
@@ -400,10 +372,8 @@ struct subscript_node : public node
 {
     const unique_node value;
 
-    subscript_node() = default;
-
     subscript_node(const position &pos, unique_node value_)
-        : node{pos}, value{std::move(value_)}
+        : node{TTAG pos}, value{std::move(value_)}
     {
     }
 
@@ -411,6 +381,8 @@ struct subscript_node : public node
 };
 
 #undef IMPLEMENT_GENERATOR_ACCESS
+#undef IMPLEMENT_TYPE_TAG
+#undef TTAG
 
 } // namespace par
 
