@@ -11,10 +11,13 @@ namespace zd
 namespace gen
 {
 
-struct zd4_byte
+struct zd4_arg
 {
     const par::node *node;
+};
 
+struct zd4_byte : public zd4_arg
+{
     const symbol     *sym;
     par::cpu_register reg;
     uint8_t           val;
@@ -29,10 +32,8 @@ struct zd4_byte
     load(x86_assembler &as, par::cpu_register dst) const;
 };
 
-struct zd4_file
+struct zd4_file : public zd4_arg
 {
-    const par::node *node;
-
     uint16_t val;
 
     zd4_file(uint16_t val_, const par::node *node_ = nullptr);
@@ -41,10 +42,8 @@ struct zd4_file
     load(x86_assembler &as, par::cpu_register dst) const;
 };
 
-struct zd4_text
+struct zd4_text : public zd4_arg
 {
-    const par::node *node;
-
     const symbol  *sym;
     const ustring *val;
 
@@ -61,10 +60,8 @@ struct zd4_text
     loadd(x86_assembler &as, par::cpu_register dst) const;
 };
 
-struct zd4_word
+struct zd4_word : public zd4_arg
 {
-    const par::node *node;
-
     const symbol     *sym;
     par::cpu_register reg;
     uint16_t          val;

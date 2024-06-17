@@ -11,17 +11,17 @@ using namespace zd::par;
     }
 
 zd4_byte::zd4_byte(symbol *sym_, const par::node *node_)
-    : sym{sym_}, reg{par::cpu_register::invalid}, val{}, node{node_}
+    : zd4_arg{node_}, sym{sym_}, reg{par::cpu_register::invalid}, val{}
 {
 }
 
 zd4_byte::zd4_byte(par::cpu_register reg_, const par::node *node_)
-    : sym{nullptr}, reg{reg_}, val{}, node{node_}
+    : zd4_arg{node_}, sym{nullptr}, reg{reg_}, val{}
 {
 }
 
 zd4_byte::zd4_byte(uint8_t val_, const par::node *node_)
-    : sym{nullptr}, reg{par::cpu_register::invalid}, val{val_}, node{node_}
+    : zd4_arg{node_}, sym{nullptr}, reg{par::cpu_register::invalid}, val{val_}
 {
 }
 
@@ -56,7 +56,7 @@ zd4_byte::load(x86_assembler &as, cpu_register dst) const
 }
 
 zd4_file::zd4_file(uint16_t val_, const par::node *node_)
-    : val{val_}, node{node_}
+    : zd4_arg{node_}, val{val_}
 {
 }
 
@@ -67,12 +67,12 @@ zd4_file::load(x86_assembler &as, cpu_register dst) const
 }
 
 zd4_text::zd4_text(const symbol *sym_, const par::node *node_)
-    : sym{sym_}, val{nullptr}, node{node_}
+    : zd4_arg{node_}, sym{sym_}, val{nullptr}
 {
 }
 
 zd4_text::zd4_text(const ustring *val_, const par::node *node_)
-    : sym{nullptr}, val{val_}, node{node_}
+    : zd4_arg{node_}, sym{nullptr}, val{val_}
 {
 }
 
@@ -125,17 +125,17 @@ zd4_text::loadd(x86_assembler &as, par::cpu_register dst) const
 }
 
 zd4_word::zd4_word(const symbol *sym_, const par::node *node_)
-    : sym{sym_}, reg{par::cpu_register::invalid}, val{}, node{node_}
+    : zd4_arg{node_}, sym{sym_}, reg{par::cpu_register::invalid}, val{}
 {
 }
 
 zd4_word::zd4_word(par::cpu_register reg_, const par::node *node_)
-    : sym{nullptr}, reg{reg_}, val{}, node{node_}
+    : zd4_arg{node_}, sym{nullptr}, reg{reg_}, val{}
 {
 }
 
 zd4_word::zd4_word(uint16_t val_, const par::node *node_)
-    : sym{nullptr}, reg{par::cpu_register::invalid}, val{val_}, node{node_}
+    : zd4_arg{node_}, sym{nullptr}, reg{par::cpu_register::invalid}, val{val_}
 {
 }
 
