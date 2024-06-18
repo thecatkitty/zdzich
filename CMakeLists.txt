@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.20)
 
 project(Zdzich CXX C)
 
@@ -25,6 +25,8 @@ if(DOS)
     include_directories(BEFORE SYSTEM ext/nicetia16/include/c++/6.3.0)
     link_directories(BEFORE ext/nicetia16/lib)
 endif()
+
+include(cmake/mc.cmake)
 
 # Subprojects
 add_subdirectory(gwizd)

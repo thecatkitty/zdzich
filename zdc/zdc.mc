@@ -1,4 +1,4 @@
-﻿LanguageNames=(English=0x0409:zdc_en_US)
+﻿LanguageNames=(English=0x0409:zdc_0409)
 
 ; // Stream errors
 
