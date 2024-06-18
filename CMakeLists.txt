@@ -27,6 +27,7 @@ if(DOS)
 endif()
 
 # Subprojects
+add_subdirectory(gwizd)
 add_subdirectory(zdc)
 
 if(NOT DOS)
