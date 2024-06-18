@@ -96,7 +96,7 @@ parser = ArgumentParser(description="Utility for converting Message Compiler tex
 parser.add_argument("input", type=FileType(
     encoding="utf-8-sig"), help="Message Compiler input text file")
 parser.add_argument(
-    "lcid", type=int, help="LCID of the language to be extracted")
+    "lcid", type=lambda x: int(x, 0), help="LCID of the language to be extracted")
 parser.add_argument("-o", type=FileType("w", encoding="utf-8"), dest="output", default=sys.stdout,
                     help="output C file (stdout is the default)")
 
