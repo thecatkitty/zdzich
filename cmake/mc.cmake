@@ -1,3 +1,5 @@
+set(SCRIPTS_DIR ${CMAKE_CURRENT_LIST_DIR})
+
 function(add_messages source_file default_lang output_var)
     cmake_path(GET source_file STEM source_name)
     if(WIN32)
@@ -18,7 +20,7 @@ function(add_messages source_file default_lang output_var)
             OUTPUT ${output_name}
             COMMAND python3
             ARGS
-                ${CMAKE_CURRENT_LIST_DIR}/../tools/mconv.py
+                ${SCRIPTS_DIR}/../tools/mconv.py
                 -o ${CMAKE_CURRENT_BINARY_DIR}/${output_name}
                 ${CMAKE_CURRENT_SOURCE_DIR}/${source_file}
                 0x${default_lang}

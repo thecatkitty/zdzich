@@ -29,8 +29,8 @@ endif()
 include(cmake/mc.cmake)
 
 # Subprojects
+add_subdirectory(app)
 add_subdirectory(gwizd)
-add_subdirectory(zdc)
 
 if(NOT DOS)
     add_subdirectory(libzdstd)
