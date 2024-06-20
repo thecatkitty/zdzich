@@ -1,3 +1,4 @@
+#include <clocale>
 #include <cstdio>
 
 #include <zd/message.hpp>
@@ -17,11 +18,15 @@
         (ret) = ::ASPRINTF((ptr), (fmt), ARGV##num(argv));                     \
         break;
 
-extern "C" const struct
+struct _message
 {
     unsigned    id;
     const char *msg;
-} MESSAGES_0409[];
+};
+
+extern "C" const _message MESSAGES_0409[];
+
+static const _message *MESSAGES{nullptr};
 
 using namespace zd;
 
@@ -44,7 +49,17 @@ message::print(std::FILE *pf) const
 static const char *
 _retrieve_fmt(uint16_t id)
 {
-    for (auto it = MESSAGES_0409; it->id; it++)
+    if (nullptr == MESSAGES)
+    {
+        auto loc = std::setlocale(LC_ALL, "");
+        auto lang_len = std::strcspn(loc, ".-_");
+
+        {
+            MESSAGES = MESSAGES_0409;
+        }
+    }
+
+    for (auto it = MESSAGES; it->id; it++)
     {
         if (it->id == id)
         {
