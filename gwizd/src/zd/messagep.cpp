@@ -25,6 +25,7 @@ struct _message
 };
 
 extern "C" const _message MESSAGES_0409[];
+extern "C" const _message MESSAGES_0415[];
 
 static const _message *MESSAGES{nullptr};
 
@@ -54,6 +55,11 @@ _retrieve_fmt(uint16_t id)
         auto loc = std::setlocale(LC_ALL, "");
         auto lang_len = std::strcspn(loc, ".-_");
 
+        if (0 == std::memcmp("pl", loc, lang_len))
+        {
+            MESSAGES = MESSAGES_0415;
+        }
+        else
         {
             MESSAGES = MESSAGES_0409;
         }
