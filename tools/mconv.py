@@ -14,6 +14,13 @@ RE_UPPER_S = re.compile(r"(%\d+\$[-\+# ]*\d*\.?\d*)S")
 RE_POS = re.compile(r"%(\d+)\$")
 
 
+# DOS code page mappings
+CODE_PAGES = {
+    "cp437": [0x0409],
+    "cp852": [0x0415],
+}
+
+
 # Parse an assignemnt into a key-value paur
 def get_assignment(line: str) -> tuple[str, str]:
     key, value = line.rstrip().split("=", 1)
@@ -99,8 +106,18 @@ parser.add_argument(
     "lcid", type=lambda x: int(x, 0), help="LCID of the language to be extracted")
 parser.add_argument("-o", type=FileType("w", encoding="utf-8"), dest="output", default=sys.stdout,
                     help="output C file (stdout is the default)")
+parser.add_argument("--dos", action="store_true",
+                    help="encode using the DOS code page")
 
 args = parser.parse_args()
+if args.dos:
+    encoding = next(
+        (cp for cp, lcids in CODE_PAGES.items() if args.lcid in lcids), "cp437")
+    if args.output is sys.stdout:
+        sys.stdout.reconfigure(encoding=encoding)
+    else:
+        args.output.close()
+        args.output = open(args.output.name, "w", encoding=encoding)
 
 # Create the declaration
 print("const struct { unsigned id; const char *msg; }", file=args.output)

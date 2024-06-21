@@ -25,6 +25,9 @@ function(add_messages source_file languages output_var)
         list(APPEND output_names ${output_name})
     else()
         foreach(language IN LISTS languages)
+            if(DOS)
+                set(dos_flag "--dos")
+            endif()
             set(output_name "${source_name}_${language}.c")
             add_custom_command(
                 OUTPUT ${output_name}
@@ -34,6 +37,7 @@ function(add_messages source_file languages output_var)
                     -o ${CMAKE_CURRENT_BINARY_DIR}/${output_name}
                     ${CMAKE_CURRENT_SOURCE_DIR}/${source_file}
                     0x${language}
+                    ${dos_flag}
                 MAIN_DEPENDENCY
                     ${CMAKE_CURRENT_SOURCE_DIR}/${source_file}
                 COMMENT "Converting localized messages ${binary_dir}/${output_name}")
