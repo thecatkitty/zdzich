@@ -47,14 +47,62 @@ message::print(std::FILE *pf) const
     std::fputs(reinterpret_cast<const char *>(_ptr), pf);
 }
 
+#ifdef __ia16__
+struct _dos_country_data
+{
+    uint16_t date_format;
+    char     currency[5];
+    char     thousands_separator[2];
+    char     decimal_separator[2];
+    char     date_separator[2];
+    char     time_separator[2];
+    uint8_t  currency_style;
+    uint8_t  fractional_digits;
+    uint8_t  time_format;
+    uint32_t case_map_call;
+    char     list_separator[2];
+    char     _reserved[10];
+};
+
+static int
+_dos_get_country_data(_dos_country_data &out)
+{
+    uint16_t ax, bx, dx;
+    asm volatile("int $0x21; pushf; pop %%dx"
+                 : "=a"(ax), "=b"(bx), "=d"(dx)
+                 : "a"(0x3800), "d"(&out));
+    return (dx & 1) ? -ax : bx;
+}
+
+static const char *
+_get_dos_locale()
+{
+    _dos_country_data cdata{};
+
+    auto ccode = _dos_get_country_data(cdata);
+    switch (ccode)
+    {
+    case 48:
+        return "pl";
+    }
+
+    return "en";
+}
+#endif
+
 static const char *
 _retrieve_fmt(uint16_t id)
 {
     if (nullptr == MESSAGES)
     {
-        auto loc = std::setlocale(LC_ALL, "");
+        const char *loc = std::setlocale(LC_ALL, "");
+#ifdef __ia16__
+        if (0 == std::strcmp("C", loc))
+        {
+            loc = _get_dos_locale();
+        }
+#endif
         auto lang_len = std::strcspn(loc, ".-_");
-
         if (0 == std::memcmp("pl", loc, lang_len))
         {
             MESSAGES = MESSAGES_0415;
