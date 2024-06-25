@@ -6,10 +6,9 @@
 #include <zd/lex/lexer.hpp>
 #include <zd/message.hpp>
 #include <zd/par/parser.hpp>
+#include <zd/text/characters.hpp>
 
 #include "zdc.hpp"
-
-typedef bool (*node_callback)(zd::par::node *, void *);
 
 static int
 action_compiler(zd::lex::lexer &lexer, std::FILE *output);
@@ -21,9 +20,6 @@ static int
 action_generator(zd::lex::lexer     &lexer,
                  zd::gen::generator *generator,
                  const char         *separator = nullptr);
-
-static bool
-is_path_separator(int ch);
 
 static void
 print_error(const zd::error &err);
@@ -65,14 +61,7 @@ main(int argc, char *argv[])
     }
 
     // Prepare configuration from arguments
-    zd::text::encoding *encoding =
-        (0 == std::strcmp(opt_enc, "dos"))   ? zd::text::encoding::ibm852
-        : (0 == std::strcmp(opt_enc, "iso")) ? zd::text::encoding::iso_8859_2
-        : (0 == std::strcmp(opt_enc, "maz")) ? zd::text::encoding::x_mazovia
-        : (0 == std::strcmp(opt_enc, "utf")) ? zd::text::encoding::utf_8
-        : (0 == std::strcmp(opt_enc, "win")) ? zd::text::encoding::windows_1250
-                                             : zd::text::encoding::unknown;
-
+    zd::text::encoding *encoding = zd::text::encoding::from_name(opt_enc);
     zd::lex::pl_istream stream{(opt_input[0] && std::strcmp("--", opt_input))
                                    ? zd::io::min_istream{opt_input}
                                    : stdin,
@@ -209,8 +198,8 @@ action_generator(zd::lex::lexer     &lexer,
                 if (!self.empty())
                 {
                     // Get parent path
-                    auto dir_end = ++zd::find_last_if(self.begin(), self.end(),
-                                                      is_path_separator);
+                    auto dir_end = ++zd::find_last_if(
+                        self.begin(), self.end(), zd::text::is_path_separator);
 
                     // Create included file path
                     std::for_each(self.begin(), dir_end, [&inc_path](int ch) {
@@ -250,19 +239,6 @@ action_generator(zd::lex::lexer     &lexer,
             std::puts(separator);
         }
     }
-}
-
-bool
-is_path_separator(int ch)
-{
-#if defined(_WIN32) || defined(__ia16__)
-    if ('\\' == ch)
-    {
-        return true;
-    }
-#endif
-
-    return '/' == ch;
 }
 
 void

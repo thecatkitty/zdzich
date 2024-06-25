@@ -56,3 +56,14 @@ text::single_byte_encoding::encode(char *buff, int codepoint)
     *buff = 0x80 + (position - _mapping);
     return 1;
 }
+
+text::encoding *
+text::encoding::from_name(const char *name)
+{
+    return (0 == std::strcmp(name, "dos"))   ? zd::text::encoding::ibm852
+           : (0 == std::strcmp(name, "iso")) ? zd::text::encoding::iso_8859_2
+           : (0 == std::strcmp(name, "maz")) ? zd::text::encoding::x_mazovia
+           : (0 == std::strcmp(name, "utf")) ? zd::text::encoding::utf_8
+           : (0 == std::strcmp(name, "win")) ? zd::text::encoding::windows_1250
+                                             : zd::text::encoding::unknown;
+}

@@ -63,6 +63,19 @@ is_name_continuation(int ch)
     return is_name_start(ch) || isdigit(ch) || ('?' == ch);
 }
 
+static inline bool
+is_path_separator(int ch)
+{
+#if defined(_WIN32) || defined(__ia16__)
+    if ('\\' == ch)
+    {
+        return true;
+    }
+#endif
+
+    return '/' == ch;
+}
+
 } // namespace text
 
 } // namespace zd
