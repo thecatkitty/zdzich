@@ -31,6 +31,9 @@ struct encoding
     static single_byte_encoding *x_iso_or_windows;
     static single_byte_encoding *x_mazovia;
 
+    static encoding *
+    from_name(const char *name);
+
   protected:
     encoding() = default;
 };
