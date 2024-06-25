@@ -11,3 +11,5 @@ if (WIN32)
 else()
 	target_sources(gwizd PRIVATE messagep.cpp)
 endif()
+
+target_sources(gwizd PRIVATE unit.cpp)

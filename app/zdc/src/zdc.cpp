@@ -3,10 +3,8 @@
 #include <zd/containers.hpp>
 #include <zd/gen/text_generator.hpp>
 #include <zd/gen/zd4_generator.hpp>
-#include <zd/lex/lexer.hpp>
 #include <zd/message.hpp>
-#include <zd/par/parser.hpp>
-#include <zd/text/characters.hpp>
+#include <zd/unit.hpp>
 
 #include "zdc.hpp"
 
@@ -17,9 +15,7 @@ static int
 action_lexer(zd::lex::lexer &lexer);
 
 static int
-action_generator(zd::lex::lexer     &lexer,
-                 zd::gen::generator *generator,
-                 const char         *separator = nullptr);
+action_parser(zd::lex::lexer &lexer);
 
 static void
 print_error(const zd::error &err);
@@ -97,8 +93,7 @@ main(int argc, char *argv[])
 
     if ('P' == *opt_action)
     {
-        zd::gen::text_generator generator{stdout};
-        return action_generator(lexer, &generator, "");
+        return action_parser(lexer);
     }
 
     assert(false && "unhandled action");
@@ -109,11 +104,13 @@ int
 action_compiler(zd::lex::lexer &lexer, std::FILE *output)
 {
     zd::gen::zd4_generator generator{};
+    zd::unit               unit{lexer, generator};
 
-    auto status = action_generator(lexer, &generator);
-    if (0 != status)
+    auto err = std::move(unit.process());
+    if (!err)
     {
-        return status;
+        print_error(err);
+        return 1;
     }
 
     auto link_ret = generator.link(output);
@@ -162,83 +159,19 @@ action_lexer(zd::lex::lexer &lexer)
 }
 
 int
-action_generator(zd::lex::lexer     &lexer,
-                 zd::gen::generator *generator,
-                 const char         *separator)
+action_parser(zd::lex::lexer &lexer)
 {
-    zd::par::parser parser{lexer};
+    zd::gen::text_generator generator{stdout};
+    zd::unit                unit{lexer, generator};
 
-    zd::result<zd::par::unique_node> result{};
-    while (true)
+    auto err = std::move(unit.process());
+    if (!err)
     {
-        result = std::move(parser.handle());
-        if (!result)
-        {
-            zd::error err = std::move(result.error());
-            if (err.is<zd::par::parser>(zd::par::parser::error_code::eof))
-            {
-                // End of file
-                return 0;
-            }
-
-            print_error(err);
-            return 1;
-        }
-
-        auto &node = *result;
-        if (node->is<zd::par::include_node>())
-        {
-            auto inc_node = static_cast<zd::par::include_node *>(node.get());
-            if (!inc_node->is_binary)
-            {
-                // Inclusion directive - #Wstaw
-                zd::ustring inc_path{};
-
-                auto &self = lexer.get_path();
-                if (!self.empty())
-                {
-                    // Get parent path
-                    auto dir_end = ++zd::find_last_if(
-                        self.begin(), self.end(), zd::text::is_path_separator);
-
-                    // Create included file path
-                    std::for_each(self.begin(), dir_end, [&inc_path](int ch) {
-                        inc_path.append(ch);
-                    });
-                }
-
-                for (auto ch : inc_node->name)
-                {
-                    inc_path.append(('\\' == ch) ? '/' : ch);
-                }
-
-                // Process the included file
-                zd::lex::pl_istream inc_stream{
-                    inc_path, lexer.get_stream().get_encoding()};
-                zd::lex::lexer inc_lexer{inc_stream};
-
-                int status = action_generator(inc_lexer, generator);
-                if (0 != status)
-                {
-                    return status;
-                }
-
-                continue;
-            }
-        }
-
-        zd::error status = node->generate(generator);
-        if (!status)
-        {
-            print_error(status);
-            return 1;
-        }
-
-        if (separator)
-        {
-            std::puts(separator);
-        }
+        print_error(err);
+        return 1;
     }
+
+    return 0;
 }
 
 void
