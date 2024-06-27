@@ -18,16 +18,8 @@
         (ret) = ::ASPRINTF((ptr), (fmt), ARGV##num(argv));                     \
         break;
 
-struct _message
-{
-    unsigned    id;
-    const char *msg;
-};
-
-extern "C" const _message MESSAGES_0409[];
-extern "C" const _message MESSAGES_0415[];
-
-static const _message *MESSAGES{nullptr};
+extern const zd::translation     TRANSLATIONS[];
+static const zd::message_record *MESSAGES{nullptr};
 
 using namespace zd;
 
@@ -95,6 +87,8 @@ _retrieve_fmt(uint16_t id)
 {
     if (nullptr == MESSAGES)
     {
+        MESSAGES = TRANSLATIONS[0].messages;
+
         const char *loc = std::setlocale(LC_ALL, "");
 #ifdef __ia16__
         if (0 == std::strcmp("C", loc))
@@ -103,13 +97,16 @@ _retrieve_fmt(uint16_t id)
         }
 #endif
         auto lang_len = std::strcspn(loc, ".-_");
-        if (0 == std::memcmp("pl", loc, lang_len))
+        for (auto translation = TRANSLATIONS; translation->messages;
+             translation++)
         {
-            MESSAGES = MESSAGES_0415;
-        }
-        else
-        {
-            MESSAGES = MESSAGES_0409;
+            if (0 != std::strncmp(translation->tag, loc, lang_len))
+            {
+                continue;
+            }
+
+            MESSAGES = translation->messages;
+            break;
         }
     }
 
