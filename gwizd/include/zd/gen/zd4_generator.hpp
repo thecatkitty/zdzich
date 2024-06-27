@@ -64,6 +64,25 @@ class zd4_generator : public generator, public zd4_reference_resolver
         return _column;
     }
 
+    uint16_t
+    get_code_size() const
+    {
+        uint16_t ret{0};
+
+        for (auto &section : _codes)
+        {
+            ret += section.size();
+        }
+
+        return ret;
+    }
+
+    uint16_t
+    get_data_size() const
+    {
+        return _data.size() + _udat.size();
+    }
+
     error
     process(const par::assignment_node &node) override;
 
