@@ -48,4 +48,16 @@ class message
              const uintptr_t *argv = nullptr);
 };
 
+struct message_record
+{
+    unsigned    id;
+    const char *msg;
+};
+
+struct translation
+{
+    char                  tag[4];
+    const message_record *messages;
+};
+
 } // namespace zd
