@@ -68,6 +68,7 @@ class pl_istream
         unexpected_byte = 0,
         invalid_sequence = 1,
         read_error = 2,
+        no_file = 3,
     };
 
   private:

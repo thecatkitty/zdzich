@@ -30,6 +30,15 @@ Language=Polish
 błąd odczytu sekwencji wielobajtowej
 .
 
+MessageId=0x0103
+Language=English
+cannot open the file
+.
+
+Language=Polish
+nie można otworzyć pliku
+.
+
 ; // Lexer errors
 
 MessageId=0x0200
