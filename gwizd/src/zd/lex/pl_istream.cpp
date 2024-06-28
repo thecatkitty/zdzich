@@ -103,6 +103,12 @@ _detect_encoding(int ch, io::min_istream &stream, text::encoding *&enc)
 result<int>
 lex::pl_istream::read() noexcept
 {
+    if (!_stream.get())
+    {
+        _line = 0;
+        return make_error(error_code::no_file);
+    }
+
     auto ch = _stream.getc();
     if (!_stream.good())
     {
