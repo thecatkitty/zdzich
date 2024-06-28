@@ -38,10 +38,18 @@ main(int argc, char *argv[])
         }
     }
 
+    char buff[PATH_MAX];
     if (!opt_file)
     {
-        std::fputs("Nie podano nazwy pliku wejsciowego!\n", stderr);
-        return 1;
+        std::printf("Podaj nazwe pliku do kompilacji: ");
+        std::fgets(buff, PATH_MAX, stdin);
+        buff[std::strlen(buff) - 1] = 0;
+        if (!buff[0])
+        {
+            return 1;
+        }
+
+        opt_file = buff;
     }
 
     const char *path_dot = std::strrchr(opt_file, '.');
