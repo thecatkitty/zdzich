@@ -1,13 +1,12 @@
-
 #include <cstdio>
 
 #include <zd/gen/zd4_generator.hpp>
 #include <zd/message.hpp>
 #include <zd/unit.hpp>
 
-#include "../../zdc/src/zdc.hpp"
+#include "zd4.h"
 
-void
+static void
 _print_error(const zd::error &err)
 {
     std::fputs("Blad: ", stderr);
@@ -50,6 +49,11 @@ main(int argc, char *argv[])
         }
 
         opt_file = buff;
+    }
+
+    if (0 == std::strcmp("*", opt_file))
+    {
+        return zd4_list_zdi();
     }
 
     const char *path_dot = std::strrchr(opt_file, '.');
