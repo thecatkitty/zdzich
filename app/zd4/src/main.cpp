@@ -19,6 +19,7 @@ _print_error(const zd::error &err)
 static void
 _print_logo()
 {
+    zd4_clear();
     std::printf("%s%9s%s\n\n", "Kompilator jezyka Zdzich 6.4", "",
                 "(c) 2024 Mateusz Karcz (Licencja MIT)");
 }
@@ -42,6 +43,8 @@ main(int argc, char *argv[])
     {
         std::printf("Podaj nazwe pliku do kompilacji: ");
         std::fgets(buff, PATH_MAX, stdin);
+        zd4_clear();
+
         buff[std::strlen(buff) - 1] = 0;
         if (!buff[0])
         {
