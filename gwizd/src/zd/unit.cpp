@@ -5,6 +5,40 @@
 
 using namespace zd;
 
+ustring
+unit::get_include_path(const lex::lexer &lex, const ustring &inc)
+{
+    // Inclusion directive - #Wstaw
+    ustring path{};
+
+    auto &self = lex.get_path();
+    if (!self.empty())
+    {
+        // Get parent path
+        auto dir_end =
+            ++find_last_if(self.begin(), self.end(), text::is_path_separator);
+
+        // Create included file path
+        std::for_each(self.begin(), dir_end, [&path](int ch) {
+            path.append(ch);
+        });
+    }
+
+    for (auto ch : inc)
+    {
+        path.append(('\\' == ch) ? '/' : ch);
+    }
+
+    auto file = std::fopen(path.data(), "r");
+    if (!file)
+    {
+        return "";
+    }
+
+    std::fclose(file);
+    return path;
+}
+
 error
 unit::process(lex::lexer &lexer)
 {
@@ -13,6 +47,7 @@ unit::process(lex::lexer &lexer)
     result<par::unique_node> result{};
     while (true)
     {
+        _line = parser.get_line();
         result = std::move(parser.handle());
         if (!result)
         {
@@ -33,24 +68,12 @@ unit::process(lex::lexer &lexer)
             if (!inc_node->is_binary)
             {
                 // Inclusion directive - #Wstaw
-                ustring inc_path{};
-
-                auto &self = _lex.get_path();
-                if (!self.empty())
+                auto inc_path =
+                    std::move(get_include_path(_lex, inc_node->name));
+                if (inc_path.empty())
                 {
-                    // Get parent path
-                    auto dir_end = ++find_last_if(self.begin(), self.end(),
-                                                  text::is_path_separator);
-
-                    // Create included file path
-                    std::for_each(self.begin(), dir_end, [&inc_path](int ch) {
-                        inc_path.append(ch);
-                    });
-                }
-
-                for (auto ch : inc_node->name)
-                {
-                    inc_path.append(('\\' == ch) ? '/' : ch);
+                    return error{*this, error_code::no_include,
+                                 std::move(inc_node->name), errno};
                 }
 
                 // Process the included file
@@ -59,7 +82,7 @@ unit::process(lex::lexer &lexer)
                 lex::lexer      inc_lexer{inc_stream};
 
                 auto status = std::move(process(inc_lexer));
-                if (0 != status)
+                if (!status)
                 {
                     return status;
                 }
