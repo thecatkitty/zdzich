@@ -234,6 +234,17 @@ Language=Polish
 nazwa '%1!S!' nie została zdefiniowana
 .
 
+; // Runner errors
+
+MessageId=0x0500
+Language=English
+cannot open included file '%1!S!' (code %2!u!)
+.
+
+Language=Polish
+nie można otworzyć załączonego pliku '%1!S!' (kod %2!u!)
+.
+
 ; // ZDC messages
 
 MessageId=0x8000
