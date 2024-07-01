@@ -65,11 +65,17 @@ class error
         *argv = static_cast<uintptr_t>(head & 0xFF);
     }
 
+    inline static void
+    to_argv(uintptr_t *argv, ustring &&head)
+    {
+        *argv = reinterpret_cast<uintptr_t>(head.extract());
+    }
+
     template <typename Head, typename... Tail>
     inline static void
     to_argv(uintptr_t *argv, Head head, Tail... tail)
     {
-        to_argv(argv, head);
+        to_argv(argv, std::forward<Head>(head));
         to_argv(argv + 1, tail...);
     }
 
@@ -80,11 +86,20 @@ class error
         *argvfp = 0;
     }
 
+    template <typename Head>
+    inline static void
+    to_argvfp(uintptr_t *argvfp, ustring &&head)
+    {
+        *argvfp = head.data() ? [](char *ptr) {
+            delete[] ptr;
+        } : nullptr;
+    }
+
     template <typename Head, typename... Tail>
     inline static void
     to_argvfp(uintptr_t *argvfp, Head head, Tail... tail)
     {
-        to_argvfp(argvfp, head);
+        to_argvfp(argvfp, std::forward<Head>(head));
         to_argvfp(argvfp + 1, tail...);
     }
 
@@ -117,8 +132,8 @@ class error
         _argc = sizeof...(args);
         _argv = new (std::nothrow) uintptr_t[sizeof...(args) * 2];
 
-        to_argv(_argv, args...);
         to_argvfp(_argv + sizeof...(args), args...);
+        to_argv(_argv, args...);
     }
 
     error(const error &) = delete;
@@ -196,6 +211,7 @@ enum class error_origin : uint8_t
     lexer = 2,
     parser = 3,
     generator = 4,
+    runner = 5,
 };
 
 template <typename T> using result = tl::expected<T, error>;
