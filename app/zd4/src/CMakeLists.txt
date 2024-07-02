@@ -1,4 +1,5 @@
 target_sources(zd4 PRIVATE main.cpp)
+target_sources(zd4 PRIVATE arguments.cpp)
 target_sources(zd4 PRIVATE clear.c)
 target_sources(zd4 PRIVATE list_zdi.c)
 
