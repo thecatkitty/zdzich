@@ -30,27 +30,10 @@ main(int argc, char *argv[])
     _print_logo();
 
     // Process command line arguments
-    const char *opt_file{nullptr};
-
-    std::list<zd::ustring> inc_dirs{};
-
-    for (int i = 1; i < argc; i++)
-    {
-        if ('/' != argv[i][0])
-        {
-            opt_file = argv[i];
-            continue;
-        }
-
-        if ('I' == argv[i][1])
-        {
-            inc_dirs.push_back(argv[i] + 2);
-            continue;
-        }
-    }
+    zd4_arguments args{argc, argv};
 
     char buff[PATH_MAX];
-    if (!opt_file)
+    if (!args.input)
     {
         std::printf("Podaj nazwe pliku do kompilacji: ");
         std::fgets(buff, PATH_MAX, stdin);
@@ -62,21 +45,21 @@ main(int argc, char *argv[])
             return 1;
         }
 
-        opt_file = buff;
+        args.input = buff;
     }
 
-    if (0 == std::strcmp("*", opt_file))
+    if (0 == std::strcmp("*", args.input))
     {
         return zd4_list_zdi();
     }
 
-    const char *path_dot = std::strrchr(opt_file, '.');
-    path_dot = path_dot ? path_dot : (opt_file + std::strlen(opt_file));
+    const char *path_dot = std::strrchr(args.input, '.');
+    path_dot = path_dot ? path_dot : (args.input + std::strlen(args.input));
 
     zd::ustring out_path{};
-    out_path.reserve(path_dot - opt_file + 4);
+    out_path.reserve(path_dot - args.input + 4);
 
-    for (auto ptr = opt_file; ptr < path_dot; ptr++)
+    for (auto ptr = args.input; ptr < path_dot; ptr++)
     {
         out_path.append(*ptr);
     }
@@ -85,10 +68,10 @@ main(int argc, char *argv[])
     out_path.append('o');
     out_path.append('m');
 
-    zd::lex::pl_istream    stream{opt_file};
+    zd::lex::pl_istream    stream{args.input};
     zd::lex::lexer         lexer{stream};
     zd::gen::zd4_generator generator{};
-    zd::unit               unit{lexer, generator, std::move(inc_dirs)};
+    zd::unit               unit{lexer, generator, std::move(args.inc_dirs)};
 
     auto err = std::move(unit.process());
     if (!err)
@@ -112,7 +95,8 @@ main(int argc, char *argv[])
         return 1;
     }
 
-    std::printf("Kompilacja pliku %s do pliku %s\n", opt_file, out_path.data());
+    std::printf("Kompilacja pliku %s do pliku %s\n", args.input,
+                out_path.data());
     std::printf("Dlugosc programu: %u bajtow\n", generator.get_code_size());
     std::printf("Dlugosc danych:   %u bajtow\n", generator.get_data_size());
     return 0;
