@@ -5,38 +5,68 @@
 
 using namespace zd;
 
-ustring
-unit::get_include_path(const lex::lexer &lex, const ustring &inc)
+static ustring
+_get_parent_directory(const lex::lexer &lex)
 {
-    // Inclusion directive - #Wstaw
     ustring path{};
 
     auto &self = lex.get_path();
     if (!self.empty())
     {
-        // Get parent path
         auto dir_end =
             ++find_last_if(self.begin(), self.end(), text::is_path_separator);
-
-        // Create included file path
         std::for_each(self.begin(), dir_end, [&path](int ch) {
             path.append(ch);
         });
     }
 
-    for (auto ch : inc)
-    {
-        path.append(('\\' == ch) ? '/' : ch);
-    }
+    return path;
+}
 
+static void
+_append_path(ustring &target, const ustring &path)
+{
+    target.append('.');
+    target.append('/');
+    for (auto ch : path)
+    {
+        target.append(('\\' == ch) ? '/' : ch);
+    }
+}
+
+static bool
+_file_exists(const ustring &path)
+{
     auto file = std::fopen(path.data(), "r");
     if (!file)
     {
-        return "";
+        return false;
     }
 
     std::fclose(file);
-    return path;
+    return true;
+}
+
+ustring
+unit::get_include_path(const lex::lexer &lex, const ustring &inc) const
+{
+    auto path = std::move(_get_parent_directory(lex));
+    _append_path(path, inc);
+    if (_file_exists(path))
+    {
+        return path;
+    }
+
+    for (ustring path : _inc_dirs)
+    {
+        _append_path(path, inc);
+        if (_file_exists(path))
+        {
+            return path;
+        }
+    }
+
+    return {};
 }
 
 error
@@ -69,7 +99,7 @@ unit::process(lex::lexer &lexer)
             {
                 // Inclusion directive - #Wstaw
                 auto inc_path =
-                    std::move(get_include_path(_lex, inc_node->name));
+                    std::move(get_include_path(lexer, inc_node->name));
                 if (inc_path.empty())
                 {
                     return error{*this, error_code::no_include,

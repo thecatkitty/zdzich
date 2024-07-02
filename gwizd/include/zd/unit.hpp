@@ -6,17 +6,22 @@ namespace zd
 
 class unit
 {
-    lex::lexer     &_lex;
+    lex::lexer        &_lex;
+    std::list<ustring> _inc_dirs;
+
+    const ustring *_path;
+    unsigned       _line;
+
     gen::generator &_gen;
-    const ustring  *_path;
-    unsigned        _line;
 
   public:
     typedef void (*node_callback)(unit *);
 
-    unit(lex::lexer &lexer, gen::generator &generator)
-        : _lex{lexer}, _gen{generator}, _path{&lexer.get_path()}, _line{1},
-          on_node{nullptr}
+    unit(lex::lexer          &lexer,
+         gen::generator      &generator,
+         std::list<ustring> &&inc_dirs = {})
+        : _lex{lexer}, _inc_dirs{std::move(inc_dirs)}, _path{&lexer.get_path()},
+          _line{1}, _gen{generator}, on_node{nullptr}
     {
     }
 
@@ -54,8 +59,8 @@ class unit
     };
 
   private:
-    static ustring
-    get_include_path(const lex::lexer &lex, const ustring &inc);
+    ustring
+    get_include_path(const lex::lexer &lex, const ustring &inc) const;
 
     error
     process(lex::lexer &lexer);
