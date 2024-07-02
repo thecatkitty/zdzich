@@ -1,6 +1,7 @@
 add_executable(zd4)
 set_property(TARGET zd4 PROPERTY CXX_STANDARD 14)
 target_link_libraries(zd4 PRIVATE gwizd)
+add_dependencies(zd4 version_info)
 
 add_subdirectory(src)
 
