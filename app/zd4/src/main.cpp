@@ -29,12 +29,23 @@ main(int argc, char *argv[])
 {
     _print_logo();
 
+    // Process command line arguments
     const char *opt_file{nullptr};
+
+    std::list<zd::ustring> inc_dirs{};
+
     for (int i = 1; i < argc; i++)
     {
         if ('/' != argv[i][0])
         {
             opt_file = argv[i];
+            continue;
+        }
+
+        if ('I' == argv[i][1])
+        {
+            inc_dirs.push_back(argv[i] + 2);
+            continue;
         }
     }
 
@@ -77,7 +88,7 @@ main(int argc, char *argv[])
     zd::lex::pl_istream    stream{opt_file};
     zd::lex::lexer         lexer{stream};
     zd::gen::zd4_generator generator{};
-    zd::unit               unit{lexer, generator};
+    zd::unit               unit{lexer, generator, std::move(inc_dirs)};
 
     auto err = std::move(unit.process());
     if (!err)
