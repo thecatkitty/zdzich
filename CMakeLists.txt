@@ -28,6 +28,9 @@ endif()
 
 include(cmake/mc.cmake)
 
+include_directories(BEFORE SYSTEM ${CMAKE_CURRENT_BINARY_DIR}/inc)
+add_custom_target(version_info COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_LIST_DIR}/cmake/version.cmake)
+
 # Subprojects
 add_subdirectory(app)
 add_subdirectory(gwizd)

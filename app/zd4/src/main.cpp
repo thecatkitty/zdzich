@@ -4,6 +4,8 @@
 #include <zd/message.hpp>
 #include <zd/unit.hpp>
 
+#include <generated/version.h>
+
 #include "zd4.h"
 
 static void
@@ -20,8 +22,8 @@ static void
 _print_logo()
 {
     zd4_clear();
-    std::printf("%s%9s%s\n\n", "Kompilator jezyka Zdzich 6.4", "",
-                "(c) 2024 Mateusz Karcz (Licencja MIT)");
+    std::printf("%s%9s%s\n\n", "Kompilator jezyka Zdzich " VER_FILEVERSION_STR,
+                "", "(c) 2024 Mateusz Karcz (Licencja MIT)");
 }
 
 int
