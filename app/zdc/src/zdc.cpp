@@ -9,13 +9,15 @@
 #include "zdc.hpp"
 
 static int
-action_compiler(zd::lex::lexer &lexer, std::FILE *output);
+action_compiler(zd::lex::lexer          &lexer,
+                std::FILE               *output,
+                std::list<zd::ustring> &&inc_dirs);
 
 static int
 action_lexer(zd::lex::lexer &lexer);
 
 static int
-action_parser(zd::lex::lexer &lexer);
+action_parser(zd::lex::lexer &lexer, std::list<zd::ustring> &&inc_dirs);
 
 static void
 print_error(const zd::error &err);
@@ -28,6 +30,8 @@ main(int argc, char *argv[])
     const char *opt_enc{""};
     const char *opt_input{""};
     const char *opt_output{""};
+
+    std::list<zd::ustring> inc_dirs{};
 
     for (auto arg : zd::range<char *>(argv + 1, argc - 1))
     {
@@ -46,6 +50,12 @@ main(int argc, char *argv[])
         if (('o' == arg[1]) && (':' == arg[2]))
         {
             opt_output = arg + 3;
+            continue;
+        }
+
+        if (('I' == arg[1]) && (':' == arg[2]))
+        {
+            inc_dirs.push_back(arg + 3);
             continue;
         }
 
@@ -83,7 +93,7 @@ main(int argc, char *argv[])
             return 1;
         }
 
-        return action_compiler(lexer, output);
+        return action_compiler(lexer, output, std::move(inc_dirs));
     }
 
     if ('L' == *opt_action)
@@ -93,7 +103,7 @@ main(int argc, char *argv[])
 
     if ('P' == *opt_action)
     {
-        return action_parser(lexer);
+        return action_parser(lexer, std::move(inc_dirs));
     }
 
     assert(false && "unhandled action");
@@ -101,10 +111,12 @@ main(int argc, char *argv[])
 }
 
 int
-action_compiler(zd::lex::lexer &lexer, std::FILE *output)
+action_compiler(zd::lex::lexer          &lexer,
+                std::FILE               *output,
+                std::list<zd::ustring> &&inc_dirs)
 {
     zd::gen::zd4_generator generator{};
-    zd::unit               unit{lexer, generator};
+    zd::unit               unit{lexer, generator, std::move(inc_dirs)};
 
     auto err = std::move(unit.process());
     if (!err)
@@ -159,10 +171,10 @@ action_lexer(zd::lex::lexer &lexer)
 }
 
 int
-action_parser(zd::lex::lexer &lexer)
+action_parser(zd::lex::lexer &lexer, std::list<zd::ustring> &&inc_dirs)
 {
     zd::gen::text_generator generator{stdout};
-    zd::unit                unit{lexer, generator};
+    zd::unit                unit{lexer, generator, std::move(inc_dirs)};
 
     auto err = std::move(unit.process());
     if (!err)
