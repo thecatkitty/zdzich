@@ -18,7 +18,8 @@ if (NOT DOS)
                 -o:${CMAKE_CURRENT_BINARY_DIR}/${target}.com
                 ${ZDC_ENCODING}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-            MAIN_DEPENDENCY ${source_file})
+            MAIN_DEPENDENCY ${source_file}
+            DEPENDS zdc)
 
         add_custom_target(
             ${target} ALL
