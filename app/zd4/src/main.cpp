@@ -11,7 +11,7 @@
 static void
 _print_error(const zd::error &err)
 {
-    std::fputs("Blad: ", stderr);
+    zd::message::retrieve(MSG_ERROR).print(stderr);
     zd::message::retrieve((err.origin() << 8) | err.ordinal(), err.size(),
                           err.begin())
         .print(stderr);
@@ -22,8 +22,10 @@ static void
 _print_logo()
 {
     zd4_clear();
-    std::printf("%s%9s%s\n\n", "Kompilator jezyka Zdzich " VER_FILEVERSION_STR,
-                "", "(c) 2024 Mateusz Karcz (Licencja MIT)");
+    zd::message::retrieve(MSG_HEADER).print(stdout);
+    std::printf("%s%9s", " " VER_FILEVERSION_STR, "");
+    zd::message::retrieve(MSG_COPYRIGHT).print(stdout);
+    std::puts("\n");
 }
 
 int
@@ -37,7 +39,7 @@ main(int argc, char *argv[])
     char buff[PATH_MAX];
     if (!args.input)
     {
-        std::printf("Podaj nazwe pliku do kompilacji: ");
+        zd::message::retrieve(MSG_INPUT_PROMPT).print(stdout);
         std::fgets(buff, PATH_MAX, stdin);
         zd4_clear();
 
@@ -97,9 +99,14 @@ main(int argc, char *argv[])
         return 1;
     }
 
-    std::printf("Kompilacja pliku %s do pliku %s\n", args.input,
-                out_path.data());
-    std::printf("Dlugosc programu: %u bajtow\n", generator.get_code_size());
-    std::printf("Dlugosc danych:   %u bajtow\n", generator.get_data_size());
+    uintptr_t margv[]{(uintptr_t)args.input, (uintptr_t)out_path.data()};
+    zd::message::retrieve(MSG_SUMMARY_INOUT, 2, margv);
+
+    margv[0] = (uintptr_t)generator.get_code_size();
+    zd::message::retrieve(MSG_SUMMARY_CODE, 1, margv);
+
+    margv[0] = (uintptr_t)generator.get_data_size();
+    zd::message::retrieve(MSG_SUMMARY_DATA, 1, margv);
+
     return 0;
 }
