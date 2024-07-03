@@ -55,7 +55,8 @@ def get_messages(input: TextIOWrapper) -> Generator[tuple[int, int, str], None, 
             if key == "MessageId":
                 message_id = int(value, 0)
             if key == "Language":
-                message_language = languages[value]
+                if value in languages.keys():
+                    message_language = languages[value]
             continue
 
         message_text += line
