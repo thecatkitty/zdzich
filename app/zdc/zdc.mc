@@ -20,3 +20,4 @@ no output file name provided (argument -o)
 Language=Polish
 nie podano nazwy pliku wynikowego (argument -o)
 .
+
