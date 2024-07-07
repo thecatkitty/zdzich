@@ -3,6 +3,8 @@ name: Build
 on:
   pull_request:
     branches: [main]
+  push:
+    tags: [6.*]
 
 jobs:
   Build:
@@ -59,6 +61,11 @@ jobs:
           git fetch --depth=1 origin +refs/tags/*:refs/tags/* || true
           cmake -S . -B build -DCMAKE_INSTALL_PREFIX=bin ${{ matrix.platform.flags }}
           cmake --build build --target install --config Release
+
+      - name: Prepare release info
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          git tag -l --format='%(contents:subject)' ${{ github.ref_name }} | sed -r "s/^.+: //" > bin/RELEASE.md
   
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -66,3 +73,27 @@ jobs:
           name: zdzich-${{ matrix.platform.target }}
           path: |
             bin
+
+  Release:
+
+    runs-on: ubuntu-latest
+    needs: Build
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Fetch build output
+        uses: actions/download-artifact@v3
+        with:
+          path: zdzich
+          
+      - name: Prepare archive
+        run: |
+          cd zdzich
+          zip -r ../zdzich-${{ github.ref_name }}.zip dos-ia16 windows-x64 windows-ia32
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Wersja ${{ github.ref_name }}
+          body_path: zdzich/dos-ia16/RELEASE.md
+          files: zdzich-${{ github.ref_name }}.zip
