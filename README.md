@@ -9,9 +9,9 @@ Niniejsze repozytorium ma na celu wskrzeszenie tego projektu - w szczególności
 
 ## Stan projektu
 
-[![Build](https://github.com/thecatkitty/zdzich/actions/workflows/build.yml/badge.svg?branch=main&event=push)](https://github.com/thecatkitty/zdzich/actions/workflows/build.yml)
+[![Build](https://github.com/thecatkitty/zdzich/actions/workflows/build.yml/badge.svg?event=push)](https://github.com/thecatkitty/zdzich/actions/workflows/build.yml)
 
-Program jest dostępny pod każdą z obsługiwanych platform w dwóch wariantach:
+Program jest dostępny pod każdą z obsługiwanych platform (DOS, Linux, macOS i Windows) w dwóch wariantach:
 1. Rozwojowy kompilator [ZDC](docs/zdc.md).
 2. Kompilator [ZD4](docs/zd4.md) zgodny ze ZDZICH4.
 
