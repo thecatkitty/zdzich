@@ -122,6 +122,7 @@ zd4_generator::process(const par::assignment_node &node)
     }
 
     assert(false && "unhandled assignment target");
+    return {};
 }
 
 error
