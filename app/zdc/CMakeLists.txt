@@ -1,6 +1,7 @@
 add_executable(zdc)
 set_property(TARGET zdc PROPERTY CXX_STANDARD 14)
 target_link_libraries(zdc PRIVATE gwizd)
+add_dependencies(zdc version_info)
 
 add_subdirectory(src)
 
