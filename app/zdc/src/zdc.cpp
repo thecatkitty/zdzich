@@ -6,12 +6,17 @@
 #include <zd/message.hpp>
 #include <zd/unit.hpp>
 
+#include <generated/version.h>
+
 #include "zdc.hpp"
 
 static int
 action_compiler(zd::lex::lexer          &lexer,
                 std::FILE               *output,
                 std::list<zd::ustring> &&inc_dirs);
+
+static int
+action_help(int argc, char *argv[]);
 
 static int
 action_lexer(zd::lex::lexer &lexer);
@@ -26,7 +31,7 @@ int
 main(int argc, char *argv[])
 {
     // Process command line arguments
-    const char *opt_action{"C"};
+    const char *opt_action{argc ? "C" : "h"};
     const char *opt_enc{""};
     const char *opt_input{""};
     const char *opt_output{""};
@@ -59,11 +64,16 @@ main(int argc, char *argv[])
             continue;
         }
 
-        if (zd::contains("CLP", arg[1]))
+        if (zd::contains("CLPh", arg[1]))
         {
             opt_action = arg + 1;
             continue;
         }
+    }
+
+    if ('h' == *opt_action)
+    {
+        return action_help(argc, argv);
     }
 
     // Prepare configuration from arguments
@@ -131,6 +141,57 @@ action_compiler(zd::lex::lexer          &lexer,
         zd::error err = std::move(link_ret.error());
         print_error(err);
         return 1;
+    }
+
+    return 0;
+}
+
+int
+action_help(int argc, char *argv[])
+{
+    auto version = VER_FILEVERSION_STR;
+    zd::message::retrieve(MSG_HEADER, 1, (const uintptr_t *)&version)
+        .print(stdout);
+    std::puts("");
+    zd::message::retrieve(MSG_COPYRIGHT).print(stdout);
+    std::puts("\n");
+
+#if defined(_WIN32) || defined(__ia16__)
+#define SEPARATOR '\\'
+#else
+#define SEPARATOR '/'
+#endif
+    auto self = std::strrchr(argv[0], SEPARATOR);
+    self = self ? (self + 1) : argv[0];
+    zd::message::retrieve(MSG_USAGE, 1, (const uintptr_t *)&self).print(stdout);
+    std::puts("\n");
+
+    zd::message::retrieve(MSG_ACTIONS).print(stdout);
+    std::puts("");
+    for (auto &it : std::array<std::pair<const char *, unsigned>, 4>{{
+             {"h", MSG_ACT_HELP},
+             {"C", MSG_ACT_COMPILER},
+             {"L", MSG_ACT_LEXER},
+             {"P", MSG_ACT_PARSER},
+         }})
+    {
+        std::printf("  -%s  ", it.first);
+        zd::message::retrieve(it.second).print(stdout);
+        std::puts("");
+    }
+    std::puts("");
+
+    zd::message::retrieve(MSG_OPTIONS).print(stdout);
+    std::puts("");
+    for (auto &it : std::array<std::pair<const char *, unsigned>, 3>{{
+             {"e", MSG_OPT_ENCODING},
+             {"o", MSG_OPT_OUTPUT},
+             {"I", MSG_OPT_INCDIR},
+         }})
+    {
+        std::printf("  -%s: ", it.first);
+        zd::message::retrieve(it.second).print(stdout);
+        std::puts("");
     }
 
     return 0;
