@@ -1,4 +1,6 @@
+#ifndef __ia16__
 #include <clocale>
+#endif
 #include <cstdio>
 
 #include <zd/message.hpp>
@@ -89,12 +91,10 @@ _retrieve_fmt(uint16_t id)
     {
         MESSAGES = TRANSLATIONS[0].messages;
 
-        const char *loc = std::setlocale(LC_ALL, "");
 #ifdef __ia16__
-        if (0 == std::strcmp("C", loc))
-        {
-            loc = _get_dos_locale();
-        }
+        const char *loc = _get_dos_locale();
+#else
+        const char *loc = std::setlocale(LC_ALL, "");
 #endif
         auto lang_len = std::strcspn(loc, ".-_");
         for (auto translation = TRANSLATIONS; translation->messages;
